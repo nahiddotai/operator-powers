@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "version": "1.0.0",
+  "releasedAt": "PENDING-RELEASE-DATE",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "date": "PENDING-RELEASE-DATE",
+      "headline": "Initial public release",
+      "new": [
+        "AI Working Setup: set up AI so it understands how you work",
+        "Meeting Miner: turn a meeting into decisions, insight, and the next move",
+        "LLM Council: pressure-test a decision from five independent angles",
+        "Plain AI Explainer: explain a difficult AI concept so a smart beginner gets it",
+        "Instagram Carousel Maker: turn one useful idea into an export-ready carousel",
+        "Repeated Task to Skill: decide if a repeated task should become a skill, then design it",
+        "System skills: start-here, find-a-superpower, whats-new, give-feedback, request-a-superpower"
+      ],
+      "improved": [],
+      "fixed": [],
+      "changedPermissions": [],
+      "privacy": [
+        "Native skills work without sending prompts, files, transcripts, or outputs to the companion service",
+        "Feedback and requests require payload preview and explicit approval"
+      ],
+      "knownLimitations": [
+        "A marketplace refresh or new session may be required before an installed update appears"
+      ]
+    }
+  ]
+}

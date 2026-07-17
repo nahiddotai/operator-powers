@@ -1,0 +1,18 @@
+name = "nahiddotai-superpowers"
+main = "src/index.ts"
+compatibility_date = "2026-06-01"
+
+# Secrets (set with `wrangler secret put`):
+#   TOKEN_SECRET - HMAC key for confirmation and deletion tokens (generate: openssl rand -hex 32)
+
+[vars]
+WRITES_ENABLED = "true"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nahiddotai-superpowers"
+database_id = "REPLACE-AFTER-`wrangler d1 create nahiddotai-superpowers`"
+
+[[kv_namespaces]]
+binding = "RATE_KV"
+id = "REPLACE-AFTER-`wrangler kv namespace create RATE_KV`"

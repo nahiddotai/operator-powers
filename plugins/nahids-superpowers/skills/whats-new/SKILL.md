@@ -1,0 +1,23 @@
+---
+name: whats-new
+description: Show what changed in Nahid's Superpowers after an update. Use when the user asks what's new, what changed, what a plugin update added, which version is installed, or whether they have the latest version of Nahid's Superpowers.
+---
+
+# What's New
+
+## The Job
+
+Tell the user what their installed version contains, what changed recently, and whether something newer exists.
+
+## How to Run It
+
+1. Read the installed release metadata at `${CLAUDE_PLUGIN_ROOT}/catalog/release.json` (fall back to `catalog/release.json` two directories above this skill file). That file states the installed version and its changelog entries.
+2. Present the installed version and its changes in plain language, newest first: new superpowers as jobs ("you can now turn a meeting into a deliverable"), then improvements, then fixes. Skip internal or build-only changes.
+3. If the `nahiddotai_superpowers` MCP server is connected, you may call `get_whats_new` with the installed version to learn about releases newer than the installed one. If something newer exists, say what it adds and how updating works: "updates arrive through your marketplace; refresh it and update the plugin, then start a new session."
+4. If the service is unreachable, show the installed changelog and say plainly that live release information was unavailable, without guessing whether an update exists.
+
+## Boundaries
+
+- Never claim a newer skill is already installed; live catalogue data describes what an update would bring.
+- Never promise instant updates; the user's client controls when updates apply.
+- The only data sent to the service is the installed version number, and only when live information is wanted.

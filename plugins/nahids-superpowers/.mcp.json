@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "nahiddotai_superpowers": {
+      "type": "http",
+      "url": "https://PENDING-CLOUDFLARE-DEPLOY.workers.dev/mcp"
+    }
+  }
+}

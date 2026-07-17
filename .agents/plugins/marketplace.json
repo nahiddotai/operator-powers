@@ -1,0 +1,20 @@
+{
+  "name": "nahiddotai",
+  "interface": {
+    "displayName": "nahiddotai"
+  },
+  "plugins": [
+    {
+      "name": "nahids-superpowers",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nahids-superpowers"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

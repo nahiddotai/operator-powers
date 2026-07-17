@@ -1,0 +1,15 @@
+{
+  "name": "nahiddotai-superpowers-mcp",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "sync-catalog": "node ../plugins/nahids-superpowers/scripts/build-catalog.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0",
+    "typescript": "^5.5.0",
+    "@cloudflare/workers-types": "^4.20260601.0"
+  }
+}

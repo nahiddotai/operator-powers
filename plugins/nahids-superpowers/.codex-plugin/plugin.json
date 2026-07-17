@@ -1,0 +1,36 @@
+{
+  "name": "nahids-superpowers",
+  "version": "1.0.0",
+  "description": "Practical AI skills for turning real work into clearer decisions, useful assets, and reusable systems.",
+  "author": {
+    "name": "nahiddotai",
+    "url": "https://github.com/nahiddotai"
+  },
+  "homepage": "https://github.com/nahiddotai/nahids-superpowers",
+  "repository": "https://github.com/nahiddotai/nahids-superpowers",
+  "license": "MIT",
+  "keywords": ["ai-workflows", "productivity", "content", "decision-making", "skills"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Nahid's Superpowers",
+    "shortDescription": "Practical AI skills for real work.",
+    "longDescription": "A growing collection of native skills for setting up AI, mining meetings, making decisions, explaining ideas, producing useful content, and turning repeated tasks into reusable systems.",
+    "developerName": "nahiddotai",
+    "category": "Productivity",
+    "capabilities": ["Skills", "MCP", "Hooks"],
+    "websiteURL": "https://github.com/nahiddotai/nahids-superpowers",
+    "privacyPolicyURL": "https://github.com/nahiddotai/nahids-superpowers/blob/main/plugins/nahids-superpowers/docs/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/nahiddotai/nahids-superpowers/blob/main/plugins/nahids-superpowers/docs/TERMS.md",
+    "defaultPrompt": [
+      "Find the right superpower for the job I need to do.",
+      "Turn these meeting notes into decisions and the next deliverable.",
+      "Help me set up AI so it understands how I work."
+    ],
+    "brandColor": "#6366F1",
+    "composerIcon": "./assets/icon-light.png",
+    "logo": "./assets/logo-light.png",
+    "logoDark": "./assets/logo-dark.png",
+    "screenshots": []
+  }
+}

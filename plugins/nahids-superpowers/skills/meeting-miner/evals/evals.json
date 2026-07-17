@@ -1,0 +1,25 @@
+{
+  "skill_name": "meeting-miner",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Here is a pasted transcript from a client strategy call. Mine it for anything useful beyond the summary: content ideas, messaging clues, offer improvements, how I explained things, and what I should do next.",
+      "expected_output": "A Meeting Miner Report that starts with the operator line, avoids a generic summary, and includes content ideas, messaging and offer clues, communication review, won-vs-lost notes only if outcome is known, and one best next move.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Use this Fathom transcript file to find newsletter and Thread ideas. I don't want action items. I want topics based on what the client actually asked or got confused about.",
+      "expected_output": "A Content Ideas From The Call report that starts with the operator line and gives grounded content ideas with source moments, why each matters, suggested format, and first angle.",
+      "files": [
+        "sample-fathom-transcript.txt"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I have four sales call transcripts from my meeting MCP. Two became clients and two didn't. Review them and tell me what I should change in my messaging, pitch, and next calls.",
+      "expected_output": "A Won Vs Lost Call Review that starts with the operator line, compares buying signals and hesitations, identifies where the pitch got muddy, suggests messaging or offer fixes, and gives one next-call move.",
+      "files": []
+    }
+  ]
+}

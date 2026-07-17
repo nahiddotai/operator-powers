@@ -1,0 +1,29 @@
+{
+  "name": "nahiddotai",
+  "owner": {
+    "name": "nahiddotai",
+    "url": "https://github.com/nahiddotai"
+  },
+  "metadata": {
+    "description": "Nahid's published plugin collection.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "nahids-superpowers",
+      "source": "./plugins/nahids-superpowers",
+      "description": "Practical AI skills for turning real work into clearer decisions, useful assets, and reusable systems.",
+      "version": "1.0.0",
+      "author": {
+        "name": "nahiddotai",
+        "url": "https://github.com/nahiddotai"
+      },
+      "homepage": "https://github.com/nahiddotai/nahids-superpowers",
+      "repository": "https://github.com/nahiddotai/nahids-superpowers",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": ["ai-workflows", "productivity", "content", "decision-making", "skills"],
+      "strict": false
+    }
+  ]
+}
