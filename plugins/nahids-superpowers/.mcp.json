@@ -2,7 +2,7 @@
   "mcpServers": {
     "nahiddotai_superpowers": {
       "type": "http",
-      "url": "https://PENDING-CLOUDFLARE-DEPLOY.workers.dev/mcp"
+      "url": "https://nahiddotai-superpowers.nahiddotai.workers.dev/mcp"
     }
   }
 }

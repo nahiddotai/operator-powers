@@ -11,8 +11,8 @@ WRITES_ENABLED = "true"
 [[d1_databases]]
 binding = "DB"
 database_name = "nahiddotai-superpowers"
-database_id = "00000000-0000-4000-8000-000000000001"
+database_id = "6250148b-d7e1-4524-8ec2-5bf874db930c"
 
 [[kv_namespaces]]
 binding = "RATE_KV"
-id = "00000000000000000000000000000001"
+id = "e15f87ec56cf4c93a5c46ab64b0f0bb8"
