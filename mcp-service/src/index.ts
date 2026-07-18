@@ -162,8 +162,10 @@ async function prepare(env: Env, action: string, args: any): Promise<ToolResult>
   const v = validatePayload(action, args?.payload ?? args);
   if ("error" in v) return err(v.error);
   const payloadHash = "sha256:" + (await sha256Hex(canonicalJson(v.payload)));
-  const expiresAt = new Date(Date.now() + TOKEN_TTL_MS).toISOString();
-  const confirmationToken = `${action}.${expiresAt}.` + (await hmac(env.TOKEN_SECRET, `${action}|${payloadHash}|${expiresAt}`));
+  const expiresEpoch = Date.now() + TOKEN_TTL_MS;
+  const expiresAt = new Date(expiresEpoch).toISOString();
+  // Token segments are dot-separated; epoch ms keeps the middle segment dot-free.
+  const confirmationToken = `${action}.${expiresEpoch}.` + (await hmac(env.TOKEN_SECRET, `${action}|${payloadHash}|${expiresEpoch}`));
   return ok({
     status: "approval_required",
     action,
@@ -185,10 +187,14 @@ async function submit(env: Env, action: string, args: any, fp: string): Promise<
   if (expectedHash !== payloadHash) return err("Payload does not match its hash. Prepare again and get fresh approval.");
   const parts = String(confirmationToken).split(".");
   if (parts.length !== 3 || parts[0] !== action) return err("Confirmation token does not match this action. Prepare again.");
-  const [, expiresAt, sig] = parts;
-  if (new Date(expiresAt).getTime() < Date.now()) return err("Confirmation token expired. Prepare again and get fresh approval.");
-  const expectedSig = await hmac(env.TOKEN_SECRET, `${action}|${payloadHash}|${expiresAt}`);
+  const [, expiresEpoch, sig] = parts;
+  if (!/^\d+$/.test(expiresEpoch) || Number(expiresEpoch) < Date.now()) return err("Confirmation token expired. Prepare again and get fresh approval.");
+  const expectedSig = await hmac(env.TOKEN_SECRET, `${action}|${payloadHash}|${expiresEpoch}`);
   if (!timingSafeEqual(sig, expectedSig)) return err("Invalid confirmation token. Prepare again.");
+  // Single use: a token that already submitted cannot submit again.
+  const usedKey = `used-token:${sig}`;
+  if (await env.RATE_KV.get(usedKey)) return err("This confirmation token was already used. Prepare again and get fresh approval for a new submission.");
+  await env.RATE_KV.put(usedKey, "1", { expirationTtl: Math.max(60, Math.ceil((Number(expiresEpoch) - Date.now()) / 1000) + 60) });
 
   const globalOk = await rateLimit(env, `global-writes:${new Date().toISOString().slice(0, 10)}`, GLOBAL_WRITES_PER_DAY, 86400);
   if (!globalOk) return err("The service has reached its daily submission limit. Please retry tomorrow; your text is safe to copy.");

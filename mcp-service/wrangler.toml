@@ -11,8 +11,8 @@ WRITES_ENABLED = "true"
 [[d1_databases]]
 binding = "DB"
 database_name = "nahiddotai-superpowers"
-database_id = "REPLACE-AFTER-`wrangler d1 create nahiddotai-superpowers`"
+database_id = "00000000-0000-4000-8000-000000000001"
 
 [[kv_namespaces]]
 binding = "RATE_KV"
-id = "REPLACE-AFTER-`wrangler kv namespace create RATE_KV`"
+id = "00000000000000000000000000000001"
