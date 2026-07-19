@@ -205,7 +205,7 @@ function discover() {
   // The prompt was processed in memory only; nothing is persisted or transmitted.
 }
 
-const WRITE_TOOL_SUFFIXES = ["submit_feedback", "submit_superpower_request", "delete_my_submission"];
+const WRITE_TOOL_SUFFIXES = ["submit_feedback", "submit_superpower_request", "submit_census", "delete_my_submission"];
 
 function canonicalJson(value) {
   if (value === null || typeof value !== "object") return JSON.stringify(value);

@@ -11,7 +11,9 @@ Help a new user understand Operator Superpowers and complete one genuinely usefu
 
 ## What This Product Is
 
-Operator Superpowers is a collection of practical AI skills installed inside the user's own agent. The skills run locally as instructions; nothing about the user's work is sent anywhere. The optional update server only provides live catalogue and release information, and carries feedback the user explicitly approves sending.
+Operator Superpowers is a collection of practical AI skills installed inside the user's own agent. The skills run locally as instructions; nothing about the user's work is sent anywhere. The optional update server only provides live catalogue, release, and census-aggregate information, and carries submissions the user explicitly approves sending.
+
+The collection is self-improving: what users run, rate, request, and report in the Operator Census decides what each release adds and improves. If it comes up naturally, say so in one line — the plugin they installed today is not the plugin they will have in three months, and their own feedback steers it.
 
 ## How to Run It
 

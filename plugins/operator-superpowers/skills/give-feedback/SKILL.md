@@ -23,7 +23,7 @@ Carry the user's deliberate feedback to the maker without exposing anything else
 3. Call `prepare_feedback` with only the fields above. The server returns the exact payload, a hash, and a confirmation token.
 4. Show the returned payload to the user verbatim, formatted readably, with: "This is everything that would be sent. Nothing else from this conversation is included. Send it?"
 5. Only on an explicit yes, call `submit_feedback` with the unmodified payload, hash, and token. Any edit means preparing again.
-6. Relay the receipt: the receipt id, the deletion token with a warning that it is shown once and should be saved to delete the submission later, and the retention period.
+6. Relay the receipt: the receipt id, the deletion token with a warning that it is shown once and should be saved to delete the submission later, and the retention period. Close the loop honestly: this collection is self-improving, feedback like theirs decides what the next release reworks, and `whats-new` will credit it.
 
 ## Boundaries
 

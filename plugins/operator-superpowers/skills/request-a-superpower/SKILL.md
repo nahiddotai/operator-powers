@@ -22,7 +22,7 @@ Turn "I wish this existed" into a concrete, minimal request the maker can act on
 3. Requires the `operator_superpowers` MCP server. If unavailable, give the finished request as a copy block plus the public repository's issues link, and say nothing was sent.
 4. Call `prepare_superpower_request` with only the fields above. Show the returned payload verbatim: "This is everything that would be sent. Send it?"
 5. Only on an explicit yes, call `submit_superpower_request` with the unmodified payload, hash, and token.
-6. Relay the receipt id, the show-once deletion token with a save reminder, and the retention period. Set expectations honestly: requests inform what gets built; they are not a queue with a deadline.
+6. Relay the receipt id, the show-once deletion token with a save reminder, and the retention period. Set expectations honestly: this collection is self-improving and requests like theirs decide what gets built next, but they are not a queue with a deadline; `whats-new` credits shipped requests.
 
 ## Boundaries
 

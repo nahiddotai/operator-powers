@@ -1,10 +1,10 @@
 # Privacy
 
-Plain-language summary: the skills run inside your own AI tool. Your prompts, files, transcripts, and outputs stay there. The only thing that ever leaves is a feedback or request message you explicitly wrote and approved after seeing it in full.
+Plain-language summary: the skills run inside your own AI tool. Your prompts, files, transcripts, and outputs stay there. The only thing that ever leaves is a feedback, request, or census message you explicitly wrote and approved after seeing it in full.
 
 ## What runs locally
 
-- All twelve skills are instruction files executed by your own agent. They send nothing to us.
+- All thirteen skills are instruction files executed by your own agent. They send nothing to us.
 - The discovery hint hook reads your prompt in memory, checks it against the bundled catalogue, and discards it. Your prompt is never written to disk or sent anywhere.
 - The session hook reads only the plugin's own release file and one small local state file.
 
@@ -24,7 +24,9 @@ Only explicit tool arguments, in exactly these cases:
 
 - Live catalogue search: your search query.
 - What's new: your installed version number.
+- Census results: nothing; reading the aggregate sends no data about you.
 - Feedback or requests: only the fields shown to you for approval, hard-capped at 1,000 characters of note text. The exact payload is displayed before anything is sent, and the server rejects any payload that changed after preview.
+- Census entries: exactly four fields, all shown to you for approval first. Three are fixed choices (role, weekly AI hours, main tool) and one is a free-text task line capped at 200 characters that the skill instructs must contain no names, companies, or contact details. Entries carry no install id and no identity; the server records the coarse country from Cloudflare's network edge (never an address) for the aggregate map. Your entry appears only inside the public aggregate everyone can read, and the deletion token shown at submission removes it at any time.
 
 The service also receives the anonymous usage events described above. It stores no IP addresses at application level and requires no account or email; the country shown in aggregate metrics comes from Cloudflare's network edge, not from storing your address. Rate limiting uses a fingerprint that rotates daily and cannot be reversed into an address.
 
@@ -34,7 +36,7 @@ The approval flow is designed so the exact payload is shown to you before submis
 
 ## Retention and deletion
 
-- Feedback and requests: kept up to 12 months, deleted sooner on request.
+- Feedback, requests, and census entries: kept up to 12 months, deleted sooner on request.
 - Every submission returns a receipt id and a one-time deletion token; `delete_my_submission` removes the record immediately.
 - Read-tool queries are not retained in application analytics.
 - Aggregate counts (non-identifying) may be kept after records are deleted.

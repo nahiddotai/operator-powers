@@ -195,6 +195,49 @@
       "privacy": "Sends only the job description you approve, never your conversation."
     },
     {
+      "id": "operator-census",
+      "title": "The Operator Census",
+      "type": "job",
+      "oneLineJob": "Join the live anonymous picture of how real operators use AI, or just read it.",
+      "description": "Your agent carries one anonymous four-field entry (role, weekly AI hours, main tool, most annoying task) into a live public aggregate, after showing you exactly what would be sent. Results are readable any time without contributing.",
+      "category": "Using the Collection",
+      "triggers": [
+        "join the census",
+        "operator census",
+        "show me the census",
+        "how do other people use ai",
+        "compare my ai usage",
+        "share my most annoying task"
+      ],
+      "negativeTriggers": [
+        "census data for my country",
+        "population census"
+      ],
+      "requiredInputs": [
+        "four quick answers, or nothing to just view results"
+      ],
+      "optionalInputs": [],
+      "outputs": [
+        "a shown-and-approved anonymous entry with receipt and deletion token",
+        "the live aggregate: roles, hours, tools, countries, recent annoying tasks"
+      ],
+      "skillPath": "./skills/operator-census",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "none",
+        "localWrites": "none",
+        "network": "MCP census tools",
+        "externalWrites": true
+      },
+      "privacy": "Sends only the four fields shown to and approved by you; fixed choices plus one short task line with no names or companies. Reading results sends nothing."
+    },
+    {
       "id": "agents-md-setup",
       "title": "AGENTS.md Setup",
       "type": "job",

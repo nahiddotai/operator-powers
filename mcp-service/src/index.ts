@@ -139,21 +139,39 @@ function compareSemver(a: string, b: string): number {
   return 0;
 }
 
+// Census answers are fixed-choice except one short free-text field, so the
+// aggregate can never contain identity even by accident.
+const CENSUS_ROLES = ["creator", "marketer", "operations", "founder", "consultant-or-coach", "educator", "product-or-tech", "other"];
+const CENSUS_HOURS = ["under-2", "2-5", "5-15", "15-plus"];
+const CENSUS_TOOLS = ["claude-code", "claude-app", "chatgpt", "codex", "cowork", "gemini", "copilot", "other"];
+const CENSUS_TASK_MAX = 200;
+
 function validatePayload(action: string, raw: any): { payload: Record<string, unknown> } | { error: string } {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { error: "payload must be an object" };
-  const allowed = action === "submit_feedback" ? ["skillId", "rating", "note"] : ["job", "category"];
-  const required = action === "submit_feedback" ? ["skillId"] : ["job"];
+  const shapes: Record<string, { allowed: string[]; required: string[] }> = {
+    submit_feedback: { allowed: ["skillId", "rating", "note"], required: ["skillId"] },
+    submit_superpower_request: { allowed: ["job", "category"], required: ["job"] },
+    submit_census: { allowed: ["role", "aiHours", "mainTool", "annoyingTask"], required: ["role", "aiHours", "mainTool", "annoyingTask"] },
+  };
+  const shape = shapes[action];
+  if (!shape) return { error: `unknown action: ${action}` };
   const keys = Object.keys(raw);
-  const unknown = keys.filter((k) => !allowed.includes(k));
+  const unknown = keys.filter((k) => !shape.allowed.includes(k));
   if (unknown.length) return { error: `undeclared fields rejected: ${unknown.join(", ")}` };
-  for (const r of required) if (!(r in raw)) return { error: `missing required field: ${r}` };
+  for (const r of shape.required) if (!(r in raw)) return { error: `missing required field: ${r}` };
   if (action === "submit_feedback") {
     if (!sps.some((s) => s.id === raw.skillId)) return { error: `unknown skillId: ${raw.skillId}` };
     if ("rating" in raw && (!Number.isInteger(raw.rating) || raw.rating < 1 || raw.rating > 5)) return { error: "rating must be an integer 1-5" };
     if ("note" in raw && (typeof raw.note !== "string" || raw.note.length > NOTE_MAX)) return { error: `note must be a string of at most ${NOTE_MAX} characters` };
-  } else {
+  } else if (action === "submit_superpower_request") {
     if (typeof raw.job !== "string" || raw.job.length < 10 || raw.job.length > NOTE_MAX) return { error: `job must be a string of 10 to ${NOTE_MAX} characters` };
     if ("category" in raw && (typeof raw.category !== "string" || raw.category.length > 100)) return { error: "category must be a short string" };
+  } else {
+    if (!CENSUS_ROLES.includes(raw.role)) return { error: `role must be one of: ${CENSUS_ROLES.join(", ")}` };
+    if (!CENSUS_HOURS.includes(raw.aiHours)) return { error: `aiHours must be one of: ${CENSUS_HOURS.join(", ")}` };
+    if (!CENSUS_TOOLS.includes(raw.mainTool)) return { error: `mainTool must be one of: ${CENSUS_TOOLS.join(", ")}` };
+    if (typeof raw.annoyingTask !== "string" || raw.annoyingTask.trim().length < 10 || raw.annoyingTask.length > CENSUS_TASK_MAX)
+      return { error: `annoyingTask must be a string of 10 to ${CENSUS_TASK_MAX} characters describing the task, with no names, companies, or contact details` };
   }
   if (canonicalJson(raw).length > PAYLOAD_MAX_BYTES) return { error: "payload too large" };
   return { payload: raw };
@@ -178,7 +196,7 @@ async function prepare(env: Env, action: string, args: any): Promise<ToolResult>
   });
 }
 
-async function submit(env: Env, action: string, args: any, fp: string): Promise<ToolResult> {
+async function submit(env: Env, action: string, args: any, fp: string, req?: Request): Promise<ToolResult> {
   if (env.WRITES_ENABLED !== "true") return err("Submissions are temporarily disabled. Your prepared text is safe to copy and retry later.");
   const { payload, payloadHash, confirmationToken } = args ?? {};
   if (!payload || !payloadHash || !confirmationToken) return err("Missing confirmation data. Run the preparation step first and show the user the exact payload.");
@@ -203,15 +221,26 @@ async function submit(env: Env, action: string, args: any, fp: string): Promise<
   const id = crypto.randomUUID();
   const deletionToken = crypto.randomUUID();
   const deletionTokenHash = await hmac(env.TOKEN_SECRET, deletionToken);
-  const type = action === "submit_feedback" ? "feedback" : "request";
-  await env.DB.prepare(
-    "INSERT INTO submissions (id, type, skill_id, rating, note, job, category, created_at, deletion_token_hash, plugin_version) VALUES (?,?,?,?,?,?,?,?,?,?)"
-  ).bind(
-    id, type,
-    (payload as any).skillId ?? null, (payload as any).rating ?? null, (payload as any).note ?? null,
-    (payload as any).job ?? null, (payload as any).category ?? null,
-    new Date().toISOString(), deletionTokenHash, PLUGIN_VERSION
-  ).run();
+  if (action === "submit_census") {
+    // Country is Cloudflare edge metadata (coarse, never an address); documented in PRIVACY.md.
+    const country = (req as any)?.cf?.country ?? "XX";
+    await env.DB.prepare(
+      "INSERT INTO census (id, role, ai_hours, main_tool, annoying_task, country, created_at, deletion_token_hash, plugin_version) VALUES (?,?,?,?,?,?,?,?,?)"
+    ).bind(
+      id, (payload as any).role, (payload as any).aiHours, (payload as any).mainTool, (payload as any).annoyingTask.trim(),
+      country, new Date().toISOString(), deletionTokenHash, PLUGIN_VERSION
+    ).run();
+  } else {
+    const type = action === "submit_feedback" ? "feedback" : "request";
+    await env.DB.prepare(
+      "INSERT INTO submissions (id, type, skill_id, rating, note, job, category, created_at, deletion_token_hash, plugin_version) VALUES (?,?,?,?,?,?,?,?,?,?)"
+    ).bind(
+      id, type,
+      (payload as any).skillId ?? null, (payload as any).rating ?? null, (payload as any).note ?? null,
+      (payload as any).job ?? null, (payload as any).category ?? null,
+      new Date().toISOString(), deletionTokenHash, PLUGIN_VERSION
+    ).run();
+  }
 
   return ok({
     status: "stored",
@@ -223,15 +252,54 @@ async function submit(env: Env, action: string, args: any, fp: string): Promise<
   });
 }
 
+const CENSUS_MIN_AGGREGATE = 5;
+const CENSUS_RECENT_TASKS = 12;
+
+async function censusResults(env: Env): Promise<ToolResult> {
+  const q = async (sql: string) => (await env.DB.prepare(sql).all()).results;
+  const [totals, byRole, byHours, byTool, byCountry, recent] = await Promise.all([
+    q("SELECT COUNT(*) AS total FROM census"),
+    q("SELECT role, COUNT(*) AS count FROM census GROUP BY role ORDER BY count DESC"),
+    q("SELECT ai_hours AS aiHours, COUNT(*) AS count FROM census GROUP BY ai_hours ORDER BY count DESC"),
+    q("SELECT main_tool AS mainTool, COUNT(*) AS count FROM census GROUP BY main_tool ORDER BY count DESC"),
+    q("SELECT country, COUNT(*) AS count FROM census GROUP BY country ORDER BY count DESC LIMIT 15"),
+    q(`SELECT annoying_task AS task, role FROM census ORDER BY created_at DESC LIMIT ${CENSUS_RECENT_TASKS}`),
+  ]);
+  const total = Number((totals[0] as any)?.total ?? 0);
+  if (total < CENSUS_MIN_AGGREGATE) {
+    return ok({
+      total,
+      status: "gathering",
+      note: `The census shows aggregate results once at least ${CENSUS_MIN_AGGREGATE} operators have contributed. Every answer is anonymous and consented for exactly this aggregate.`,
+    });
+  }
+  return ok({
+    total,
+    generatedBy: "the agents of everyone who contributed — no human filled in a form",
+    byRole,
+    byAiHoursPerWeek: byHours,
+    byMainTool: byTool,
+    byCountry,
+    recentAnnoyingTasks: recent,
+    note: "Anonymous by construction: fixed-choice answers plus one short task description, contributed with explicit approval, deletable by receipt.",
+  });
+}
+
 async function deleteSubmission(env: Env, args: any): Promise<ToolResult> {
   if (env.WRITES_ENABLED !== "true") return err("Deletion is temporarily disabled; please retry later.");
   const { receiptId, deletionToken } = args ?? {};
   if (!receiptId || !deletionToken) return err("Deletion needs both the receipt id and the deletion token.");
-  const row = await env.DB.prepare("SELECT id, type, skill_id, job, created_at, deletion_token_hash FROM submissions WHERE id = ?").bind(receiptId).first();
+  let table = "submissions";
+  let row = await env.DB.prepare("SELECT id, type, created_at, deletion_token_hash FROM submissions WHERE id = ?").bind(receiptId).first();
+  if (!row) {
+    table = "census";
+    const c = await env.DB.prepare("SELECT id, created_at, deletion_token_hash FROM census WHERE id = ?").bind(receiptId).first();
+    if (c) row = { ...c, type: "census" };
+  }
   if (!row) return err("No submission found for that receipt id. It may already be deleted.");
   const expected = await hmac(env.TOKEN_SECRET, String(deletionToken));
   if (!timingSafeEqual(String(row.deletion_token_hash), expected)) return err("Deletion token does not match this submission.");
-  await env.DB.prepare("DELETE FROM submissions WHERE id = ?").bind(receiptId).run();
+  await env.DB.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(receiptId).run();
   return ok({ status: "deleted", deletedRecord: { id: row.id, type: row.type, createdAt: row.created_at } });
 }
 
@@ -247,7 +315,10 @@ const TOOL_DEFS = [
   { name: "submit_feedback", description: "Persist feedback the user explicitly approved. Requires the unmodified payload, its hash, and a valid confirmation token from prepare_feedback.", inputSchema: { type: "object", properties: { payload: { type: "object" }, payloadHash: { type: "string" }, confirmationToken: { type: "string" } }, required: ["payload", "payloadHash", "confirmationToken"] }, annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true } },
   { name: "prepare_superpower_request", description: "Turn a missing job into a minimal request payload WITHOUT submitting. Returns the exact payload, hash, expiry, and confirmation token to show the user for approval.", inputSchema: { type: "object", properties: { payload: { type: "object", properties: { job: { type: "string", maxLength: NOTE_MAX }, category: { type: "string" } }, required: ["job"] } }, required: ["payload"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
   { name: "submit_superpower_request", description: "Persist a superpower request the user explicitly approved. Requires the unmodified payload, its hash, and a valid confirmation token from prepare_superpower_request.", inputSchema: { type: "object", properties: { payload: { type: "object" }, payloadHash: { type: "string" }, confirmationToken: { type: "string" } }, required: ["payload", "payloadHash", "confirmationToken"] }, annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true } },
-  { name: "delete_my_submission", description: "Delete a stored submission. Requires the receipt id and the deletion token shown once at submission time.", inputSchema: { type: "object", properties: { receiptId: { type: "string" }, deletionToken: { type: "string" } }, required: ["receiptId", "deletionToken"] }, annotations: { readOnlyHint: false, destructiveHint: true, openWorldHint: true } },
+  { name: "delete_my_submission", description: "Delete a stored submission (feedback, request, or census entry). Requires the receipt id and the deletion token shown once at submission time.", inputSchema: { type: "object", properties: { receiptId: { type: "string" }, deletionToken: { type: "string" } }, required: ["receiptId", "deletionToken"] }, annotations: { readOnlyHint: false, destructiveHint: true, openWorldHint: true } },
+  { name: "get_census_results", description: "Read the live Operator Census aggregate: how contributors work with AI, by role, weekly AI hours, main tool, and country, plus recent anonymous 'most annoying task' entries. Read-only; stores nothing.", inputSchema: { type: "object", properties: {} }, annotations: { readOnlyHint: true, openWorldHint: false } },
+  { name: "prepare_census", description: "Validate one anonymous Operator Census entry WITHOUT submitting: role, weekly AI hours, main tool (all fixed choices), and one short 'most annoying task' line. Returns the exact payload, hash, expiry, and confirmation token to show the user for approval.", inputSchema: { type: "object", properties: { payload: { type: "object", properties: { role: { type: "string", enum: CENSUS_ROLES }, aiHours: { type: "string", enum: CENSUS_HOURS }, mainTool: { type: "string", enum: CENSUS_TOOLS }, annoyingTask: { type: "string", maxLength: CENSUS_TASK_MAX } }, required: ["role", "aiHours", "mainTool", "annoyingTask"] } }, required: ["payload"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
+  { name: "submit_census", description: "Persist a census entry the user explicitly approved. Requires the unmodified payload, its hash, and a valid confirmation token from prepare_census.", inputSchema: { type: "object", properties: { payload: { type: "object" }, payloadHash: { type: "string" }, confirmationToken: { type: "string" } }, required: ["payload", "payloadHash", "confirmationToken"] }, annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true } },
 ];
 
 const RESOURCES = [
@@ -305,16 +376,17 @@ async function handleRpc(env: Env, req: Request, msg: any): Promise<object | nul
       const args = params?.arguments ?? {};
       const fp = await fingerprint(req, env);
       let result: ToolResult;
-      if (name in readTools || name.startsWith("prepare_")) {
+      if (name in readTools || name === "get_census_results" || name.startsWith("prepare_")) {
         const allowed = await rateLimit(env, `reads:${fp}:${Math.floor(Date.now() / 60000)}`, READS_PER_MINUTE, 120);
         if (!allowed) result = err("Rate limited. Try again in a minute.");
         else if (name in readTools) result = readTools[name](args);
-        else result = await prepare(env, name.replace("prepare_feedback", "submit_feedback").replace("prepare_superpower_request", "submit_superpower_request"), args);
-      } else if (name === "submit_feedback" || name === "submit_superpower_request" || name === "delete_my_submission") {
+        else if (name === "get_census_results") result = await censusResults(env);
+        else result = await prepare(env, name.replace(/^prepare_/, "submit_"), args);
+      } else if (name === "submit_feedback" || name === "submit_superpower_request" || name === "submit_census" || name === "delete_my_submission") {
         const allowed = await rateLimit(env, `writes:${fp}:${new Date().toISOString().slice(0, 10)}`, WRITES_PER_DAY, 86400);
         if (!allowed) result = err("Daily submission limit reached for this connection. Your text is safe to copy and retry tomorrow.");
         else if (name === "delete_my_submission") result = await deleteSubmission(env, args);
-        else result = await submit(env, name, args, fp);
+        else result = await submit(env, name, args, fp, req);
       } else {
         return rpcError(id, -32602, `Unknown tool: ${name}`);
       }
@@ -376,7 +448,7 @@ async function handleStats(req: Request, env: Env): Promise<Response> {
   const cutoff7 = new Date(Date.now() - 7 * 864e5).toISOString();
   const cutoff30 = new Date(Date.now() - 30 * 864e5).toISOString();
   const day30 = cutoff30.slice(0, 10);
-  const [totals, active, countries, clients, versions, topSkills, daily, submissions] = await Promise.all([
+  const [totals, active, countries, clients, versions, topSkills, daily, submissions, census] = await Promise.all([
     q("SELECT COUNT(*) AS installs FROM telemetry_installs"),
     q("SELECT SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS active_7d, SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS active_30d FROM telemetry_installs", cutoff7, cutoff30),
     q("SELECT country, COUNT(*) AS installs FROM telemetry_installs GROUP BY country ORDER BY installs DESC LIMIT 20"),
@@ -385,6 +457,7 @@ async function handleStats(req: Request, env: Env): Promise<Response> {
     q("SELECT skill, SUM(count) AS runs FROM telemetry_daily WHERE event='skill_run' AND day >= ? GROUP BY skill ORDER BY runs DESC", day30),
     q("SELECT day, event, SUM(count) AS count FROM telemetry_daily WHERE day >= ? GROUP BY day, event ORDER BY day", day30),
     q("SELECT type, COUNT(*) AS count FROM submissions GROUP BY type"),
+    q("SELECT COUNT(*) AS entries, COUNT(DISTINCT country) AS countries FROM census"),
   ]);
   return Response.json({
     generatedAt: new Date().toISOString(),
@@ -396,6 +469,7 @@ async function handleStats(req: Request, env: Env): Promise<Response> {
     topSkills30d: topSkills,
     daily30d: daily,
     feedbackAndRequests: submissions,
+    census: census[0] ?? {},
   });
 }
 
