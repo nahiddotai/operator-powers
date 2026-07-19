@@ -24,7 +24,7 @@ Plus five small system skills: `start-here`, `find-a-superpower`, `whats-new`, `
 
 ## Privacy in one paragraph
 
-Skills run inside your own AI tool; your prompts, files, and outputs are never collected. Three small local hooks (welcome notice, discovery hints, submission guard) have no network access and their full source is in [hook-runner/](hook-runner/). The optional companion service only provides live catalogue and release information, and carries feedback you explicitly approved after seeing the exact message. Full detail: [docs/PRIVACY.md](docs/PRIVACY.md).
+Skills run inside your own AI tool; your prompts, files, and outputs are never collected. The plugin sends only anonymous usage counts (install, daily active, which of its own superpowers ran): six fixed fields, no content, no identity, on by default and easy to turn off. The hooks' full source is in [hook-runner/](hook-runner/). The optional companion service only provides live catalogue and release information, and carries feedback you explicitly approved after seeing the exact message. Full detail: [docs/PRIVACY.md](docs/PRIVACY.md).
 
 ## Support
 

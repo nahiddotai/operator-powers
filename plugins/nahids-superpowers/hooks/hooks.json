@@ -35,6 +35,18 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hook-runner/index.mjs\" skill-run",
+            "timeout": 2
+          }
+        ]
+      }
     ]
   }
 }

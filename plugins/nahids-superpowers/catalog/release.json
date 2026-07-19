@@ -21,7 +21,8 @@
       "changedPermissions": [],
       "privacy": [
         "Native skills work without sending prompts, files, transcripts, or outputs to the companion service",
-        "Feedback and requests require payload preview and explicit approval"
+        "Feedback and requests require payload preview and explicit approval",
+        "Anonymous usage metrics (install, daily active, own-skill run counts) are on by default with a documented off switch; no content or identity is ever sent"
       ],
       "knownLimitations": [
         "A marketplace refresh or new session may be required before an installed update appears"

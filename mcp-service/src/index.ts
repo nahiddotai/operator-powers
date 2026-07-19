@@ -16,6 +16,7 @@ import releases from "./releases.json";
 export interface Env {
   DB: D1Database;
   TOKEN_SECRET: string; // wrangler secret; HMAC key for confirmation + deletion tokens
+  STATS_KEY: string; // wrangler secret; grants read access to GET /stats
   WRITES_ENABLED: string; // "true" | "false" kill switch for all write tools
   RATE_KV: KVNamespace;
 }
@@ -324,10 +325,86 @@ async function handleRpc(env: Env, req: Request, msg: any): Promise<object | nul
   }
 }
 
+// ---------- anonymous usage metrics ----------
+// POST /t accepts one fixed-shape event and nothing else. No IPs stored;
+// country comes from Cloudflare's edge metadata. See docs/PRIVACY.md.
+
+const TELEMETRY_EVENTS = new Set(["install", "heartbeat", "skill_run"]);
+
+async function handleTelemetry(req: Request, env: Env): Promise<Response> {
+  let body: any;
+  try {
+    body = await req.json();
+  } catch {
+    return new Response(null, { status: 400 });
+  }
+  const { installId, event, skill, client, os, version } = body ?? {};
+  if (typeof installId !== "string" || !/^[a-f0-9-]{8,64}$/i.test(installId)) return new Response(null, { status: 400 });
+  if (!TELEMETRY_EVENTS.has(event)) return new Response(null, { status: 400 });
+  const knownSkill = skill == null ? null : sps.some((s) => s.id === skill) ? skill : null;
+  if (event === "skill_run" && !knownSkill) return new Response(null, { status: 400 });
+  const safe = (v: unknown, max: number) => (typeof v === "string" ? v.slice(0, max).replace(/[^\w.-]/g, "") : "unknown");
+  const clientSafe = safe(client, 24) || "unknown";
+  const osSafe = safe(os, 16) || "unknown";
+  const versionSafe = safe(version, 16) || "unknown";
+  const country = (req as any).cf?.country ?? "XX";
+
+  const fp = await fingerprint(req, env);
+  const allowed = await rateLimit(env, `t:${fp}:${new Date().toISOString().slice(0, 10)}`, 300, 86400);
+  if (!allowed) return new Response(null, { status: 429 });
+
+  const now = new Date().toISOString();
+  const day = now.slice(0, 10);
+  await env.DB.batch([
+    env.DB.prepare(
+      `INSERT INTO telemetry_installs (install_id, first_seen, last_seen, client, os, version, country)
+       VALUES (?,?,?,?,?,?,?)
+       ON CONFLICT(install_id) DO UPDATE SET last_seen=excluded.last_seen, client=excluded.client, os=excluded.os, version=excluded.version, country=excluded.country`
+    ).bind(installId, now, now, clientSafe, osSafe, versionSafe, country),
+    env.DB.prepare(
+      `INSERT INTO telemetry_daily (day, event, skill, client, country, version, count)
+       VALUES (?,?,?,?,?,?,1)
+       ON CONFLICT(day, event, skill, client, country, version) DO UPDATE SET count = count + 1`
+    ).bind(day, event, knownSkill ?? "", clientSafe, country, versionSafe),
+  ]);
+  return new Response(null, { status: 204 });
+}
+
+async function handleStats(req: Request, env: Env): Promise<Response> {
+  if (!env.STATS_KEY || req.headers.get("x-stats-key") !== env.STATS_KEY) return new Response("Forbidden", { status: 403 });
+  const q = async (sql: string, ...binds: unknown[]) => (await env.DB.prepare(sql).bind(...binds).all()).results;
+  const cutoff7 = new Date(Date.now() - 7 * 864e5).toISOString();
+  const cutoff30 = new Date(Date.now() - 30 * 864e5).toISOString();
+  const day30 = cutoff30.slice(0, 10);
+  const [totals, active, countries, clients, versions, topSkills, daily, submissions] = await Promise.all([
+    q("SELECT COUNT(*) AS installs FROM telemetry_installs"),
+    q("SELECT SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS active_7d, SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS active_30d FROM telemetry_installs", cutoff7, cutoff30),
+    q("SELECT country, COUNT(*) AS installs FROM telemetry_installs GROUP BY country ORDER BY installs DESC LIMIT 20"),
+    q("SELECT client, COUNT(*) AS installs FROM telemetry_installs GROUP BY client ORDER BY installs DESC"),
+    q("SELECT version, COUNT(*) AS installs FROM telemetry_installs GROUP BY version ORDER BY installs DESC LIMIT 10"),
+    q("SELECT skill, SUM(count) AS runs FROM telemetry_daily WHERE event='skill_run' AND day >= ? GROUP BY skill ORDER BY runs DESC", day30),
+    q("SELECT day, event, SUM(count) AS count FROM telemetry_daily WHERE day >= ? GROUP BY day, event ORDER BY day", day30),
+    q("SELECT type, COUNT(*) AS count FROM submissions GROUP BY type"),
+  ]);
+  return Response.json({
+    generatedAt: new Date().toISOString(),
+    installsTotal: (totals[0] as any)?.installs ?? 0,
+    active: active[0] ?? {},
+    byCountry: countries,
+    byClient: clients,
+    byVersion: versions,
+    topSkills30d: topSkills,
+    daily30d: daily,
+    feedbackAndRequests: submissions,
+  });
+}
+
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
     if (url.pathname === "/health") return Response.json({ status: "healthy", version: PLUGIN_VERSION });
+    if (url.pathname === "/t" && req.method === "POST") return handleTelemetry(req, env);
+    if (url.pathname === "/stats" && req.method === "GET") return handleStats(req, env);
     if (url.pathname !== "/mcp") return new Response("Not found", { status: 404 });
     if (req.method === "GET") return new Response(null, { status: 405 }); // no server-initiated stream
     if (req.method !== "POST") return new Response(null, { status: 405 });

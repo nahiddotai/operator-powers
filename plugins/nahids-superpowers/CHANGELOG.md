@@ -23,6 +23,7 @@ Released: PENDING-RELEASE-DATE
 
 - Native skills work without sending prompts, files, transcripts, or outputs to the companion service.
 - External feedback and requests require payload preview and explicit approval, with hard field caps.
+- Anonymous usage metrics (install, daily active, own-skill run counts; six fixed fields, no content, no identity) are on by default with a documented off switch.
 
 ### Compatibility
 

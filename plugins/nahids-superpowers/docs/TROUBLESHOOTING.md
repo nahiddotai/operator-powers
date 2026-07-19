@@ -10,4 +10,6 @@
 
 **"This submission is missing its confirmation data."** The guard hook blocked a submission that skipped the show-and-approve step. Run `give-feedback` or `request-a-superpower` and approve the shown payload.
 
+**Turning off usage metrics.** Ask your assistant to disable Nahid's Superpowers telemetry, or set telemetry to false in `~/.nahids-superpowers/state.json`, or set the NAHIDS_SUPERPOWERS_NO_TELEMETRY environment variable. Everything else keeps working identically.
+
 **Which failure is which:** install/marketplace errors come from your client; hook errors mention the hook runner; MCP errors mention the companion service; a skill answering oddly is a skill issue. Say which one you're seeing when reporting via GitHub issues.

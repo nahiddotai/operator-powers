@@ -1,20 +1,28 @@
 #!/usr/bin/env node
 // Nahid's Superpowers hook runner.
-// Deterministic, dependency-free, no network, no shell, no transcript access.
+// Deterministic, dependency-free, no shell, no transcript access.
 // Reads: stdin (host-provided hook JSON), the bundled read-only catalogue,
 // and ~/.nahids-superpowers/state.json. Writes: only that state file.
-// Subcommands: session-start | discover | guard-mcp-write
+// Network: ONE fire-and-forget anonymous usage ping (see PRIVACY.md).
+// It carries only: random install id, event name, plugin skill id (ours only),
+// client, OS, plugin version. Never prompts, files, outputs, or paths.
+// Disable: set "telemetry": false in the state file, or set the
+// NAHIDS_SUPERPOWERS_NO_TELEMETRY environment variable.
+// Subcommands: session-start | discover | guard-mcp-write | skill-run | send-ping
 
 import { readFileSync, writeFileSync, mkdirSync, renameSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
+import { spawn } from "node:child_process";
 
-const PLUGIN_ROOT = dirname(fileURLToPath(new URL(".", import.meta.url)));
+const SELF = fileURLToPath(import.meta.url);
+const PLUGIN_ROOT = dirname(dirname(SELF));
 const STATE_DIR = join(homedir(), ".nahids-superpowers");
 const STATE_FILE = join(STATE_DIR, "state.json");
 const MAX_HINTS = 2;
+const TELEMETRY_URL = process.env.NAHIDS_SUPERPOWERS_TELEMETRY_URL ?? "https://nahiddotai-superpowers.nahiddotai.workers.dev/t";
 
 // Every failure fails open (exit 0, no output) except the write guard,
 // which emits an explicit deny when its checks fail.
@@ -38,9 +46,63 @@ function readJson(path) {
 function loadState() {
   const s = readJson(STATE_FILE);
   if (!s || typeof s !== "object" || s.schemaVersion !== 1) {
-    return { schemaVersion: 1, lastSeenPluginVersion: null, firstRunCompleted: false, hookPreferences: { discoveryHints: true }, pendingSubmissions: [] };
+    return { schemaVersion: 1, lastSeenPluginVersion: null, firstRunCompleted: false, hookPreferences: { discoveryHints: true }, telemetry: true, installId: null, lastPingDate: null, pendingSubmissions: [] };
   }
+  if (s.telemetry === undefined) s.telemetry = true;
   return s;
+}
+
+// ---- anonymous usage metrics ----
+// One tiny event, fired through a detached child process so hooks never wait
+// on the network. Content of any kind is structurally excluded: the payload
+// fields are fixed here and the server rejects anything else.
+
+function telemetryEnabled(state) {
+  if (process.env.NAHIDS_SUPERPOWERS_NO_TELEMETRY) return false;
+  if (!TELEMETRY_URL) return false;
+  return state.telemetry !== false;
+}
+
+function detectClient() {
+  if (process.env.CLAUDECODE || process.env.CLAUDE_CODE_ENTRYPOINT) return "claude-code";
+  if (process.env.CODEX_HOME || process.env.CODEX_SANDBOX || process.env.OPENAI_CODEX) return "codex";
+  return "unknown";
+}
+
+function sendEvent(state, event, skill) {
+  try {
+    if (!telemetryEnabled(state)) return;
+    const release = readJson(join(PLUGIN_ROOT, "catalog", "release.json"));
+    const payload = {
+      installId: state.installId,
+      event,
+      skill: skill ?? null,
+      client: detectClient(),
+      os: process.platform,
+      version: release && typeof release.version === "string" ? release.version : "unknown",
+    };
+    const child = spawn(process.execPath, [SELF, "send-ping", JSON.stringify(payload)], { detached: true, stdio: "ignore" });
+    child.unref();
+  } catch {
+    // Metrics are never worth breaking a session over.
+  }
+}
+
+async function sendPing() {
+  try {
+    const payload = JSON.parse(process.argv[3] ?? "{}");
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 4000);
+    await fetch(TELEMETRY_URL, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: ctrl.signal,
+    });
+    clearTimeout(t);
+  } catch {
+    // Fire-and-forget; failures are silent by design.
+  }
 }
 
 function saveState(state) {
@@ -64,12 +126,25 @@ function sessionStart() {
   const state = loadState();
   const installed = release.version;
   const lastSeen = state.lastSeenPluginVersion;
+  const firstRun = lastSeen === null && !state.installId;
 
-  if (lastSeen === installed) return; // Nothing new; stay silent.
+  if (!state.installId) state.installId = randomUUID();
+
+  // At most one metrics event per session-start: install once, else one heartbeat per day.
+  const today = new Date().toISOString().slice(0, 10);
+  if (firstRun) {
+    sendEvent(state, "install", null);
+    state.lastPingDate = today;
+  } else if (state.lastPingDate !== today) {
+    sendEvent(state, "heartbeat", null);
+    state.lastPingDate = today;
+  }
+
+  if (lastSeen === installed) { saveState(state); return; } // Nothing new to say; stay silent.
 
   let message;
   if (lastSeen === null) {
-    message = "Nahid's Superpowers is installed. Ask for the job you want done or run start-here. Skills work locally; live catalogue and feedback features may contact the companion service only with your approval.";
+    message = "Nahid's Superpowers is installed. Ask for the job you want done or run start-here. Your work stays on your machine: skills run locally, and the plugin sends only anonymous usage counts (never content), which you can turn off; see the PRIVACY doc or ask to disable superpowers telemetry.";
   } else {
     const entry = Array.isArray(release.releases) ? release.releases.find((r) => r && r.version === installed) : null;
     const added = entry && Array.isArray(entry.new) ? entry.new.length : 0;
@@ -81,6 +156,20 @@ function sessionStart() {
   state.firstRunCompleted = true;
   saveState(state);
   emitContext("SessionStart", message);
+}
+
+function skillRun() {
+  const input = readStdin();
+  const raw = String(input.tool_input?.skill ?? input.tool_input?.name ?? "");
+  if (!raw) return;
+  const catalog = readJson(join(PLUGIN_ROOT, "catalog", "superpowers.json"));
+  if (!catalog || !Array.isArray(catalog.superpowers)) return;
+  // Count ONLY this plugin's own skills; anything else is not our business.
+  const ours = catalog.superpowers.find((sp) => raw === sp.id || raw.endsWith(`:${sp.id}`));
+  if (!ours) return;
+  const state = loadState();
+  if (!state.installId) { state.installId = randomUUID(); saveState(state); }
+  sendEvent(state, "skill_run", ours.id);
 }
 
 function normalize(text) {
@@ -162,7 +251,9 @@ try {
   if (cmd === "session-start") sessionStart();
   else if (cmd === "discover") discover();
   else if (cmd === "guard-mcp-write") guardMcpWrite();
-  // Unknown subcommands exit silently; the runner accepts only the three fixed commands.
+  else if (cmd === "skill-run") skillRun();
+  else if (cmd === "send-ping") await sendPing();
+  // Unknown subcommands exit silently; the runner accepts only the fixed commands above.
 } catch {
   process.exitCode = 0; // Fail open; never break the user's session.
 }

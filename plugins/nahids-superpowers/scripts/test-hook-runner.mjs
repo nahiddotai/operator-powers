@@ -13,10 +13,12 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const RUNNER = join(HERE, "..", "hook-runner", "index.mjs");
 let pass = 0, fail = 0;
 
-function run(cmd, stdinObj, home) {
+function run(cmd, stdinObj, home, extraEnv = {}) {
   const res = spawnSync(process.execPath, [RUNNER, cmd], {
     input: stdinObj === undefined ? "" : JSON.stringify(stdinObj),
-    env: { ...process.env, HOME: home },
+    // Telemetry is disabled for the whole suite (empty URL) unless a test
+    // explicitly points it at the local mock server.
+    env: { ...process.env, HOME: home, NAHIDS_SUPERPOWERS_TELEMETRY_URL: "", ...extraEnv },
     encoding: "utf8",
     timeout: 5000,
   });
@@ -92,6 +94,56 @@ const statePath = (home) => join(home, ".nahids-superpowers", "state.json");
 
 // --- unknown subcommand ---
 check("unknown subcommand exits silently", run("bogus", {}, freshHome()).out === "" );
+
+// --- telemetry ---
+{
+  const { createServer } = await import("node:http");
+  const pings = [];
+  const server = createServer((req, res) => {
+    let body = "";
+    req.on("data", (c) => (body += c));
+    req.on("end", () => { try { pings.push(JSON.parse(body)); } catch {} res.statusCode = 204; res.end(); });
+  });
+  await new Promise((r) => server.listen(0, "127.0.0.1", r));
+  const T = { NAHIDS_SUPERPOWERS_TELEMETRY_URL: `http://127.0.0.1:${server.address().port}/t` };
+  const waitPings = (n) => new Promise((resolve) => {
+    const t0 = Date.now();
+    const iv = setInterval(() => { if (pings.length >= n || Date.now() - t0 > 4000) { clearInterval(iv); resolve(); } }, 50);
+  });
+
+  const home = freshHome();
+  run("session-start", {}, home, T);
+  await waitPings(1);
+  check("first run sends one install event", pings.length === 1 && pings[0].event === "install");
+  check("install event has an install id and no content fields", !!pings[0]?.installId && Object.keys(pings[0]).sort().join(",") === "client,event,installId,os,skill,version");
+  const st = JSON.parse(readFileSync(statePath(home), "utf8"));
+  check("install id persisted in state", st.installId === pings[0].installId);
+
+  run("session-start", {}, home, T);
+  await new Promise((r) => setTimeout(r, 600));
+  check("same-day second session sends no heartbeat", pings.length === 1);
+
+  run("skill-run", { tool_name: "Skill", tool_input: { skill: "nahids-superpowers:meeting-miner" } }, home, T);
+  await waitPings(2);
+  check("our skill run is counted", pings.length === 2 && pings[1].event === "skill_run" && pings[1].skill === "meeting-miner");
+
+  run("skill-run", { tool_name: "Skill", tool_input: { skill: "someone-elses-skill" } }, home, T);
+  await new Promise((r) => setTimeout(r, 600));
+  check("other people's skills are never reported", pings.length === 2);
+
+  const before = pings.length;
+  writeFileSync(statePath(home), JSON.stringify({ ...JSON.parse(readFileSync(statePath(home), "utf8")), telemetry: false }));
+  run("skill-run", { tool_name: "Skill", tool_input: { skill: "nahids-superpowers:meeting-miner" } }, home, T);
+  await new Promise((r) => setTimeout(r, 600));
+  check("state off switch stops all events", pings.length === before);
+
+  const home2 = freshHome();
+  run("session-start", {}, home2, { ...T, NAHIDS_SUPERPOWERS_NO_TELEMETRY: "1" });
+  await new Promise((r) => setTimeout(r, 600));
+  check("env off switch stops all events", pings.length === before);
+
+  server.close();
+}
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);

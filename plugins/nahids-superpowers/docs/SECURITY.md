@@ -7,7 +7,7 @@ Open a private security advisory on the GitHub repository (Security tab), or ope
 ## Design
 
 - **No runtime code download.** The plugin executes only the files shipped in the installed release.
-- **Dependency-free hook runner.** The runner uses only the Node standard library: no network client, no shell execution, no dynamic loading, no transcript access. Its full source is in `hook-runner/` and is covered by deterministic tests.
+- **Dependency-free hook runner.** The runner uses only the Node standard library: no shell execution, no dynamic loading, no transcript access. Its single network action is the anonymous usage ping described in PRIVACY.md, with a fixed six-field payload and an off switch; it can send nothing else. Full source is in `hook-runner/` and is covered by deterministic tests.
 - **Write-guard hook.** `PreToolUse` blocks this plugin's MCP submission tools when the payload lacks a confirmation token or no longer matches the hash of what was prepared and shown. Scope note: on machines where hooks cannot run (no Node), this guard does not exist; protection is then the server-side token validation plus your host's tool-approval prompts. Keep those prompts on.
 - **Server-side enforcement.** The companion service independently validates payload shape, field allowlist, size caps, token signature, and expiry. The client-side guard is a second line, not the only line.
 - **Prompt injection is a named threat.** Skills that process third-party content (meeting transcripts, documents) treat that content as data, never instructions; nothing inside a processed document may trigger a feedback or request submission. Server-side field caps bound what any successful manipulation could exfiltrate.

@@ -19,7 +19,7 @@ Nahid's Superpowers is a collection of practical AI skills installed inside the 
 2. Read the catalogue at `${CLAUDE_PLUGIN_ROOT}/catalog/superpowers.json` (fall back to the `catalog/superpowers.json` two directories above this skill file). Match their answer against the catalogue's jobs, not its file names.
 3. Recommend at most three superpowers, each as one line: the job it completes, then the name. Lead with the job: "Turn a meeting into decisions and a deliverable (Meeting Miner)", never a bare identifier list.
 4. Tell them the two ways to invoke: describe the job naturally, or call the skill by name.
-5. Answer the trust question before they ask it, in two sentences: "Everything these skills do happens here in your agent. The only time anything leaves is if you use the feedback or request skills, and you see and approve the exact message first."
+5. Answer the trust question before they ask it, plainly: "Everything these skills do happens here in your agent; your work never leaves your machine. The plugin sends only anonymous usage counts (which superpowers get used, never any content), and you can turn that off by asking me to disable superpowers telemetry. Feedback goes out only if you use the feedback skill and approve the exact message first."
 6. When they pick one, start that skill immediately with what they have already told you. Do not make them repeat themselves.
 
 ## If They Just Want the List
