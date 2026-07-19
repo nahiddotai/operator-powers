@@ -1,6 +1,6 @@
-# Companion MCP Service Specification
+# Update Server (MCP) Specification
 
-Server name: `nahiddotai_superpowers`. Endpoint: `POST /mcp` (MCP Streamable HTTP, stateless JSON-RPC). Health: `GET /health`. Source: `mcp-service/`.
+Server name: `operator_superpowers`. Endpoint: `POST /mcp` (MCP Streamable HTTP, stateless JSON-RPC). Health: `GET /health`. Source: `mcp-service/`.
 
 ## Canonical URL rule
 
@@ -42,10 +42,10 @@ Per daily-rotating fingerprint (truncated IP + coarse UA + date, hashed; never s
 ## Deploy runbook
 
 1. `cd mcp-service && npm install`
-2. `npx wrangler d1 create nahiddotai-superpowers` then paste the id into wrangler.toml
-3. `npx wrangler d1 execute nahiddotai-superpowers --file=schema.sql --remote`
+2. `npx wrangler d1 create operator-superpowers` then paste the id into wrangler.toml
+3. `npx wrangler d1 execute operator-superpowers --file=schema.sql --remote`
 4. `npx wrangler kv namespace create RATE_KV` then paste the id into wrangler.toml
 5. `openssl rand -hex 32 | npx wrangler secret put TOKEN_SECRET`
 6. `npx wrangler deploy` and note the workers.dev URL
-7. Put `https://<worker-url>/mcp` into `plugins/nahids-superpowers/.mcp.json`
+7. Put `https://<worker-url>/mcp` into `plugins/operator-superpowers/.mcp.json`
 8. Contract-check: initialize, tools/list (10 tools, correct annotations), a search call, the full prepare -> submit -> delete flow, an expired/altered-payload rejection, and `GET /health`.

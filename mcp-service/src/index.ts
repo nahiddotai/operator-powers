@@ -1,5 +1,5 @@
 /**
- * nahiddotai_superpowers companion MCP service.
+ * operator_superpowers update server (MCP) service.
  * Cloudflare Worker, dependency-free implementation of the MCP Streamable HTTP
  * protocol subset this product needs: initialize, tools/list, tools/call,
  * resources/list, resources/read, ping.
@@ -124,13 +124,13 @@ const readTools: Record<string, (args: any) => ToolResult> = {
   get_install_help: (args) => {
     const client = String(args?.client ?? "").toLowerCase();
     const help: Record<string, string> = {
-      "claude-code": "Add the marketplace: /plugin marketplace add nahiddotai/nahids-superpowers — then install: /plugin install nahids-superpowers@nahiddotai. Restart or start a new session after install or update. Docs: docs/INSTALL-CLAUDE.md in the repository.",
-      codex: "Add the nahiddotai Git marketplace in your plugin settings, install Nahid's Superpowers, and start a new task. After releases, refresh the marketplace and update; installed plugins are cached, so a reinstall plus a new task may be needed. Docs: docs/INSTALL-CODEX.md in the repository.",
+      "claude-code": "Add the marketplace: /plugin marketplace add nahiddotai/operator-superpowers — then install: /plugin install operator-superpowers@nahiddotai. Restart or start a new session after install or update. Docs: docs/INSTALL-CLAUDE.md in the repository.",
+      codex: "Add the nahiddotai Git marketplace in your plugin settings, install Operator Superpowers, and start a new task. After releases, refresh the marketplace and update; installed plugins are cached, so a reinstall plus a new task may be needed. Docs: docs/INSTALL-CODEX.md in the repository.",
       "chatgpt-work": "Install through the plugin surface where your workspace exposes it. If you do not see plugins, your surface or workspace may not support them yet; use Codex or Claude Code instead. Docs: docs/INSTALL-CODEX.md in the repository.",
     };
     return ok({ client: client || "unspecified", instructions: help[client] ?? Object.values(help).join("\n\n"), troubleshooting: "docs/TROUBLESHOOTING.md in the repository" });
   },
-  get_product_status: () => ok({ service: "healthy", currentPluginVersion: PLUGIN_VERSION, marketplace: "github.com/nahiddotai/nahids-superpowers" }),
+  get_product_status: () => ok({ service: "healthy", currentPluginVersion: PLUGIN_VERSION, marketplace: "github.com/nahiddotai/operator-superpowers" }),
 };
 
 function compareSemver(a: string, b: string): number {
@@ -238,7 +238,7 @@ async function deleteSubmission(env: Env, args: any): Promise<ToolResult> {
 // ---------- MCP tool + resource declarations ----------
 
 const TOOL_DEFS = [
-  { name: "search_superpowers", description: "Search the current public Nahid's Superpowers catalogue. Returns ranked results with an installed-version caveat.", inputSchema: { type: "object", properties: { query: { type: "string" }, category: { type: "string" }, client: { type: "string" } }, required: ["query"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
+  { name: "search_superpowers", description: "Search the current public Operator Superpowers catalogue. Returns ranked results with an installed-version caveat.", inputSchema: { type: "object", properties: { query: { type: "string" }, category: { type: "string" }, client: { type: "string" } }, required: ["query"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
   { name: "get_superpower", description: "Get public metadata for one superpower by id.", inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
   { name: "get_whats_new", description: "List releases newer than the caller's installed version.", inputSchema: { type: "object", properties: { installedVersion: { type: "string" } }, required: ["installedVersion"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
   { name: "get_install_help", description: "Verified install, update, and troubleshooting instructions per client.", inputSchema: { type: "object", properties: { client: { type: "string" }, errorCategory: { type: "string" } } }, annotations: { readOnlyHint: true, openWorldHint: false } },
@@ -284,8 +284,8 @@ async function handleRpc(env: Env, req: Request, msg: any): Promise<object | nul
       return rpcResult(id, {
         protocolVersion: params?.protocolVersion ?? "2025-06-18",
         capabilities: { tools: {}, resources: {} },
-        serverInfo: { name: "nahiddotai_superpowers", version: PLUGIN_VERSION },
-        instructions: "Live catalogue, release, and install information for Nahid's Superpowers, plus explicitly approved feedback and requests. The installed plugin's native skills never require this server.",
+        serverInfo: { name: "operator_superpowers", version: PLUGIN_VERSION },
+        instructions: "Live catalogue, release, and install information for Operator Superpowers, plus explicitly approved feedback and requests. The installed plugin's native skills never require this server.",
       });
     case "notifications/initialized":
       return null;

@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "nahids-superpowers",
+      "name": "operator-superpowers",
       "source": {
         "source": "local",
-        "path": "./plugins/nahids-superpowers"
+        "path": "./plugins/operator-superpowers"
       },
       "policy": {
         "installation": "AVAILABLE",

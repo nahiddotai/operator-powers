@@ -1,6 +1,6 @@
-# Nahid's Superpowers
+# Operator Superpowers
 
-Practical AI skills for turning real work into clearer decisions, useful assets, and reusable systems. One plugin, installed into the AI tool you already use.
+Practical AI skills for non-technical knowledge work. One plugin, installed into the AI you already use, kept updated with new superpowers as they're found.
 
 **Install once. Use practical AI skills where you already work. Receive new and improved superpowers through normal plugin updates.**
 
@@ -8,12 +8,13 @@ Practical AI skills for turning real work into clearer decisions, useful assets,
 
 | Superpower | The job it completes |
 |---|---|
-| AI Working Setup | Set up AI so it understands how you work |
+| Operator Audit | Audit your last two weeks and get your 5 highest-leverage next tasks |
+| AGENTS.md Setup | Create or optimize the AGENTS.md or CLAUDE.md your AI reads |
 | Meeting Miner | Turn a meeting into decisions, insight, and the next move |
 | LLM Council | Pressure-test a decision from five independent angles |
 | Plain AI Explainer | Explain a difficult AI concept so a smart beginner gets it |
+| De-Slop | Strip the AI tells out of writing without losing your voice |
 | Instagram Carousel Maker | Turn one useful idea into an export-ready carousel |
-| Repeated Task to Skill | Decide if a repeated task should become a skill, then design it |
 
 Plus five small system skills: `start-here`, `find-a-superpower`, `whats-new`, `give-feedback`, `request-a-superpower`.
 
@@ -24,7 +25,7 @@ Plus five small system skills: `start-here`, `find-a-superpower`, `whats-new`, `
 
 ## Privacy in one paragraph
 
-Skills run inside your own AI tool; your prompts, files, and outputs are never collected. The plugin sends only anonymous usage counts (install, daily active, which of its own superpowers ran): six fixed fields, no content, no identity, on by default and easy to turn off. The hooks' full source is in [hook-runner/](hook-runner/). The optional companion service only provides live catalogue and release information, and carries feedback you explicitly approved after seeing the exact message. Full detail: [docs/PRIVACY.md](docs/PRIVACY.md).
+Skills run inside your own AI tool; your prompts, files, and outputs are never collected. The plugin sends only anonymous usage counts (install, daily active, which of its own superpowers ran): six fixed fields, no content, no identity, on by default and easy to turn off. The hooks' full source is in [hook-runner/](hook-runner/). The optional update server only provides live catalogue and release information, and carries feedback you explicitly approved after seeing the exact message. Full detail: [docs/PRIVACY.md](docs/PRIVACY.md).
 
 ## Support
 

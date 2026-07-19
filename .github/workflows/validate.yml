@@ -12,11 +12,11 @@ jobs:
         with:
           node-version: "22"
       - name: Static package validation
-        run: node plugins/nahids-superpowers/scripts/validate-package.mjs
+        run: node plugins/operator-superpowers/scripts/validate-package.mjs
       - name: Version sync
-        run: node plugins/nahids-superpowers/scripts/verify-version-sync.mjs
+        run: node plugins/operator-superpowers/scripts/verify-version-sync.mjs
       - name: Hook runner tests
-        run: node plugins/nahids-superpowers/scripts/test-hook-runner.mjs
+        run: node plugins/operator-superpowers/scripts/test-hook-runner.mjs
       - name: Version sync against tag
         if: startsWith(github.ref, 'refs/tags/v')
-        run: node plugins/nahids-superpowers/scripts/verify-version-sync.mjs "${GITHUB_REF_NAME}"
+        run: node plugins/operator-superpowers/scripts/verify-version-sync.mjs "${GITHUB_REF_NAME}"

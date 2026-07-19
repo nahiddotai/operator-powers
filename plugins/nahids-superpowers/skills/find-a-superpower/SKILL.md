@@ -1,6 +1,6 @@
 ---
 name: find-a-superpower
-description: Find the right Nahid's Superpowers skill for a job without memorising names. Use when the user asks what superpowers exist, which skill fits a task, what this plugin can do, wants to browse the catalogue, or describes a job and wants to know if there is a superpower for it.
+description: Find the right Operator Superpowers skill for a job without memorising names. Use when the user asks what superpowers exist, which skill fits a task, what this plugin can do, wants to browse the catalogue, or describes a job and wants to know if there is a superpower for it.
 ---
 
 # Find a Superpower
@@ -19,7 +19,7 @@ Match what the user is trying to do to the right superpower, or tell them honest
 
 ## Live Enrichment (Optional)
 
-If the `nahiddotai_superpowers` MCP server is connected and the user wants current information (newest additions, current examples, release notes), you may call its read tools (`search_superpowers`, `get_superpower`). Rules:
+If the `operator_superpowers` MCP server is connected and the user wants current information (newest additions, current examples, release notes), you may call its read tools (`search_superpowers`, `get_superpower`). Rules:
 
 - The local catalogue decides what is installed. Never claim a skill from the live catalogue is available locally unless the local catalogue contains it; if it is newer than the installed version, say it arrives with a plugin update.
 - If the service is unreachable, continue with the local catalogue and say live information was unavailable. Never block on it.

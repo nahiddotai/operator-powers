@@ -8,55 +8,110 @@
       "oneLineJob": "Understand the collection and complete your first useful job.",
       "description": "Orientation: explains what runs locally, recommends up to three relevant superpowers, and starts the one you pick.",
       "category": "Using the Collection",
-      "triggers": ["start here", "what is nahid's superpowers", "how does this plugin work", "first superpower"],
+      "triggers": [
+        "start here",
+        "what is nahid's superpowers",
+        "how does this plugin work",
+        "first superpower"
+      ],
       "negativeTriggers": [],
       "requiredInputs": [],
-      "optionalInputs": ["what you are trying to get done"],
-      "outputs": ["up to three job-led recommendations", "your first completed job"],
+      "optionalInputs": [
+        "what you are trying to get done"
+      ],
+      "outputs": [
+        "up to three job-led recommendations",
+        "your first completed job"
+      ],
       "skillPath": "./skills/start-here",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
-      "supportedClients": ["codex", "chatgpt-work", "claude-code"],
-      "permissions": {"localReads": "bundled catalogue only", "localWrites": "none", "network": false, "externalWrites": false},
-      "privacy": "Nothing is sent to the companion service."
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "bundled catalogue only",
+        "localWrites": "none",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Nothing is sent to the update server."
     },
     {
       "id": "find-a-superpower",
       "title": "Find a Superpower",
       "type": "system",
       "oneLineJob": "Find the right capability without memorising names.",
-      "description": "Matches your job against the local catalogue; can optionally enrich results with live release information from the companion service.",
+      "description": "Matches your job against the local catalogue; can optionally enrich results with live release information from the update server.",
       "category": "Using the Collection",
-      "triggers": ["find a superpower", "which skill", "what can this plugin do", "browse the catalogue", "is there a superpower for"],
+      "triggers": [
+        "find a superpower",
+        "which skill",
+        "what can this plugin do",
+        "browse the catalogue",
+        "is there a superpower for"
+      ],
       "negativeTriggers": [],
-      "requiredInputs": ["the job you want done, or nothing to browse"],
+      "requiredInputs": [
+        "the job you want done, or nothing to browse"
+      ],
       "optionalInputs": [],
-      "outputs": ["up to three ranked recommendations with reasons"],
+      "outputs": [
+        "up to three ranked recommendations with reasons"
+      ],
       "skillPath": "./skills/find-a-superpower",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
-      "supportedClients": ["codex", "chatgpt-work", "claude-code"],
-      "permissions": {"localReads": "bundled catalogue only", "localWrites": "none", "network": "optional MCP read tools", "externalWrites": false},
-      "privacy": "Only your search query reaches the companion service, and only when you want live information."
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "bundled catalogue only",
+        "localWrites": "none",
+        "network": "optional MCP read tools",
+        "externalWrites": false
+      },
+      "privacy": "Only your search query reaches the update server, and only when you want live information."
     },
     {
       "id": "whats-new",
       "title": "What's New",
       "type": "system",
       "oneLineJob": "See what changed after an update.",
-      "description": "Shows the installed version's changes and can check the companion service for newer releases.",
+      "description": "Shows the installed version's changes and can check the update server for newer releases.",
       "category": "Using the Collection",
-      "triggers": ["what's new", "what changed", "latest version", "did the plugin update"],
+      "triggers": [
+        "what's new",
+        "what changed",
+        "latest version",
+        "did the plugin update"
+      ],
       "negativeTriggers": [],
       "requiredInputs": [],
       "optionalInputs": [],
-      "outputs": ["plain-language changelog", "update instructions when newer exists"],
+      "outputs": [
+        "plain-language changelog",
+        "update instructions when newer exists"
+      ],
       "skillPath": "./skills/whats-new",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
-      "supportedClients": ["codex", "chatgpt-work", "claude-code"],
-      "permissions": {"localReads": "bundled release metadata", "localWrites": "none", "network": "optional MCP read tools", "externalWrites": false},
-      "privacy": "Only the installed version number reaches the companion service, and only when you want live information."
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "bundled release metadata",
+        "localWrites": "none",
+        "network": "optional MCP read tools",
+        "externalWrites": false
+      },
+      "privacy": "Only the installed version number reaches the update server, and only when you want live information."
     },
     {
       "id": "give-feedback",
@@ -65,16 +120,39 @@
       "oneLineJob": "Tell the maker whether a superpower helped.",
       "description": "Prepares a minimal feedback payload, shows it verbatim, and submits only after your explicit approval.",
       "category": "Using the Collection",
-      "triggers": ["give feedback", "rate this skill", "report a problem with the plugin", "send feedback to nahid"],
-      "negativeTriggers": ["feedback on my draft", "feedback on my work"],
-      "requiredInputs": ["which superpower and what you want to say"],
-      "optionalInputs": ["a 1-5 rating"],
-      "outputs": ["a shown-and-approved submission with receipt and deletion token"],
+      "triggers": [
+        "give feedback",
+        "rate this skill",
+        "report a problem with the plugin",
+        "send feedback to nahid"
+      ],
+      "negativeTriggers": [
+        "feedback on my draft",
+        "feedback on my work"
+      ],
+      "requiredInputs": [
+        "which superpower and what you want to say"
+      ],
+      "optionalInputs": [
+        "a 1-5 rating"
+      ],
+      "outputs": [
+        "a shown-and-approved submission with receipt and deletion token"
+      ],
       "skillPath": "./skills/give-feedback",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
-      "supportedClients": ["codex", "chatgpt-work", "claude-code"],
-      "permissions": {"localReads": "none", "localWrites": "none", "network": "MCP write tools", "externalWrites": true},
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "none",
+        "localWrites": "none",
+        "network": "MCP write tools",
+        "externalWrites": true
+      },
       "privacy": "Sends only the fields shown to and approved by you: skill id, optional rating, optional note."
     },
     {
@@ -84,36 +162,84 @@
       "oneLineJob": "Ask for a job the collection doesn't cover yet.",
       "description": "Turns a missing job into a concise request, shows the exact submission, and sends only after your explicit approval.",
       "category": "Using the Collection",
-      "triggers": ["request a superpower", "i wish this plugin could", "can you add a skill", "suggest a new skill"],
+      "triggers": [
+        "request a superpower",
+        "i wish this plugin could",
+        "can you add a skill",
+        "suggest a new skill"
+      ],
       "negativeTriggers": [],
-      "requiredInputs": ["the job you want done"],
-      "optionalInputs": ["a category"],
-      "outputs": ["a shown-and-approved request with receipt and deletion token"],
+      "requiredInputs": [
+        "the job you want done"
+      ],
+      "optionalInputs": [
+        "a category"
+      ],
+      "outputs": [
+        "a shown-and-approved request with receipt and deletion token"
+      ],
       "skillPath": "./skills/request-a-superpower",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
-      "supportedClients": ["codex", "chatgpt-work", "claude-code"],
-      "permissions": {"localReads": "bundled catalogue only", "localWrites": "none", "network": "MCP write tools", "externalWrites": true},
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "bundled catalogue only",
+        "localWrites": "none",
+        "network": "MCP write tools",
+        "externalWrites": true
+      },
       "privacy": "Sends only the job description you approve, never your conversation."
     },
     {
-      "id": "ai-working-setup",
-      "title": "AI Working Setup",
+      "id": "agents-md-setup",
+      "title": "AGENTS.md Setup",
       "type": "job",
-      "oneLineJob": "Set up AI so it understands how you work.",
-      "description": "Interviews you, writes the instruction file your agent reads (AGENTS.md, CLAUDE.md, or custom instructions), installs it, and verifies it with a live test.",
+      "oneLineJob": "Create or optimize the AGENTS.md or CLAUDE.md your AI reads.",
+      "description": "Interviews you (or audits your existing file), writes the instruction file your agent actually reads, installs it, and verifies it with a live test.",
       "category": "Setup and Systems",
-      "triggers": ["set up ai", "agents.md", "claude.md", "custom instructions", "ai keeps getting me wrong", "understand how i work", "system prompt for my workflow"],
-      "negativeTriggers": ["set up a meeting", "set up my account"],
-      "requiredInputs": ["a short interview about who you are and how you work"],
-      "optionalInputs": ["an existing instruction file to improve"],
-      "outputs": ["an installed instruction file under 60 lines", "a passed fresh-session test", "a maintenance habit"],
-      "skillPath": "./skills/ai-working-setup",
+      "triggers": [
+        "agents.md",
+        "claude.md",
+        "custom instructions",
+        "set up ai",
+        "ai keeps getting me wrong",
+        "understand how i work",
+        "optimize my instructions file"
+      ],
+      "negativeTriggers": [
+        "set up a meeting",
+        "set up my account"
+      ],
+      "requiredInputs": [
+        "a short interview about who you are and how you work"
+      ],
+      "optionalInputs": [
+        "an existing instruction file to improve"
+      ],
+      "outputs": [
+        "an installed instruction file under 60 lines",
+        "a passed fresh-session test",
+        "a maintenance habit"
+      ],
+      "skillPath": "./skills/agents-md-setup",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
-      "supportedClients": ["codex", "chatgpt-work", "claude-code"],
-      "permissions": {"localReads": "files you point to", "localWrites": "the instruction file, with your confirmation", "network": false, "externalWrites": false},
-      "privacy": "Nothing is sent to the companion service."
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "files you point to",
+        "localWrites": "the instruction file, with your confirmation",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Nothing is sent to the update server."
     },
     {
       "id": "meeting-miner",
@@ -122,17 +248,48 @@
       "oneLineJob": "Turn a meeting into decisions, insight, and the next move.",
       "description": "Mines transcripts or notes beyond the summary: content ideas, messaging and offer clues, communication feedback, and won-versus-lost call patterns.",
       "category": "Meetings to Deliverables",
-      "triggers": ["meeting transcript", "meeting notes", "mine this call", "what did we decide", "sales call review", "won vs lost", "insights from this call"],
-      "negativeTriggers": ["schedule a meeting", "join a meeting", "record a meeting", "set up a meeting"],
-      "requiredInputs": ["a transcript or meeting notes"],
-      "optionalInputs": ["desired focus mode", "won/lost outcome labels", "project context"],
-      "outputs": ["a structured report for the chosen mode", "one best next move"],
+      "triggers": [
+        "meeting transcript",
+        "meeting notes",
+        "mine this call",
+        "what did we decide",
+        "sales call review",
+        "won vs lost",
+        "insights from this call"
+      ],
+      "negativeTriggers": [
+        "schedule a meeting",
+        "join a meeting",
+        "record a meeting",
+        "set up a meeting"
+      ],
+      "requiredInputs": [
+        "a transcript or meeting notes"
+      ],
+      "optionalInputs": [
+        "desired focus mode",
+        "won/lost outcome labels",
+        "project context"
+      ],
+      "outputs": [
+        "a structured report for the chosen mode",
+        "one best next move"
+      ],
       "skillPath": "./skills/meeting-miner",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
-      "supportedClients": ["codex", "chatgpt-work", "claude-code"],
-      "permissions": {"localReads": "user-selected transcripts only", "localWrites": "only when you request an artifact", "network": false, "externalWrites": false},
-      "privacy": "No content is sent to the companion service."
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "user-selected transcripts only",
+        "localWrites": "only when you request an artifact",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "No content is sent to the update server."
     },
     {
       "id": "llm-council",
@@ -141,17 +298,46 @@
       "oneLineJob": "Pressure-test a decision from five independent angles.",
       "description": "Five advisor lenses analyse your decision independently, peer-review each other anonymously, and a chairman synthesises a direct verdict. Honest about how independent the advisors can be on your host.",
       "category": "Decisions",
-      "triggers": ["council this", "pressure-test this", "stress-test this", "debate this", "should i", "which option", "i'm torn between", "is this the right move"],
-      "negativeTriggers": ["council tax", "city council", "should i use markdown"],
-      "requiredInputs": ["a genuine decision with stakes and options"],
-      "optionalInputs": ["context files, constraints, numbers"],
-      "outputs": ["a council verdict: agreements, clashes, blind spots, recommendation, first step", "an HTML report and transcript where file writes are supported"],
+      "triggers": [
+        "council this",
+        "pressure-test this",
+        "stress-test this",
+        "debate this",
+        "should i",
+        "which option",
+        "i'm torn between",
+        "is this the right move"
+      ],
+      "negativeTriggers": [
+        "council tax",
+        "city council",
+        "should i use markdown"
+      ],
+      "requiredInputs": [
+        "a genuine decision with stakes and options"
+      ],
+      "optionalInputs": [
+        "context files, constraints, numbers"
+      ],
+      "outputs": [
+        "a council verdict: agreements, clashes, blind spots, recommendation, first step",
+        "an HTML report and transcript where file writes are supported"
+      ],
       "skillPath": "./skills/llm-council",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
-      "supportedClients": ["codex", "chatgpt-work", "claude-code"],
-      "permissions": {"localReads": "workspace context files", "localWrites": "report and transcript where supported", "network": false, "externalWrites": false},
-      "privacy": "No content is sent to the companion service."
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "workspace context files",
+        "localWrites": "report and transcript where supported",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "No content is sent to the update server."
     },
     {
       "id": "plain-ai-explainer",
@@ -160,17 +346,44 @@
       "oneLineJob": "Explain a difficult AI concept so a smart beginner gets it first read.",
       "description": "Turns any technical AI topic into a plain-language explainer doc, social thread, newsletter section, or talk-track, using a capability-risk-fix opening and a directness test.",
       "category": "Content",
-      "triggers": ["explain this simply", "plain english explainer", "non-technical explanation", "explain mcp", "explain agents", "too technical", "make this easier to understand"],
-      "negativeTriggers": ["explain this code line by line", "explain this error"],
-      "requiredInputs": ["the topic or source to explain"],
-      "optionalInputs": ["output format", "audience notes"],
-      "outputs": ["a plain-language explainer in the chosen format with verified format rules"],
+      "triggers": [
+        "explain this simply",
+        "plain english explainer",
+        "non-technical explanation",
+        "explain mcp",
+        "explain agents",
+        "too technical",
+        "make this easier to understand"
+      ],
+      "negativeTriggers": [
+        "explain this code line by line",
+        "explain this error"
+      ],
+      "requiredInputs": [
+        "the topic or source to explain"
+      ],
+      "optionalInputs": [
+        "output format",
+        "audience notes"
+      ],
+      "outputs": [
+        "a plain-language explainer in the chosen format with verified format rules"
+      ],
       "skillPath": "./skills/plain-ai-explainer",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
-      "supportedClients": ["codex", "chatgpt-work", "claude-code"],
-      "permissions": {"localReads": "sources you provide", "localWrites": "draft file where supported", "network": false, "externalWrites": false},
-      "privacy": "No content is sent to the companion service."
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "sources you provide",
+        "localWrites": "draft file where supported",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "No content is sent to the update server."
     },
     {
       "id": "instagram-carousel-maker",
@@ -179,36 +392,142 @@
       "oneLineJob": "Turn one useful idea into an export-ready carousel package.",
       "description": "Designs a branded, swipeable carousel with your colors and fonts: HTML preview plus 1080x1350 PNG export where the host supports it, or a complete structured handoff package where it doesn't.",
       "category": "Content",
-      "triggers": ["instagram carousel", "ig carousel", "carousel slides", "swipeable post", "slide deck for instagram"],
-      "negativeTriggers": ["photo carousel widget", "website carousel"],
-      "requiredInputs": ["the idea or content", "brand name, handle, and primary color"],
-      "optionalInputs": ["logo", "font preference", "images"],
-      "outputs": ["swipeable HTML preview", "per-slide PNGs or a design handoff package"],
+      "triggers": [
+        "instagram carousel",
+        "ig carousel",
+        "carousel slides",
+        "swipeable post",
+        "slide deck for instagram"
+      ],
+      "negativeTriggers": [
+        "photo carousel widget",
+        "website carousel"
+      ],
+      "requiredInputs": [
+        "the idea or content",
+        "brand name, handle, and primary color"
+      ],
+      "optionalInputs": [
+        "logo",
+        "font preference",
+        "images"
+      ],
+      "outputs": [
+        "swipeable HTML preview",
+        "per-slide PNGs or a design handoff package"
+      ],
       "skillPath": "./skills/instagram-carousel-maker",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
-      "supportedClients": ["codex", "chatgpt-work", "claude-code"],
-      "permissions": {"localReads": "content and assets you provide", "localWrites": "HTML and PNG files where supported", "network": "Google Fonts at render time", "externalWrites": false},
-      "privacy": "Never posts to Instagram or any platform. No content is sent to the companion service."
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "content and assets you provide",
+        "localWrites": "HTML and PNG files where supported",
+        "network": "Google Fonts at render time",
+        "externalWrites": false
+      },
+      "privacy": "Never posts to Instagram or any platform. No content is sent to the update server."
     },
     {
-      "id": "repeated-task-to-skill",
-      "title": "Repeated Task to Skill",
+      "id": "operator-audit",
+      "title": "Operator Audit",
       "type": "job",
-      "oneLineJob": "Decide if a repeated task should become a skill, then design it.",
-      "description": "Applies a worth-it test to your repeated task and, when it passes, produces an implementation-ready skill brief and a ready SKILL.md for your tool.",
+      "oneLineJob": "Audit your last two weeks and get your 5 highest-leverage next tasks.",
+      "description": "Reads your recent local conversation history in this client, maps where the time went and what stalled, and recommends 5 tailored tasks with first steps. Fully local.",
       "category": "Setup and Systems",
-      "triggers": ["turn this into a skill", "should this be a skill", "i keep pasting the same prompt", "make a skill for", "design a skill", "reusable workflow"],
-      "negativeTriggers": ["new skill i should learn", "skill for my resume"],
-      "requiredInputs": ["the repeated task: the prompt, a past chat, or the corrections you keep making"],
-      "optionalInputs": ["an example of a good output", "which agent will run it"],
-      "outputs": ["a build / not yet / never verdict", "a complete skill brief and SKILL.md when warranted"],
-      "skillPath": "./skills/repeated-task-to-skill",
+      "triggers": [
+        "operator audit",
+        "audit my week",
+        "audit my last",
+        "what should i work on",
+        "what should i focus on",
+        "review my recent work",
+        "what did i leave unfinished",
+        "feeling scattered"
+      ],
+      "negativeTriggers": [
+        "security audit",
+        "financial audit",
+        "seo audit",
+        "audit this code"
+      ],
+      "requiredInputs": [
+        "consent to read local conversation history"
+      ],
+      "optionalInputs": [
+        "audit window (7-14 days)",
+        "which client to audit"
+      ],
+      "outputs": [
+        "where the time went",
+        "finished / stalled / repeated map",
+        "5 ranked tailored recommendations with first steps"
+      ],
+      "skillPath": "./skills/operator-audit",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
-      "supportedClients": ["codex", "chatgpt-work", "claude-code"],
-      "permissions": {"localReads": "examples you provide", "localWrites": "the skill file, with your confirmation", "network": false, "externalWrites": false},
-      "privacy": "No content is sent to the companion service."
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "local AI conversation history, audit window only",
+        "localWrites": "audit file only if requested",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "History is read locally and never leaves the machine."
+    },
+    {
+      "id": "de-slop",
+      "title": "De-Slop",
+      "type": "job",
+      "oneLineJob": "Strip the AI tells out of writing without losing your voice.",
+      "description": "Edits a draft to remove telltale AI patterns (em dashes, stock phrases, uniform rhythm, empty claims) while keeping meaning and voice, then teaches you your top recurring tells.",
+      "category": "Content",
+      "triggers": [
+        "de-slop",
+        "sounds like ai",
+        "humanize this",
+        "remove ai tells",
+        "too robotic",
+        "make this sound human",
+        "ai wrote this"
+      ],
+      "negativeTriggers": [
+        "detect if this is ai written",
+        "ai detector"
+      ],
+      "requiredInputs": [
+        "the draft to clean"
+      ],
+      "optionalInputs": [
+        "voice notes or a sample of your writing"
+      ],
+      "outputs": [
+        "cleaned draft",
+        "grouped change list with your top 3 recurring tells"
+      ],
+      "skillPath": "./skills/de-slop",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "the draft you provide",
+        "localWrites": "cleaned file only if requested",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "The edit happens entirely in the conversation; nothing is sent anywhere."
     }
   ]
 }

@@ -28,8 +28,8 @@ if (versionSet.size !== 1) errors.push(`version mismatch: ${JSON.stringify(versi
 if (!/^\d+\.\d+\.\d+$/.test(release.version)) errors.push(`release version is not semver: ${release.version}`);
 const changelog = read(join(PLUGIN, "CHANGELOG.md"));
 if (!changelog.includes(`## ${release.version}`)) errors.push(`CHANGELOG.md has no heading for ${release.version}`);
-for (const name of ["nahids-superpowers"]) {
-  if (claudeManifest.name !== name || codexManifest.name !== name) errors.push("plugin name drifted from nahids-superpowers");
+for (const name of ["operator-superpowers"]) {
+  if (claudeManifest.name !== name || codexManifest.name !== name) errors.push("plugin name drifted from operator-superpowers");
 }
 
 // --- skill frontmatter ---
@@ -82,7 +82,7 @@ const hookCmds = JSON.stringify(hooks);
 if (!/session-start|discover|guard-mcp-write/.test(hookCmds)) errors.push("hooks.json does not reference the runner subcommands");
 if (!existsSync(join(PLUGIN, "hook-runner", "index.mjs"))) errors.push("hook-runner/index.mjs missing");
 const mcpConf = json(join(PLUGIN, ".mcp.json"));
-const mcpUrl = mcpConf.mcpServers?.nahiddotai_superpowers?.url ?? "";
+const mcpUrl = mcpConf.mcpServers?.operator_superpowers?.url ?? "";
 if (!mcpUrl.startsWith("https://")) errors.push(".mcp.json url must be https");
 if (mcpUrl.includes("PENDING")) warns.push("RELEASE BLOCKER: .mcp.json still has the placeholder URL; deploy the MCP service and set the real workers.dev URL before tagging a release");
 

@@ -18,7 +18,7 @@ function run(cmd, stdinObj, home, extraEnv = {}) {
     input: stdinObj === undefined ? "" : JSON.stringify(stdinObj),
     // Telemetry is disabled for the whole suite (empty URL) unless a test
     // explicitly points it at the local mock server.
-    env: { ...process.env, HOME: home, NAHIDS_SUPERPOWERS_TELEMETRY_URL: "", ...extraEnv },
+    env: { ...process.env, HOME: home, OPERATOR_SUPERPOWERS_TELEMETRY_URL: "", ...extraEnv },
     encoding: "utf8",
     timeout: 5000,
   });
@@ -31,7 +31,7 @@ function check(name, cond) {
 }
 
 function freshHome() { return mkdtempSync(join(tmpdir(), "nsp-test-")); }
-const statePath = (home) => join(home, ".nahids-superpowers", "state.json");
+const statePath = (home) => join(home, ".operator-superpowers", "state.json");
 
 // --- session-start ---
 {
@@ -44,7 +44,7 @@ const statePath = (home) => join(home, ".nahids-superpowers", "state.json");
 }
 {
   const home = freshHome();
-  mkdirSync(join(home, ".nahids-superpowers"), { recursive: true });
+  mkdirSync(join(home, ".operator-superpowers"), { recursive: true });
   writeFileSync(statePath(home), JSON.stringify({ schemaVersion: 1, lastSeenPluginVersion: "0.9.0", firstRunCompleted: true, hookPreferences: { discoveryHints: true }, pendingSubmissions: [] }));
   const res = run("session-start", {}, home);
   check("upgrade emits update notice once", res.out.includes("updated to"));
@@ -54,7 +54,7 @@ const statePath = (home) => join(home, ".nahids-superpowers", "state.json");
 }
 {
   const home = freshHome();
-  mkdirSync(join(home, ".nahids-superpowers"), { recursive: true });
+  mkdirSync(join(home, ".operator-superpowers"), { recursive: true });
   writeFileSync(statePath(home), "{corrupt json!!");
   const res = run("session-start", {}, home);
   check("corrupt state treated as first run", res.out.includes("is installed"));
@@ -84,12 +84,12 @@ const statePath = (home) => join(home, ".nahids-superpowers", "state.json");
   const goodHash = "sha256:" + createHash("sha256").update(canonical(payload)).digest("hex");
 
   check("unrelated tool passes through", run("guard-mcp-write", { tool_name: "mcp__other_server__submit_feedback_thing", tool_input: {} }, home).out === "" || !run("guard-mcp-write", { tool_name: "Bash", tool_input: {} }, home).out.includes("deny"));
-  check("read tool passes through", run("guard-mcp-write", { tool_name: "mcp__nahiddotai_superpowers__search_superpowers", tool_input: { query: "x" } }, home).out === "");
-  check("missing token denied", run("guard-mcp-write", { tool_name: "mcp__nahiddotai_superpowers__submit_feedback", tool_input: { payload } }, home).out.includes("deny"));
-  check("hash mismatch denied", run("guard-mcp-write", { tool_name: "mcp__nahiddotai_superpowers__submit_feedback", tool_input: { payload: { ...payload, note: "changed after preparation" }, payloadHash: goodHash, confirmationToken: "t" } }, home).out.includes("deny"));
-  check("valid submission passes", run("guard-mcp-write", { tool_name: "mcp__nahiddotai_superpowers__submit_feedback", tool_input: { payload, payloadHash: goodHash, confirmationToken: "t" } }, home).out === "");
-  check("deletion without token denied", run("guard-mcp-write", { tool_name: "mcp__nahiddotai_superpowers__delete_my_submission", tool_input: {} }, home).out.includes("deny"));
-  check("deletion with credentials passes", run("guard-mcp-write", { tool_name: "mcp__nahiddotai_superpowers__delete_my_submission", tool_input: { receiptId: "r1", deletionToken: "d1" } }, home).out === "");
+  check("read tool passes through", run("guard-mcp-write", { tool_name: "mcp__operator_superpowers__search_superpowers", tool_input: { query: "x" } }, home).out === "");
+  check("missing token denied", run("guard-mcp-write", { tool_name: "mcp__operator_superpowers__submit_feedback", tool_input: { payload } }, home).out.includes("deny"));
+  check("hash mismatch denied", run("guard-mcp-write", { tool_name: "mcp__operator_superpowers__submit_feedback", tool_input: { payload: { ...payload, note: "changed after preparation" }, payloadHash: goodHash, confirmationToken: "t" } }, home).out.includes("deny"));
+  check("valid submission passes", run("guard-mcp-write", { tool_name: "mcp__operator_superpowers__submit_feedback", tool_input: { payload, payloadHash: goodHash, confirmationToken: "t" } }, home).out === "");
+  check("deletion without token denied", run("guard-mcp-write", { tool_name: "mcp__operator_superpowers__delete_my_submission", tool_input: {} }, home).out.includes("deny"));
+  check("deletion with credentials passes", run("guard-mcp-write", { tool_name: "mcp__operator_superpowers__delete_my_submission", tool_input: { receiptId: "r1", deletionToken: "d1" } }, home).out === "");
 }
 
 // --- unknown subcommand ---
@@ -105,7 +105,7 @@ check("unknown subcommand exits silently", run("bogus", {}, freshHome()).out ===
     req.on("end", () => { try { pings.push(JSON.parse(body)); } catch {} res.statusCode = 204; res.end(); });
   });
   await new Promise((r) => server.listen(0, "127.0.0.1", r));
-  const T = { NAHIDS_SUPERPOWERS_TELEMETRY_URL: `http://127.0.0.1:${server.address().port}/t` };
+  const T = { OPERATOR_SUPERPOWERS_TELEMETRY_URL: `http://127.0.0.1:${server.address().port}/t` };
   const waitPings = (n) => new Promise((resolve) => {
     const t0 = Date.now();
     const iv = setInterval(() => { if (pings.length >= n || Date.now() - t0 > 4000) { clearInterval(iv); resolve(); } }, 50);
@@ -123,7 +123,7 @@ check("unknown subcommand exits silently", run("bogus", {}, freshHome()).out ===
   await new Promise((r) => setTimeout(r, 600));
   check("same-day second session sends no heartbeat", pings.length === 1);
 
-  run("skill-run", { tool_name: "Skill", tool_input: { skill: "nahids-superpowers:meeting-miner" } }, home, T);
+  run("skill-run", { tool_name: "Skill", tool_input: { skill: "operator-superpowers:meeting-miner" } }, home, T);
   await waitPings(2);
   check("our skill run is counted", pings.length === 2 && pings[1].event === "skill_run" && pings[1].skill === "meeting-miner");
 
@@ -133,12 +133,12 @@ check("unknown subcommand exits silently", run("bogus", {}, freshHome()).out ===
 
   const before = pings.length;
   writeFileSync(statePath(home), JSON.stringify({ ...JSON.parse(readFileSync(statePath(home), "utf8")), telemetry: false }));
-  run("skill-run", { tool_name: "Skill", tool_input: { skill: "nahids-superpowers:meeting-miner" } }, home, T);
+  run("skill-run", { tool_name: "Skill", tool_input: { skill: "operator-superpowers:meeting-miner" } }, home, T);
   await new Promise((r) => setTimeout(r, 600));
   check("state off switch stops all events", pings.length === before);
 
   const home2 = freshHome();
-  run("session-start", {}, home2, { ...T, NAHIDS_SUPERPOWERS_NO_TELEMETRY: "1" });
+  run("session-start", {}, home2, { ...T, OPERATOR_SUPERPOWERS_NO_TELEMETRY: "1" });
   await new Promise((r) => setTimeout(r, 600));
   check("env off switch stops all events", pings.length === before);
 

@@ -1,17 +1,17 @@
 ---
 name: start-here
-description: Orientation for Nahid's Superpowers. Use when the user has just installed the plugin, asks what Nahid's Superpowers is, what it can do, how it works, or wants help choosing their first superpower. Explains what runs locally versus what contacts the companion service, recommends up to three relevant superpowers for the user's actual job, and starts the selected one.
+description: Orientation for Operator Superpowers. Use when the user has just installed the plugin, asks what Operator Superpowers is, what it can do, how it works, or wants help choosing their first superpower. Explains what runs locally versus what contacts the update server, recommends up to three relevant superpowers for the user's actual job, and starts the selected one.
 ---
 
 # Start Here
 
 ## The Job
 
-Help a new user understand Nahid's Superpowers and complete one genuinely useful job in their first session.
+Help a new user understand Operator Superpowers and complete one genuinely useful job in their first session.
 
 ## What This Product Is
 
-Nahid's Superpowers is a collection of practical AI skills installed inside the user's own agent. The skills run locally as instructions; nothing about the user's work is sent anywhere. The optional companion service only provides live catalogue and release information, and carries feedback the user explicitly approves sending.
+Operator Superpowers is a collection of practical AI skills installed inside the user's own agent. The skills run locally as instructions; nothing about the user's work is sent anywhere. The optional update server only provides live catalogue and release information, and carries feedback the user explicitly approves sending.
 
 ## How to Run It
 
@@ -29,5 +29,5 @@ Show the catalogue grouped by category, one line per superpower, job first. Do n
 ## Boundaries
 
 - Never oversell: if none of the superpowers fit their job, say so and suggest they use `request-a-superpower` if they would like it to exist.
-- Never contact the companion service from this skill.
+- Never contact the update server from this skill.
 - Keep the whole orientation under a minute of reading; the goal is their first completed job, not a tour.

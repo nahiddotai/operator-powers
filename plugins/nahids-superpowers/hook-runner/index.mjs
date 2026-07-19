@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-// Nahid's Superpowers hook runner.
+// Operator Superpowers hook runner.
 // Deterministic, dependency-free, no shell, no transcript access.
 // Reads: stdin (host-provided hook JSON), the bundled read-only catalogue,
-// and ~/.nahids-superpowers/state.json. Writes: only that state file.
+// and ~/.operator-superpowers/state.json. Writes: only that state file.
 // Network: ONE fire-and-forget anonymous usage ping (see PRIVACY.md).
 // It carries only: random install id, event name, plugin skill id (ours only),
 // client, OS, plugin version. Never prompts, files, outputs, or paths.
 // Disable: set "telemetry": false in the state file, or set the
-// NAHIDS_SUPERPOWERS_NO_TELEMETRY environment variable.
+// OPERATOR_SUPERPOWERS_NO_TELEMETRY environment variable.
 // Subcommands: session-start | discover | guard-mcp-write | skill-run | send-ping
 
 import { readFileSync, writeFileSync, mkdirSync, renameSync } from "node:fs";
@@ -19,10 +19,10 @@ import { spawn } from "node:child_process";
 
 const SELF = fileURLToPath(import.meta.url);
 const PLUGIN_ROOT = dirname(dirname(SELF));
-const STATE_DIR = join(homedir(), ".nahids-superpowers");
+const STATE_DIR = join(homedir(), ".operator-superpowers");
 const STATE_FILE = join(STATE_DIR, "state.json");
 const MAX_HINTS = 2;
-const TELEMETRY_URL = process.env.NAHIDS_SUPERPOWERS_TELEMETRY_URL ?? "https://nahiddotai-superpowers.nahiddotai.workers.dev/t";
+const TELEMETRY_URL = process.env.OPERATOR_SUPERPOWERS_TELEMETRY_URL ?? "https://operator-superpowers.nahiddotai.workers.dev/t";
 
 // Every failure fails open (exit 0, no output) except the write guard,
 // which emits an explicit deny when its checks fail.
@@ -58,7 +58,7 @@ function loadState() {
 // fields are fixed here and the server rejects anything else.
 
 function telemetryEnabled(state) {
-  if (process.env.NAHIDS_SUPERPOWERS_NO_TELEMETRY) return false;
+  if (process.env.OPERATOR_SUPERPOWERS_NO_TELEMETRY) return false;
   if (!TELEMETRY_URL) return false;
   return state.telemetry !== false;
 }
@@ -144,12 +144,12 @@ function sessionStart() {
 
   let message;
   if (lastSeen === null) {
-    message = "Nahid's Superpowers is installed. Ask for the job you want done or run start-here. Your work stays on your machine: skills run locally, and the plugin sends only anonymous usage counts (never content), which you can turn off; see the PRIVACY doc or ask to disable superpowers telemetry.";
+    message = "Operator Superpowers is installed. Ask for the job you want done or run start-here. Your work stays on your machine: skills run locally, and the plugin sends only anonymous usage counts (never content), which you can turn off; see the PRIVACY doc or ask to disable superpowers telemetry.";
   } else {
     const entry = Array.isArray(release.releases) ? release.releases.find((r) => r && r.version === installed) : null;
     const added = entry && Array.isArray(entry.new) ? entry.new.length : 0;
     const summary = added > 0 ? ` ${added} addition${added === 1 ? "" : "s"} in this release.` : "";
-    message = `Nahid's Superpowers updated to ${installed}.${summary} Run whats-new for details.`;
+    message = `Operator Superpowers updated to ${installed}.${summary} Run whats-new for details.`;
   }
 
   state.lastSeenPluginVersion = installed;
@@ -201,7 +201,7 @@ function discover() {
   matches.sort((a, b) => b.hits - a.hits);
   const top = matches.slice(0, MAX_HINTS);
   const lines = top.map((m) => `${m.job} (installed superpower: ${m.id})`).join(" | ");
-  emitContext("UserPromptSubmit", `Possibly relevant from Nahid's Superpowers: ${lines}. Use only if it genuinely fits the user's request.`);
+  emitContext("UserPromptSubmit", `Possibly relevant from Operator Superpowers: ${lines}. Use only if it genuinely fits the user's request.`);
   // The prompt was processed in memory only; nothing is persisted or transmitted.
 }
 
@@ -217,7 +217,7 @@ function guardMcpWrite() {
   const input = readStdin();
   const toolName = String(input.tool_name || "");
   // Only this plugin's MCP write tools are guarded; everything else passes untouched.
-  const isOurs = toolName.includes("nahiddotai_superpowers");
+  const isOurs = toolName.includes("operator_superpowers");
   const isWrite = WRITE_TOOL_SUFFIXES.some((s) => toolName.endsWith(s));
   if (!isOurs || !isWrite) return;
 

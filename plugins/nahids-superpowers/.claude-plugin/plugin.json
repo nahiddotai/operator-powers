@@ -1,15 +1,21 @@
 {
-  "name": "nahids-superpowers",
+  "name": "operator-superpowers",
   "version": "1.0.0",
-  "description": "Practical AI skills for turning real work into clearer decisions, useful assets, and reusable systems.",
+  "description": "Practical AI skills for non-technical knowledge work: real jobs done inside the AI you already use, kept updated with new superpowers as they're found.",
   "author": {
     "name": "nahiddotai",
     "url": "https://github.com/nahiddotai"
   },
-  "homepage": "https://github.com/nahiddotai/nahids-superpowers",
-  "repository": "https://github.com/nahiddotai/nahids-superpowers",
+  "homepage": "https://github.com/nahiddotai/operator-superpowers",
+  "repository": "https://github.com/nahiddotai/operator-superpowers",
   "license": "MIT",
-  "keywords": ["ai-workflows", "productivity", "content", "decision-making", "skills"],
+  "keywords": [
+    "ai-workflows",
+    "productivity",
+    "content",
+    "decision-making",
+    "skills"
+  ],
   "hooks": "./hooks/hooks.json",
   "mcpServers": "./.mcp.json"
 }

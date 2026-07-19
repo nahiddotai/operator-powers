@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "nahiddotai_superpowers": {
+    "operator_superpowers": {
       "type": "http",
-      "url": "https://nahiddotai-superpowers.nahiddotai.workers.dev/mcp"
+      "url": "https://operator-superpowers.nahiddotai.workers.dev/mcp"
     }
   }
 }

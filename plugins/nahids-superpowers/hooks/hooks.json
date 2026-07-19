@@ -26,7 +26,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "mcp__nahiddotai_superpowers__.*",
+        "matcher": "mcp__operator_superpowers__.*",
         "hooks": [
           {
             "type": "command",

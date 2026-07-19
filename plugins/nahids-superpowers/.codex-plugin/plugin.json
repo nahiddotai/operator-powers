@@ -1,31 +1,41 @@
 {
-  "name": "nahids-superpowers",
+  "name": "operator-superpowers",
   "version": "1.0.0",
-  "description": "Practical AI skills for turning real work into clearer decisions, useful assets, and reusable systems.",
+  "description": "Practical AI skills for non-technical knowledge work: real jobs done inside the AI you already use, kept updated with new superpowers as they're found.",
   "author": {
     "name": "nahiddotai",
     "url": "https://github.com/nahiddotai"
   },
-  "homepage": "https://github.com/nahiddotai/nahids-superpowers",
-  "repository": "https://github.com/nahiddotai/nahids-superpowers",
+  "homepage": "https://github.com/nahiddotai/operator-superpowers",
+  "repository": "https://github.com/nahiddotai/operator-superpowers",
   "license": "MIT",
-  "keywords": ["ai-workflows", "productivity", "content", "decision-making", "skills"],
+  "keywords": [
+    "ai-workflows",
+    "productivity",
+    "content",
+    "decision-making",
+    "skills"
+  ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
-    "displayName": "Nahid's Superpowers",
-    "shortDescription": "Practical AI skills for real work.",
-    "longDescription": "A growing collection of native skills for setting up AI, mining meetings, making decisions, explaining ideas, producing useful content, and turning repeated tasks into reusable systems.",
+    "displayName": "Operator Superpowers",
+    "shortDescription": "Practical AI skills for non-technical work.",
+    "longDescription": "A growing, maintained collection of practical AI skills for knowledge workers who aren't engineers. Audit your week, set up your AI to know how you work, mine meetings, pressure-test decisions, explain tricky ideas simply, de-slop your writing, and produce content assets. Kept updated, with new superpowers added as the most useful ones are found for non-technical people like us.",
     "developerName": "nahiddotai",
     "category": "Productivity",
-    "capabilities": ["Skills", "MCP", "Hooks"],
-    "websiteURL": "https://github.com/nahiddotai/nahids-superpowers",
-    "privacyPolicyURL": "https://github.com/nahiddotai/nahids-superpowers/blob/main/plugins/nahids-superpowers/docs/PRIVACY.md",
-    "termsOfServiceURL": "https://github.com/nahiddotai/nahids-superpowers/blob/main/plugins/nahids-superpowers/docs/TERMS.md",
+    "capabilities": [
+      "Skills",
+      "MCP",
+      "Hooks"
+    ],
+    "websiteURL": "https://github.com/nahiddotai/operator-superpowers",
+    "privacyPolicyURL": "https://github.com/nahiddotai/operator-superpowers/blob/main/plugins/operator-superpowers/docs/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/nahiddotai/operator-superpowers/blob/main/plugins/operator-superpowers/docs/TERMS.md",
     "defaultPrompt": [
-      "Find the right superpower for the job I need to do.",
-      "Turn these meeting notes into decisions and the next deliverable.",
-      "Help me set up AI so it understands how I work."
+      "Audit my last two weeks and tell me what to focus on.",
+      "Turn these meeting notes into decisions and next steps.",
+      "Set up my AGENTS.md so my AI understands how I work."
     ],
     "brandColor": "#6366F1",
     "composerIcon": "./assets/icon-light.png",

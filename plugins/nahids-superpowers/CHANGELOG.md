@@ -6,22 +6,23 @@ Released: PENDING-RELEASE-DATE
 
 ### New superpowers
 
-- AI Working Setup: creates the instruction file that helps an agent understand how you work.
+- Operator Audit: audits your recent local conversation history and recommends your 5 highest-leverage next tasks.
+- AGENTS.md Setup: creates or optimizes the AGENTS.md or CLAUDE.md your agent reads.
 - Meeting Miner: turns transcripts or notes into decisions, insight, and the next move.
 - LLM Council: pressure-tests a decision from five independent angles with peer review and a verdict.
 - Plain AI Explainer: explains difficult AI concepts so a smart beginner gets them first read.
+- De-Slop: strips the AI tells out of writing without losing the writer's voice.
 - Instagram Carousel Maker: turns one useful idea into an export-ready carousel package.
-- Repeated Task to Skill: decides whether a repeated job should become a skill and designs it.
 
 ### System capabilities
 
 - Onboarding (start-here), catalogue discovery (find-a-superpower), update notes (whats-new), feedback and request skills.
 - Three hooks: one-time session/update notice, local discovery hints, and a submission approval guard.
-- Optional companion MCP for live catalogue information and explicitly approved feedback.
+- Optional update server (MCP) for live catalogue information and explicitly approved feedback.
 
 ### Privacy
 
-- Native skills work without sending prompts, files, transcripts, or outputs to the companion service.
+- Native skills work without sending prompts, files, transcripts, or outputs to the update server.
 - External feedback and requests require payload preview and explicit approval, with hard field caps.
 - Anonymous usage metrics (install, daily active, own-skill run counts; six fixed fields, no content, no identity) are on by default with a documented off switch.
 

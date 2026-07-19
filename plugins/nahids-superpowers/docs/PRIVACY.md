@@ -12,13 +12,13 @@ Plain-language summary: the skills run inside your own AI tool. Your prompts, fi
 
 So the maker can see whether the plugin is being used and which superpowers earn their place, the plugin sends small anonymous usage events: one when it is first installed, at most one still-in-use ping per day, and one when a superpower from this plugin runs. Each event contains exactly six fields: a random install id (generated on your machine, linked to no identity), the event name, the superpower id (only this plugin's own skills, never any other tool), which client (Claude Code or Codex), your operating system name, and the plugin version. The payload shape is fixed in the open-source hook runner and the server rejects anything else, so your prompts, files, outputs, transcripts, and paths are structurally excluded, not just promised away.
 
-Metrics are on by default. To turn them off: ask your assistant to disable Nahid's Superpowers telemetry (it sets telemetry to false in the state file below), edit that file yourself, or set the NAHIDS_SUPERPOWERS_NO_TELEMETRY environment variable. Everything works identically with metrics off.
+Metrics are on by default. To turn them off: ask your assistant to disable Operator Superpowers telemetry (it sets telemetry to false in the state file below), edit that file yourself, or set the OPERATOR_SUPERPOWERS_NO_TELEMETRY environment variable. Everything works identically with metrics off.
 
 ## The one local file we keep
 
-`~/.nahids-superpowers/state.json` stores: the last plugin version you saw (so update notices appear once), whether first run completed, your hook and telemetry preferences, and the random anonymous install id. Prompts and outputs are prohibited from this file. Deleting it is always safe; the effects are seeing the welcome notice again and starting a fresh anonymous id.
+`~/.operator-superpowers/state.json` stores: the last plugin version you saw (so update notices appear once), whether first run completed, your hook and telemetry preferences, and the random anonymous install id. Prompts and outputs are prohibited from this file. Deleting it is always safe; the effects are seeing the welcome notice again and starting a fresh anonymous id.
 
-## What the companion service receives
+## What the update server receives
 
 Only explicit tool arguments, in exactly these cases:
 

@@ -1,6 +1,6 @@
 ---
 name: give-feedback
-description: Send feedback about a Nahid's Superpowers skill to its maker. Use when the user says a superpower helped or fell short, wants to rate a skill, report a problem with one, or send feedback to Nahid about this plugin. Prepares a minimal payload, shows it verbatim, and submits only after explicit approval.
+description: Send feedback about an Operator Superpowers skill to its maker. Use when the user says a superpower helped or fell short, wants to rate a skill, report a problem with one, or send feedback to Nahid about this plugin. Prepares a minimal payload, shows it verbatim, and submits only after explicit approval.
 ---
 
 # Give Feedback
@@ -19,7 +19,7 @@ Carry the user's deliberate feedback to the maker without exposing anything else
 ## How to Run It
 
 1. Ask which superpower the feedback is about (skip if obvious from the conversation) and what they want to say. Offer the shape: rating, what worked, what didn't.
-2. Requires the `nahiddotai_superpowers` MCP server. If it is not connected or unreachable, compose the feedback as a text block the user can copy and submit later (or post as a GitHub issue on the public repository), and say plainly that nothing was sent.
+2. Requires the `operator_superpowers` MCP server. If it is not connected or unreachable, compose the feedback as a text block the user can copy and submit later (or post as a GitHub issue on the public repository), and say plainly that nothing was sent.
 3. Call `prepare_feedback` with only the fields above. The server returns the exact payload, a hash, and a confirmation token.
 4. Show the returned payload to the user verbatim, formatted readably, with: "This is everything that would be sent. Nothing else from this conversation is included. Send it?"
 5. Only on an explicit yes, call `submit_feedback` with the unmodified payload, hash, and token. Any edit means preparing again.

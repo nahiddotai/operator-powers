@@ -1,6 +1,6 @@
 ---
 name: meeting-miner
-description: Use this skill whenever the user wants to analyze meeting transcripts beyond summaries, especially client calls, partner calls, sales calls, discovery calls, consulting sessions, coaching calls, Fathom transcripts, Granola notes, Fireflies notes, or meeting notes from pasted text, uploaded files, local files, or an MCP connector. This skill helps small-business operators mine calls for content ideas, messaging and offer improvements, communication feedback, and won-vs-lost call patterns. Trigger this even if the user only asks to find insights, use meeting notes, review calls, mine transcripts, make content from calls, improve an offer from calls, review their communication, or analyze why deals were won or lost.
+description: Use whenever the user wants to analyze meeting transcripts or notes beyond a summary: client calls, sales calls, discovery calls, coaching or consulting sessions, or notes from any meeting tool, whether pasted, uploaded, or in a file. Mines calls for content ideas, messaging and offer improvements, communication feedback, and won-versus-lost patterns. Trigger even if the user only asks to find insights, use meeting notes, review calls, mine transcripts, make content from calls, improve an offer from calls, review their communication, or analyze why deals were won or lost.
 ---
 
 # Meeting Miner
@@ -15,7 +15,7 @@ Use it when the input is:
 
 - Pasted transcript text
 - One or more transcript files
-- Meeting notes from Fathom, Granola, Fireflies, Notion, Google Docs, or another source
+- Meeting notes from any recorder or notes tool, a doc, or another source
 - Transcripts available through an MCP connector
 - A mix of notes, transcript snippets, call summaries, and meeting metadata
 
@@ -48,7 +48,7 @@ If the user does not choose a mode, run the default `Full Meeting Miner` pass.
 
 At the top of the output, include:
 
-`For operators running small-business meetings with clients, partners, prospects, or collaborators, here is what I found beyond the summary.`
+`Here is what I found in this meeting beyond the summary.`
 
 Then continue with the selected output format.
 
@@ -73,7 +73,7 @@ Output:
 ```markdown
 # Meeting Miner Report
 
-For operators running small-business meetings with clients, partners, prospects, or collaborators, here is what I found beyond the summary.
+Here is what I found in this meeting beyond the summary.
 
 ## 1. Useful Meeting Context
 [2-4 bullets on who/what the meeting was about, without over-summarizing.]
@@ -135,7 +135,7 @@ Output:
 ```markdown
 # Content Ideas From The Call
 
-For operators running small-business meetings with clients, partners, prospects, or collaborators, here is what I found beyond the summary.
+Here is what I found in this meeting beyond the summary.
 
 ## Best Ideas
 [5-10 ideas.]
@@ -165,7 +165,7 @@ Output:
 ```markdown
 # Messaging And Offer Clues
 
-For operators running small-business meetings with clients, partners, prospects, or collaborators, here is what I found beyond the summary.
+Here is what I found in this meeting beyond the summary.
 
 ## Words To Reuse
 [Exact words or close paraphrases. Mark exact quotes clearly.]
@@ -200,7 +200,7 @@ Output:
 ```markdown
 # Communication Review
 
-For operators running small-business meetings with clients, partners, prospects, or collaborators, here is what I found beyond the summary.
+Here is what I found in this meeting beyond the summary.
 
 ## What Worked
 [Specific parts where the user explained, guided, listened, or clarified well.]
@@ -235,7 +235,7 @@ Output:
 ```markdown
 # Won Vs Lost Call Review
 
-For operators running small-business meetings with clients, partners, prospects, or collaborators, here is what I found beyond the summary.
+Here is what I found in this meeting beyond the summary.
 
 ## Buying Signals
 [Moments where interest, urgency, fit, trust, or decision-readiness showed up.]
@@ -279,4 +279,4 @@ If the user already gave enough context, proceed.
 - Writes: saves the report as a local Markdown file when the host supports file writes and the user wants an artifact; otherwise the full report is returned in the conversation.
 - Network: none required.
 - External actions: none. Never sends follow-ups, emails, or messages; drafts are for the user to use.
-- Privacy: transcripts often contain other people's words. The analysis stays in the conversation; nothing is sent to any companion service.
+- Privacy: transcripts often contain other people's words. The analysis stays in the conversation; nothing is sent to any update server.

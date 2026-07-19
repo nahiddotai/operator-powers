@@ -1,9 +1,14 @@
 ---
-name: ai-working-setup
-description: Interview the user and create the written working context that helps an AI agent understand how they work, then install it as the instruction file their agent actually reads, such as AGENTS.md, CLAUDE.md, or custom instructions. Use when the user wants to set up AI to understand their work, their business, or their preferences, says the AI keeps getting things wrong about them, asks about AGENTS.md or CLAUDE.md, wants a system prompt for their workflow, or is starting fresh with an AI agent and wants it configured properly.
+name: agents-md-setup
+description: Create or optimize the user's AGENTS.md or CLAUDE.md, the instruction file their AI agent reads before working, through a short interview or an audit of the existing file. Use when the user asks about AGENTS.md or CLAUDE.md, wants to set up AI to understand how they work, says the AI keeps getting things wrong about them or re-asks the same things, wants their existing instruction file reviewed or improved, or is starting fresh and wants their agent configured properly.
 ---
 
-# AI Working Setup
+# AGENTS.md Setup
+
+## Two Modes
+
+- **Create:** no instruction file exists yet. Run the interview below and write it.
+- **Optimize:** a file already exists. Read it first, then audit it: flag lines that are generic (any AI does this by default), missing boundaries, stale facts, and gaps the interview questions below would fill. Propose the edits, apply on approval, and keep what already works.
 
 ## The Job
 
