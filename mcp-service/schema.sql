@@ -24,6 +24,16 @@ CREATE TABLE IF NOT EXISTS telemetry_installs (
   version TEXT,
   country TEXT
 );
+-- Per-install skill counts (same anonymous install id, this plugin's own
+-- skills only). Powers retention, repeat-use, and gateway-skill insights.
+CREATE TABLE IF NOT EXISTS telemetry_skill_installs (
+  install_id TEXT NOT NULL,
+  skill TEXT NOT NULL,
+  first_run TEXT NOT NULL,
+  last_run TEXT NOT NULL,
+  runs INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (install_id, skill)
+);
 CREATE TABLE IF NOT EXISTS telemetry_daily (
   day TEXT NOT NULL,
   event TEXT NOT NULL,

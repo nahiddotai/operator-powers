@@ -12,6 +12,8 @@ Plain-language summary: the skills run inside your own AI tool. Your prompts, fi
 
 So the maker can see whether the plugin is being used and which superpowers earn their place, the plugin sends small anonymous usage events: one when it is first installed, at most one still-in-use ping per day, and one when a superpower from this plugin runs. Each event contains exactly six fields: a random install id (generated on your machine, linked to no identity), the event name, the superpower id (only this plugin's own skills, never any other tool), which client (Claude Code or Codex), your operating system name, and the plugin version. The payload shape is fixed in the open-source hook runner and the server rejects anything else, so your prompts, files, outputs, transcripts, and paths are structurally excluded, not just promised away.
 
+Skill-run counts are kept per anonymous install id (which of this plugin's skills ran, how many times, first and last run date). This exists so the maker can see whether skills are used once or earn repeat use, and it maps to no identity: the install id is random, generated on your machine, and deleting the state file below starts a fresh one.
+
 Metrics are on by default. To turn them off: ask your assistant to disable Operator Superpowers telemetry (it sets telemetry to false in the state file below), edit that file yourself, or set the OPERATOR_SUPERPOWERS_NO_TELEMETRY environment variable. Everything works identically with metrics off.
 
 ## The one local file we keep
@@ -41,4 +43,4 @@ The approval flow is designed so the exact payload is shown to you before submis
 
 ## What we never collect
 
-Prompt text, output text, transcripts, file names, project paths, hidden model context, advertising identifiers, identity of any kind, or per-user behavioural profiles. Usage metrics are counts, disclosed above, and switchable off.
+Prompt text, output text, transcripts, file names, project paths, hidden model context, advertising identifiers, or identity of any kind. Usage metrics are counts of this plugin's own skills, kept against a random anonymous install id as disclosed above, and switchable off; they are never linked to a person and never cover anything outside this plugin.

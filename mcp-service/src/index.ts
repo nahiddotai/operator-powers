@@ -355,7 +355,7 @@ async function handleTelemetry(req: Request, env: Env): Promise<Response> {
 
   const now = new Date().toISOString();
   const day = now.slice(0, 10);
-  await env.DB.batch([
+  const writes = [
     env.DB.prepare(
       `INSERT INTO telemetry_installs (install_id, first_seen, last_seen, client, os, version, country)
        VALUES (?,?,?,?,?,?,?)
@@ -366,7 +366,17 @@ async function handleTelemetry(req: Request, env: Env): Promise<Response> {
        VALUES (?,?,?,?,?,?,1)
        ON CONFLICT(day, event, skill, client, country, version) DO UPDATE SET count = count + 1`
     ).bind(day, event, knownSkill ?? "", clientSafe, country, versionSafe),
-  ]);
+  ];
+  if (event === "skill_run" && knownSkill) {
+    writes.push(
+      env.DB.prepare(
+        `INSERT INTO telemetry_skill_installs (install_id, skill, first_run, last_run, runs)
+         VALUES (?,?,?,?,1)
+         ON CONFLICT(install_id, skill) DO UPDATE SET last_run=excluded.last_run, runs = runs + 1`
+      ).bind(installId, knownSkill, now, now)
+    );
+  }
+  await env.DB.batch(writes);
   return new Response(null, { status: 204 });
 }
 
@@ -376,28 +386,126 @@ async function handleStats(req: Request, env: Env): Promise<Response> {
   const cutoff7 = new Date(Date.now() - 7 * 864e5).toISOString();
   const cutoff30 = new Date(Date.now() - 30 * 864e5).toISOString();
   const day30 = cutoff30.slice(0, 10);
-  const [totals, active, countries, clients, versions, topSkills, daily, submissions] = await Promise.all([
+  const cutoff14 = new Date(Date.now() - 14 * 864e5).toISOString();
+  const day7 = cutoff7.slice(0, 10);
+  const day14 = cutoff14.slice(0, 10);
+  const [totals, active, countries, clients, versions, topSkills, daily, submissions,
+         growthWeekly, skillEngagement, gateway, timeToFirstRun, skillsThisWeek, skillsLastWeek] = await Promise.all([
     q("SELECT COUNT(*) AS installs FROM telemetry_installs"),
-    q("SELECT SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS active_7d, SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS active_30d FROM telemetry_installs", cutoff7, cutoff30),
+    q("SELECT SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS active_7d, SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS active_30d, SUM(CASE WHEN last_seen < ? THEN 1 ELSE 0 END) AS dormant_30d FROM telemetry_installs", cutoff7, cutoff30, cutoff30),
     q("SELECT country, COUNT(*) AS installs FROM telemetry_installs GROUP BY country ORDER BY installs DESC LIMIT 20"),
     q("SELECT client, COUNT(*) AS installs FROM telemetry_installs GROUP BY client ORDER BY installs DESC"),
-    q("SELECT version, COUNT(*) AS installs FROM telemetry_installs GROUP BY version ORDER BY installs DESC LIMIT 10"),
+    q("SELECT version, COUNT(*) AS installs, SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS active_7d FROM telemetry_installs GROUP BY version ORDER BY installs DESC LIMIT 10", cutoff7),
     q("SELECT skill, SUM(count) AS runs FROM telemetry_daily WHERE event='skill_run' AND day >= ? GROUP BY skill ORDER BY runs DESC", day30),
     q("SELECT day, event, SUM(count) AS count FROM telemetry_daily WHERE day >= ? GROUP BY day, event ORDER BY day", day30),
     q("SELECT type, COUNT(*) AS count FROM submissions GROUP BY type"),
+    // Install growth by ISO week of first_seen (last ~12 weeks).
+    q("SELECT substr(first_seen,1,10) AS day, COUNT(*) AS installs FROM telemetry_installs WHERE first_seen >= ? GROUP BY substr(first_seen,1,10) ORDER BY day", new Date(Date.now() - 84 * 864e5).toISOString()),
+    // Per-skill engagement: reach, depth, and repeat rate.
+    q(`SELECT skill, COUNT(*) AS unique_installs, SUM(runs) AS total_runs,
+              SUM(CASE WHEN runs >= 2 THEN 1 ELSE 0 END) AS repeat_installs,
+              ROUND(1.0 * SUM(CASE WHEN runs >= 2 THEN 1 ELSE 0 END) / COUNT(*), 2) AS repeat_rate
+       FROM telemetry_skill_installs GROUP BY skill ORDER BY unique_installs DESC`),
+    // Gateway skill: which skill is most often an install's FIRST run.
+    q(`SELECT skill, COUNT(*) AS first_runs FROM (
+         SELECT install_id, skill, MIN(first_run) AS fr FROM telemetry_skill_installs GROUP BY install_id
+       ) GROUP BY skill ORDER BY first_runs DESC`),
+    // Median-ish days from install to first skill run (bucketed).
+    q(`SELECT CASE
+           WHEN julianday(f.fr) - julianday(i.first_seen) < 1 THEN 'same-day'
+           WHEN julianday(f.fr) - julianday(i.first_seen) < 7 THEN 'within-week'
+           ELSE 'later' END AS bucket, COUNT(*) AS installs
+       FROM telemetry_installs i
+       JOIN (SELECT install_id, MIN(first_run) AS fr FROM telemetry_skill_installs GROUP BY install_id) f
+         ON f.install_id = i.install_id
+       GROUP BY bucket`),
+    q("SELECT skill, SUM(count) AS runs FROM telemetry_daily WHERE event='skill_run' AND day >= ? GROUP BY skill", day7),
+    q("SELECT skill, SUM(count) AS runs FROM telemetry_daily WHERE event='skill_run' AND day >= ? AND day < ? GROUP BY skill", day14, day7),
   ]);
+  // Week-over-week deltas per skill: the raw material for data-driven content.
+  const lastMap = new Map((skillsLastWeek as any[]).map((r) => [r.skill, Number(r.runs)]));
+  const weekOverWeek = (skillsThisWeek as any[]).map((r) => {
+    const prev = lastMap.get(r.skill) ?? 0;
+    return { skill: r.skill, thisWeek: Number(r.runs), lastWeek: prev, delta: Number(r.runs) - prev };
+  }).sort((a, b) => b.delta - a.delta);
   return Response.json({
     generatedAt: new Date().toISOString(),
     installsTotal: (totals[0] as any)?.installs ?? 0,
     active: active[0] ?? {},
+    installGrowthByDay: growthWeekly,
     byCountry: countries,
     byClient: clients,
     byVersion: versions,
     topSkills30d: topSkills,
+    skillEngagement,
+    gatewaySkills: gateway,
+    timeToFirstSkillRun: timeToFirstRun,
+    skillRunsWeekOverWeek: weekOverWeek,
     daily30d: daily,
     feedbackAndRequests: submissions,
   });
 }
+
+// Owner dashboard: static HTML, no data baked in. The page asks for the stats
+// key once (kept in the browser's localStorage) and calls /stats with it.
+const DASHBOARD_HTML = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>Operator Superpowers — metrics</title>
+<style>
+:root{--bg:#0f1222;--card:#181c30;--ink:#e8e6f0;--dim:#8a87a0;--accent:#7c6cf0;--good:#4fc38a;--bad:#e06c75}
+*{box-sizing:border-box;margin:0}body{background:var(--bg);color:var(--ink);font:15px/1.5 ui-sans-serif,system-ui;padding:24px;max-width:1080px;margin:0 auto}
+h1{font-size:20px;margin-bottom:4px}h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin:0 0 10px}
+.sub{color:var(--dim);margin-bottom:20px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.card{background:var(--card);border-radius:12px;padding:16px;overflow-x:auto}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:14px}
+.tile{background:var(--card);border-radius:12px;padding:14px}.tile .n{font-size:26px;font-weight:700}.tile .l{font-size:12px;color:var(--dim)}
+table{border-collapse:collapse;width:100%;font-size:13px}td,th{text-align:left;padding:4px 10px 4px 0;border-bottom:1px solid #262a42}th{color:var(--dim);font-weight:500}
+td.num,th.num{text-align:right}
+.delta-up{color:var(--good)}.delta-down{color:var(--bad)}
+#gate{margin:40px auto;max-width:420px;text-align:center}input{background:var(--card);border:1px solid #2c3050;color:var(--ink);border-radius:8px;padding:10px 12px;width:100%;margin:10px 0}
+button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 18px;cursor:pointer;font-size:14px}
+#err{color:var(--bad);font-size:13px;margin-top:8px}
+</style></head><body>
+<div id="gate"><h1>Operator Superpowers metrics</h1><p class="sub">Paste the stats key (from mcp-service/.stats-key). Stored only in this browser.</p>
+<input id="key" type="password" placeholder="stats key"><button onclick="saveKey()">Open dashboard</button><div id="err"></div></div>
+<div id="dash" style="display:none">
+<h1>Operator Superpowers</h1><div class="sub" id="stamp"></div>
+<div class="tiles" id="tiles"></div>
+<div class="grid" id="cards"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function saveKey(){localStorage.setItem("statsKey",$("key").value.trim());load()}
+function tile(n,l){return '<div class="tile"><div class="n">'+n+'</div><div class="l">'+l+'</div></div>'}
+function table(title,rows,cols){
+ if(!rows||!rows.length)return '<div class="card"><h2>'+title+'</h2><p class="sub">No data yet.</p></div>';
+ let h='<div class="card"><h2>'+title+'</h2><table><tr>'+cols.map(c=>'<th class="'+(c.num?'num':'')+'">'+c.label+'</th>').join('')+'</tr>';
+ for(const r of rows){h+='<tr>'+cols.map(c=>{let v=r[c.key];if(c.fmt)v=c.fmt(v,r);return '<td class="'+(c.num?'num':'')+'">'+(v??'')+'</td>'}).join('')+'</tr>'}
+ return h+'</table></div>'}
+async function load(){
+ const key=localStorage.getItem("statsKey");if(!key)return;
+ const res=await fetch("/stats",{headers:{"x-stats-key":key}});
+ if(!res.ok){$("gate").style.display="block";$("dash").style.display="none";$("err").textContent="That key was rejected ("+res.status+").";localStorage.removeItem("statsKey");return}
+ const d=await res.json();
+ $("gate").style.display="none";$("dash").style.display="block";
+ $("stamp").textContent="Generated "+d.generatedAt;
+ const a=d.active||{};
+ $("tiles").innerHTML=tile(d.installsTotal,"installs")+tile(a.active_7d??0,"active, 7 days")+tile(a.active_30d??0,"active, 30 days")+tile(a.dormant_30d??0,"dormant 30+ days")+tile((d.byCountry||[]).length,"countries");
+ const delta=(v,r)=>{const c=r.delta>0?"delta-up":(r.delta<0?"delta-down":"");const s=r.delta>0?"+"+r.delta:r.delta;return '<span class="'+c+'">'+s+'</span>'};
+ $("cards").innerHTML=
+  table("Skill runs, week over week (content angles live here)",d.skillRunsWeekOverWeek,[{key:"skill",label:"Skill"},{key:"thisWeek",label:"This wk",num:1},{key:"lastWeek",label:"Last wk",num:1},{key:"delta",label:"Δ",num:1,fmt:delta}])+
+  table("Skill engagement (repeat rate = comes back)",d.skillEngagement,[{key:"skill",label:"Skill"},{key:"unique_installs",label:"Users",num:1},{key:"total_runs",label:"Runs",num:1},{key:"repeat_rate",label:"Repeat",num:1}])+
+  table("Gateway skills (the first thing people run)",d.gatewaySkills,[{key:"skill",label:"Skill"},{key:"first_runs",label:"First runs",num:1}])+
+  table("Time from install to first skill run",d.timeToFirstSkillRun,[{key:"bucket",label:"When"},{key:"installs",label:"Installs",num:1}])+
+  table("Top skills, 30 days",d.topSkills30d,[{key:"skill",label:"Skill"},{key:"runs",label:"Runs",num:1}])+
+  table("By client",d.byClient,[{key:"client",label:"Client"},{key:"installs",label:"Installs",num:1}])+
+  table("By version (are updates landing?)",d.byVersion,[{key:"version",label:"Version"},{key:"installs",label:"Installs",num:1},{key:"active_7d",label:"Active 7d",num:1}])+
+  table("By country",d.byCountry,[{key:"country",label:"Country"},{key:"installs",label:"Installs",num:1}])+
+  table("Installs per day (12 weeks)",d.installGrowthByDay,[{key:"day",label:"Day"},{key:"installs",label:"New installs",num:1}])+
+  table("Feedback and requests",d.feedbackAndRequests,[{key:"type",label:"Type"},{key:"count",label:"Count",num:1}]);
+}
+load();
+</script></body></html>`;
 
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
@@ -405,6 +513,7 @@ export default {
     if (url.pathname === "/health") return Response.json({ status: "healthy", version: PLUGIN_VERSION });
     if (url.pathname === "/t" && req.method === "POST") return handleTelemetry(req, env);
     if (url.pathname === "/stats" && req.method === "GET") return handleStats(req, env);
+    if (url.pathname === "/dashboard" && req.method === "GET") return new Response(DASHBOARD_HTML, { headers: { "content-type": "text/html; charset=utf-8", "x-robots-tag": "noindex" } });
     if (url.pathname !== "/mcp") return new Response("Not found", { status: 404 });
     if (req.method === "GET") return new Response(null, { status: 405 }); // no server-initiated stream
     if (req.method !== "POST") return new Response(null, { status: 405 });
