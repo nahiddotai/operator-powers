@@ -12,7 +12,7 @@ Tell the user what their installed version contains, what changed recently, and 
 ## How to Run It
 
 1. Read the installed release metadata at `${CLAUDE_PLUGIN_ROOT}/catalog/release.json` (fall back to `catalog/release.json` two directories above this skill file). That file states the installed version and its changelog entries.
-2. Present the installed version and its changes in plain language, newest first: new superpowers as jobs ("you can now turn a meeting into a deliverable"), then improvements, then fixes. Skip internal or build-only changes. When a release entry credits user input (feedback, requests, or census answers), lead with that: this collection is self-improving, and "this exists because users asked for it" is the most important line in any release.
+2. Present the installed version and its changes in plain language, newest first: new superpowers as jobs ("you can now turn a meeting into a deliverable"), then improvements, then fixes. Skip internal or build-only changes. When a release entry credits user input (feedback or requests), lead with that: this collection is self-improving, and "this exists because users asked for it" is the most important line in any release.
 3. If the `operator_superpowers` MCP server is connected, you may call `get_whats_new` with the installed version to learn about releases newer than the installed one. If something newer exists, say what it adds and how updating works: "updates arrive through your marketplace; refresh it and update the plugin, then start a new session."
 4. If the service is unreachable, show the installed changelog and say plainly that live release information was unavailable, without guessing whether an update exists.
 

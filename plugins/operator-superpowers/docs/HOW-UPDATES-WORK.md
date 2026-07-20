@@ -4,7 +4,7 @@ Install once, then receive new and improved superpowers through marketplace upda
 
 ## Where updates come from
 
-The collection is self-improving, and here is exactly what that means: releases are decided by what users deliberately contribute. Feedback ratings, superpower requests, census answers, and anonymous usage counts all feed the roadmap: a skill rated low gets reworked, a job requested repeatedly becomes a new superpower, and the census's "most annoying task" entries show what to build next. Nothing is scraped or observed silently; every signal is either a submission you approved after seeing it in full or a documented anonymous count with an off switch. The maker reviews the signals and pushes the release, and `whats-new` tells you what user input shaped it.
+The collection is self-improving, and here is exactly what that means: releases are decided by what users deliberately contribute. Feedback ratings, superpower requests, and anonymous usage counts all feed the roadmap: a skill rated low gets reworked, a job requested repeatedly becomes a new superpower, and usage counts show which skills earn their place. Nothing is scraped or observed silently; every signal is either a submission you approved after seeing it in full or a documented anonymous count with an off switch. The maker reviews the signals and pushes the release, and `whats-new` tells you what user input shaped it.
 
 ## How a release reaches you
 

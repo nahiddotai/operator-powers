@@ -15,8 +15,7 @@
         "Plain AI Explainer: explain a difficult AI concept so a smart beginner gets it",
         "De-Slop: strip the AI tells out of writing without losing your voice",
         "Instagram Carousel Maker: turn one useful idea into an export-ready carousel",
-        "The Operator Census: join (or just read) the live anonymous picture of how real operators use AI, built by everyone's agents instead of survey forms",
-        "Self-improving collection: feedback, requests, census answers, and anonymous usage counts decide what each release adds and improves",
+        "Self-improving collection: feedback, requests, and anonymous usage counts decide what each release adds and improves",
         "System skills: start-here, find-a-superpower, whats-new, give-feedback, request-a-superpower"
       ],
       "improved": [],
@@ -24,7 +23,7 @@
       "changedPermissions": [],
       "privacy": [
         "Native skills work without sending prompts, files, transcripts, or outputs to the update server",
-        "Feedback, requests, and census entries require payload preview and explicit approval; census entries are anonymous by construction (fixed choices plus one capped task line) and deletable by receipt",
+        "Feedback and requests require payload preview and explicit approval",
         "Anonymous usage metrics (install, daily active, own-skill run counts) are on by default with a documented off switch; no content or identity is ever sent"
       ],
       "knownLimitations": [
