@@ -2,7 +2,7 @@
 
 ## 1.0.0 - Initial public release
 
-Released: PENDING-RELEASE-DATE
+Released: 2026-07-21
 
 ### New superpowers
 

@@ -124,7 +124,8 @@ const readTools: Record<string, (args: any) => ToolResult> = {
   get_install_help: (args) => {
     const client = String(args?.client ?? "").toLowerCase();
     const help: Record<string, string> = {
-      "claude-code": "Add the marketplace: /plugin marketplace add nahiddotai/operator-superpowers — then install: /plugin install operator-superpowers@nahiddotai. Restart or start a new session after install or update. Docs: docs/INSTALL-CLAUDE.md in the repository.",
+      "claude-code": "Add the marketplace: /plugin marketplace add nahiddotai/operator-superpowers — then install: /plugin install operator-superpowers@nahiddotai. Restart or start a new session after install or update. Note: the Claude Code desktop app's plugin browser only lists the official marketplace; run those two commands once in a terminal and the plugin appears in the desktop app too. Docs: docs/INSTALL-CLAUDE.md in the repository.",
+      cowork: "In Claude Cowork (or chat on claude.ai / the Chat tab in Claude Desktop): open Customize, choose Browse plugins, add a marketplace from GitHub: nahiddotai/operator-superpowers, install Operator Superpowers, and approve the permissions prompt. Skills and the live catalogue work identically there; the session hooks are Claude Code/Codex machinery and simply don't run.",
       codex: "Add the nahiddotai Git marketplace in your plugin settings, install Operator Superpowers, and start a new task. After releases, refresh the marketplace and update; installed plugins are cached, so a reinstall plus a new task may be needed. Docs: docs/INSTALL-CODEX.md in the repository.",
       "chatgpt-work": "Install through the plugin surface where your workspace exposes it. If you do not see plugins, your surface or workspace may not support them yet; use Codex or Claude Code instead. Docs: docs/INSTALL-CODEX.md in the repository.",
     };

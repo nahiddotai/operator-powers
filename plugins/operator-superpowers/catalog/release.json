@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "version": "1.0.0",
-  "releasedAt": "PENDING-RELEASE-DATE",
+  "releasedAt": "2026-07-21",
   "releases": [
     {
       "version": "1.0.0",
-      "date": "PENDING-RELEASE-DATE",
+      "date": "2026-07-21",
       "headline": "Initial public release",
       "new": [
         "Operator Audit: audit your recent work locally and get your 5 highest-leverage next tasks",
