@@ -528,6 +528,146 @@
         "externalWrites": false
       },
       "privacy": "The edit happens entirely in the conversation; nothing is sent anywhere."
+    },
+    {
+      "id": "voice-dna",
+      "title": "Voice DNA",
+      "type": "job",
+      "oneLineJob": "Turn samples of your writing into your own portable writing-voice skill.",
+      "description": "Analyzes 3 to 5 samples of your real writing (register, rhythm, vocabulary, signature moves, never-rules), lets you correct the read, then generates a complete personal voice SKILL.md you own and can install in any AI tool. Proves it with a side-by-side test.",
+      "category": "Setup and Systems",
+      "triggers": [
+        "voice dna",
+        "write like me",
+        "doesn't sound like me",
+        "capture my writing style",
+        "clone my voice",
+        "make a writing voice skill",
+        "train ai on my writing"
+      ],
+      "negativeTriggers": [
+        "voice memo",
+        "text to speech",
+        "voice over"
+      ],
+      "requiredInputs": [
+        "3 to 5 samples of your genuine writing from at least two contexts"
+      ],
+      "optionalInputs": [
+        "a topic for the proof test"
+      ],
+      "outputs": [
+        "your voice analysis with quoted evidence",
+        "a complete portable SKILL.md named after you",
+        "a side-by-side proof paragraph"
+      ],
+      "skillPath": "./skills/voice-dna",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "only the samples you paste or point at",
+        "localWrites": "the skill file, where you ask",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Samples and the generated skill stay in the conversation and on your machine."
+    },
+    {
+      "id": "daydreamer",
+      "title": "Daydreamer",
+      "type": "job",
+      "oneLineJob": "Find the non-obvious connections hiding across your own notes and work.",
+      "description": "Collides distant pieces of the material you point at (notes, documents, recent work), attacks each candidate connection for novelty, evidence, and usefulness, and presents only the survivors with quotes and a concrete next move each.",
+      "category": "Insight and Rituals",
+      "triggers": [
+        "daydream",
+        "find connections in my notes",
+        "patterns in my work",
+        "what am i not seeing",
+        "ideas from my own notes",
+        "insights from my files"
+      ],
+      "negativeTriggers": [
+        "web research",
+        "research this topic"
+      ],
+      "requiredInputs": [
+        "the folder, notes, or material to daydream over"
+      ],
+      "optionalInputs": [
+        "where to save the resulting insights"
+      ],
+      "outputs": [
+        "a short ranked list of surviving insights with quoted evidence",
+        "one concrete action per insight"
+      ],
+      "skillPath": "./skills/daydreamer",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "only the material you point at",
+        "localWrites": "an insights note, only where you ask",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Reads only what you point at; nothing leaves your machine."
+    },
+    {
+      "id": "weekly-review",
+      "title": "Weekly Review",
+      "type": "job",
+      "oneLineJob": "Fifteen honest minutes on your week: moved, drifted, kill, and next week's one thing.",
+      "description": "A fixed four-part review (moved, drifted, kill-or-keep, the one thing) built from whatever evidence you have, saved as a dated one-page note, with a callback to last week's priority so the practice compounds.",
+      "category": "Insight and Rituals",
+      "triggers": [
+        "weekly review",
+        "friday review",
+        "review my week",
+        "how did my week go",
+        "week wrap up",
+        "accountability check"
+      ],
+      "negativeTriggers": [
+        "code review",
+        "review this draft",
+        "performance review at work"
+      ],
+      "requiredInputs": [
+        "whatever evidence you have, or fifteen minutes to talk it through"
+      ],
+      "optionalInputs": [
+        "where you keep notes",
+        "last week's review"
+      ],
+      "outputs": [
+        "a dated one-page review",
+        "one checkable priority for next week"
+      ],
+      "skillPath": "./skills/weekly-review",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "the evidence you provide or point at",
+        "localWrites": "the review note, where you keep notes",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "The review is written only where you keep notes; nothing is sent anywhere."
     }
   ]
 }

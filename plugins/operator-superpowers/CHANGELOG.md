@@ -13,6 +13,9 @@ Released: PENDING-RELEASE-DATE
 - Plain AI Explainer: explains difficult AI concepts so a smart beginner gets them first read.
 - De-Slop: strips the AI tells out of writing without losing the writer's voice.
 - Instagram Carousel Maker: turns one useful idea into an export-ready carousel package.
+- Voice DNA: turns samples of the user's writing into their own portable writing-voice skill they can install anywhere.
+- Daydreamer: collides distant pieces of the user's own notes and work to surface non-obvious, evidence-backed insights.
+- Weekly Review: a fixed honest week review (moved, drifted, kill-or-keep, one thing) saved as a compounding practice.
 
 ### System capabilities
 

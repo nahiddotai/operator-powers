@@ -1,10 +1,35 @@
 {
   "schemaVersion": 1,
   "categories": [
-    {"id": "using-the-collection", "title": "Using the Collection", "order": 1},
-    {"id": "setup-and-systems", "title": "Setup and Systems", "order": 2},
-    {"id": "meetings-to-deliverables", "title": "Meetings to Deliverables", "order": 3},
-    {"id": "decisions", "title": "Decisions", "order": 4},
-    {"id": "content", "title": "Content", "order": 5}
+    {
+      "id": "using-the-collection",
+      "title": "Using the Collection",
+      "order": 1
+    },
+    {
+      "id": "setup-and-systems",
+      "title": "Setup and Systems",
+      "order": 2
+    },
+    {
+      "id": "meetings-to-deliverables",
+      "title": "Meetings to Deliverables",
+      "order": 3
+    },
+    {
+      "id": "decisions",
+      "title": "Decisions",
+      "order": 4
+    },
+    {
+      "id": "content",
+      "title": "Content",
+      "order": 5
+    },
+    {
+      "id": "insight-and-rituals",
+      "title": "Insight and Rituals",
+      "order": 6
+    }
   ]
 }

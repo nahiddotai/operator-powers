@@ -4,7 +4,7 @@ Plain-language summary: the skills run inside your own AI tool. Your prompts, fi
 
 ## What runs locally
 
-- All twelve skills are instruction files executed by your own agent. They send nothing to us.
+- All fifteen skills are instruction files executed by your own agent. They send nothing to us.
 - The discovery hint hook reads your prompt in memory, checks it against the bundled catalogue, and discards it. Your prompt is never written to disk or sent anywhere.
 - The session hook reads only the plugin's own release file and one small local state file.
 
