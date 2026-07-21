@@ -1,6 +1,6 @@
 ---
 name: operator-audit
-description: Audit the user's last 7 to 14 days of AI conversation history in this client (Claude Code or Codex) and recommend the 5 highest-leverage tasks for them specifically, based on their real projects, unfinished threads, and repeated work. Use when the user asks for an operator audit, asks what they should work on or focus on, wants a review of their recent work or week, says they feel scattered or behind, or wants to know what they started but never finished. Everything runs locally; no history ever leaves the machine.
+description: Audit the user's last 7 to 14 days of AI conversation history in this client (Claude Code or Codex) and recommend the 5 highest-leverage tasks for them specifically, based on their real projects, unfinished threads, and repeated work. Use when the user asks for an operator audit, asks what they should work on or focus on, wants a review of their recent work or week, says they feel scattered or behind, or wants to know what they started but never finished. Requires explicit approval before reading any history. Everything runs locally; no history ever leaves the machine.
 ---
 
 # Operator Audit
@@ -11,11 +11,13 @@ Look at what the user actually did with their AI over the last one to two weeks,
 
 ## Privacy First, Said Out Loud
 
-Before reading anything, say one line: "I'll read your recent conversation history on this machine to build the audit. Everything stays here; nothing is sent anywhere." Then proceed unless they object. This skill must never quote sensitive content (credentials, client names in delicate contexts) back into the audit without need; summarize themes, not secrets.
+Before reading anything, ask: "To build this audit, I need to read your recent Claude Code or Codex conversation history on this machine for the audit window. Everything stays here and nothing is sent anywhere. Do you approve this history access?"
+
+Wait for an explicit yes. Silence, an unrelated reply, or the original audit request does not count as approval. Do not list, open, search, or inspect any history file before approval. If the user declines, offer the spoken mini-audit instead. This skill must never quote sensitive content (credentials, client names in delicate contexts) back into the audit without need; summarize themes, not secrets.
 
 ## Step 1: Find the History
 
-Locate this client's local conversation history and take the files modified in the last 7 to 14 days (ask which window they want; default 14):
+Only after explicit approval, locate this client's local conversation history and take the files modified in the last 7 to 14 days (ask which window they want; default 14):
 
 - **Claude Code:** session transcripts under `~/.claude/projects/` (one folder per project, `.jsonl` files; the folder names indicate the project paths).
 - **Codex:** session files under `~/.codex/sessions/` and `~/.codex/archived_sessions/`.
@@ -53,7 +55,7 @@ Deliver the audit in the conversation: the picture (section 2) compact, the five
 
 ## Capability Contract
 
-- Reads: local conversation history files for this machine's AI clients, and only for the audit window.
+- Reads: local conversation history files for this machine's AI clients, only after explicit approval and only for the audit window.
 - Writes: the audit file, only if the user wants it saved.
 - Network: none. History content never leaves the machine; the plugin's anonymous usage counter records only that this skill ran, never anything it read.
 - External actions: none.

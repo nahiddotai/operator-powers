@@ -1,6 +1,6 @@
 ---
 name: meeting-miner
-description: Use whenever the user wants to analyze meeting transcripts or notes beyond a summary: client calls, sales calls, discovery calls, coaching or consulting sessions, or notes from any meeting tool, whether pasted, uploaded, or in a file. Mines calls for content ideas, messaging and offer improvements, communication feedback, and won-versus-lost patterns. Trigger even if the user only asks to find insights, use meeting notes, review calls, mine transcripts, make content from calls, improve an offer from calls, review their communication, or analyze why deals were won or lost.
+description: "Use whenever the user wants to analyze meeting transcripts or notes beyond a summary: client calls, sales calls, discovery calls, coaching or consulting sessions, or notes from any meeting tool, whether pasted, uploaded, or in a file. Mines calls for content ideas, messaging and offer improvements, communication feedback, and won-versus-lost patterns. Trigger even if the user only asks to find insights, use meeting notes, review calls, mine transcripts, make content from calls, improve an offer from calls, review their communication, or analyze why deals were won or lost."
 ---
 
 # Meeting Miner
