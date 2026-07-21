@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="plugins/operator-powers/assets/logo-dark.png" alt="Operator Powers" width="180">
+  <img src="plugins/operator-powers/assets/social-banner.png" alt="Operator Powers" width="880">
 </p>
 
 # Operator Powers
 
-Operator Powers is a complete AI working method for non-technical professionals, built on a hand-picked set of practical skills and the initial instructions that make sure your AI actually uses them.
+Operator Powers is a growing set of agent skills for non-technical professionals, hand-picked and kept practical. Each one finishes a job you would otherwise do by hand, and the set grows as new skills earn their place.
 
 You don't write code. You run meetings, make decisions, create content, and keep a business moving. This plugin installs the skills for those jobs directly into the AI you already use.
 
