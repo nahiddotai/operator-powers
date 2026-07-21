@@ -1,4 +1,4 @@
-name = "operator-superpowers"
+name = "operator-powers"
 main = "src/index.ts"
 compatibility_date = "2026-06-01"
 
@@ -10,7 +10,7 @@ WRITES_ENABLED = "true"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "operator-superpowers"
+database_name = "operator-powers"
 database_id = "6250148b-d7e1-4524-8ec2-5bf874db930c"
 
 [[kv_namespaces]]

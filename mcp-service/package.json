@@ -1,11 +1,11 @@
 {
-  "name": "operator-superpowers-mcp",
+  "name": "operator-powers-mcp",
   "private": true,
   "version": "1.0.0",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "sync-catalog": "node ../plugins/operator-superpowers/scripts/build-catalog.mjs"
+    "sync-catalog": "node ../plugins/operator-powers/scripts/build-catalog.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.0.0",

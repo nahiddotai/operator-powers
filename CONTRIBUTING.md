@@ -1,3 +1,3 @@
 # Contributing
 
-See [plugins/operator-superpowers/docs/CONTRIBUTING.md](plugins/operator-superpowers/docs/CONTRIBUTING.md).
+See [plugins/operator-powers/docs/CONTRIBUTING.md](plugins/operator-powers/docs/CONTRIBUTING.md).

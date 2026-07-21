@@ -1,0 +1,46 @@
+{
+  "name": "operator-powers",
+  "version": "1.0.0",
+  "description": "Practical AI skills for non-technical knowledge work: real jobs done inside the AI you already use. A self-improving collection: what users run, rate, and request decides what each update adds.",
+  "author": {
+    "name": "nahiddotai",
+    "url": "https://github.com/nahiddotai"
+  },
+  "homepage": "https://github.com/nahiddotai/operator-powers",
+  "repository": "https://github.com/nahiddotai/operator-powers",
+  "license": "MIT",
+  "keywords": [
+    "ai-workflows",
+    "productivity",
+    "content",
+    "decision-making",
+    "skills"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Operator Powers",
+    "shortDescription": "Practical AI skills for non-technical work.",
+    "longDescription": "A growing, maintained collection of practical AI skills for knowledge workers who aren't engineers. Audit your week, set up your AI to know how you work, mine meetings, pressure-test decisions, explain tricky ideas simply, de-slop your writing, and produce content assets. Kept updated, with new powers added as the most useful ones are found for non-technical people like us.",
+    "developerName": "nahiddotai",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills",
+      "MCP",
+      "Hooks"
+    ],
+    "websiteURL": "https://github.com/nahiddotai/operator-powers",
+    "privacyPolicyURL": "https://github.com/nahiddotai/operator-powers/blob/main/plugins/operator-powers/docs/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/nahiddotai/operator-powers/blob/main/plugins/operator-powers/docs/TERMS.md",
+    "defaultPrompt": [
+      "Audit my last two weeks and tell me what to focus on.",
+      "Turn these meeting notes into decisions and next steps.",
+      "Set up my AGENTS.md so my AI understands how I work."
+    ],
+    "brandColor": "#6366F1",
+    "composerIcon": "./assets/icon-light.png",
+    "logo": "./assets/logo-light.png",
+    "logoDark": "./assets/logo-dark.png",
+    "screenshots": []
+  }
+}

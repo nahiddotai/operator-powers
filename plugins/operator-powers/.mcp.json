@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "operator_powers": {
+      "type": "http",
+      "url": "https://operator-powers.nahiddotai.workers.dev/mcp"
+    }
+  }
+}

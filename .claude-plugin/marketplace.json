@@ -10,16 +10,16 @@
   },
   "plugins": [
     {
-      "name": "operator-superpowers",
-      "source": "./plugins/operator-superpowers",
+      "name": "operator-powers",
+      "source": "./plugins/operator-powers",
       "description": "Practical AI skills for non-technical knowledge work: real jobs done inside the AI you already use. A self-improving collection: what users run, rate, and request decides what each update adds.",
       "version": "1.0.0",
       "author": {
         "name": "nahiddotai",
         "url": "https://github.com/nahiddotai"
       },
-      "homepage": "https://github.com/nahiddotai/operator-superpowers",
-      "repository": "https://github.com/nahiddotai/operator-superpowers",
+      "homepage": "https://github.com/nahiddotai/operator-powers",
+      "repository": "https://github.com/nahiddotai/operator-powers",
       "license": "MIT",
       "category": "productivity",
       "keywords": [

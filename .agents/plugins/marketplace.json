@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "operator-superpowers",
+      "name": "operator-powers",
       "source": {
         "source": "local",
-        "path": "./plugins/operator-superpowers"
+        "path": "./plugins/operator-powers"
       },
       "policy": {
         "installation": "AVAILABLE",

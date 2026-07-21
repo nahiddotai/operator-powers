@@ -1,0 +1,21 @@
+{
+  "name": "operator-powers",
+  "version": "1.0.0",
+  "description": "Practical AI skills for non-technical knowledge work: real jobs done inside the AI you already use. A self-improving collection: what users run, rate, and request decides what each update adds.",
+  "author": {
+    "name": "nahiddotai",
+    "url": "https://github.com/nahiddotai"
+  },
+  "homepage": "https://github.com/nahiddotai/operator-powers",
+  "repository": "https://github.com/nahiddotai/operator-powers",
+  "license": "MIT",
+  "keywords": [
+    "ai-workflows",
+    "productivity",
+    "content",
+    "decision-making",
+    "skills"
+  ],
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.mcp.json"
+}

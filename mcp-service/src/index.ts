@@ -1,5 +1,5 @@
 /**
- * operator_superpowers update server (MCP) service.
+ * operator_powers update server (MCP) service.
  * Cloudflare Worker, dependency-free implementation of the MCP Streamable HTTP
  * protocol subset this product needs: initialize, tools/list, tools/call,
  * resources/list, resources/read, ping.
@@ -86,10 +86,10 @@ function err(message: string): ToolResult {
   return { content: [{ type: "text", text: JSON.stringify({ error: message }) }], isError: true };
 }
 
-const sps: any[] = (catalog as any).superpowers;
+const sps: any[] = (catalog as any).powers;
 
 const readTools: Record<string, (args: any) => ToolResult> = {
-  search_superpowers: (args) => {
+  search_powers: (args) => {
     const q = String(args?.query ?? "").toLowerCase().trim();
     const cat = args?.category ? String(args.category).toLowerCase() : null;
     const scored = sps
@@ -110,9 +110,9 @@ const readTools: Record<string, (args: any) => ToolResult> = {
       currentPluginVersion: PLUGIN_VERSION,
     });
   },
-  get_superpower: (args) => {
+  get_power: (args) => {
     const s = sps.find((x) => x.id === args?.id);
-    if (!s) return err(`No superpower with id '${args?.id}'.`);
+    if (!s) return err(`No power with id '${args?.id}'.`);
     return ok(s);
   },
   get_whats_new: (args) => {
@@ -124,14 +124,14 @@ const readTools: Record<string, (args: any) => ToolResult> = {
   get_install_help: (args) => {
     const client = String(args?.client ?? "").toLowerCase();
     const help: Record<string, string> = {
-      "claude-code": "Add the marketplace: /plugin marketplace add nahiddotai/operator-superpowers — then install: /plugin install operator-superpowers@nahiddotai. Restart or start a new session after install or update. Note: the Claude Code desktop app's plugin browser only lists the official marketplace; run those two commands once in a terminal and the plugin appears in the desktop app too. Docs: docs/INSTALL-CLAUDE.md in the repository.",
-      cowork: "In Claude Cowork (or chat on claude.ai / the Chat tab in Claude Desktop): open Customize, choose Browse plugins, add a marketplace from GitHub: nahiddotai/operator-superpowers, install Operator Superpowers, and approve the permissions prompt. Skills and the live catalogue work identically there; the session hooks are Claude Code/Codex machinery and simply don't run.",
-      codex: "Add the nahiddotai Git marketplace in your plugin settings, install Operator Superpowers, and start a new task. After releases, refresh the marketplace and update; installed plugins are cached, so a reinstall plus a new task may be needed. Docs: docs/INSTALL-CODEX.md in the repository.",
+      "claude-code": "Add the marketplace: /plugin marketplace add nahiddotai/operator-powers — then install: /plugin install operator-powers@nahiddotai. Restart or start a new session after install or update. Note: the Claude Code desktop app's plugin browser only lists the official marketplace; run those two commands once in a terminal and the plugin appears in the desktop app too. Docs: docs/INSTALL-CLAUDE.md in the repository.",
+      cowork: "In Claude Cowork (or chat on claude.ai / the Chat tab in Claude Desktop): open Customize, choose Browse plugins, add a marketplace from GitHub: nahiddotai/operator-powers, install Operator Powers, and approve the permissions prompt. Skills and the live catalogue work identically there; the session hooks are Claude Code/Codex machinery and simply don't run.",
+      codex: "Add the nahiddotai Git marketplace in your plugin settings, install Operator Powers, and start a new task. After releases, refresh the marketplace and update; installed plugins are cached, so a reinstall plus a new task may be needed. Docs: docs/INSTALL-CODEX.md in the repository.",
       "chatgpt-work": "Install through the plugin surface where your workspace exposes it. If you do not see plugins, your surface or workspace may not support them yet; use Codex or Claude Code instead. Docs: docs/INSTALL-CODEX.md in the repository.",
     };
     return ok({ client: client || "unspecified", instructions: help[client] ?? Object.values(help).join("\n\n"), troubleshooting: "docs/TROUBLESHOOTING.md in the repository" });
   },
-  get_product_status: () => ok({ service: "healthy", currentPluginVersion: PLUGIN_VERSION, marketplace: "github.com/nahiddotai/operator-superpowers" }),
+  get_product_status: () => ok({ service: "healthy", currentPluginVersion: PLUGIN_VERSION, marketplace: "github.com/nahiddotai/operator-powers" }),
 };
 
 function compareSemver(a: string, b: string): number {
@@ -239,15 +239,15 @@ async function deleteSubmission(env: Env, args: any): Promise<ToolResult> {
 // ---------- MCP tool + resource declarations ----------
 
 const TOOL_DEFS = [
-  { name: "search_superpowers", description: "Search the current public Operator Superpowers catalogue. Returns ranked results with an installed-version caveat.", inputSchema: { type: "object", properties: { query: { type: "string" }, category: { type: "string" }, client: { type: "string" } }, required: ["query"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
-  { name: "get_superpower", description: "Get public metadata for one superpower by id.", inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
+  { name: "search_powers", description: "Search the current public Operator Powers catalogue. Returns ranked results with an installed-version caveat.", inputSchema: { type: "object", properties: { query: { type: "string" }, category: { type: "string" }, client: { type: "string" } }, required: ["query"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
+  { name: "get_power", description: "Get public metadata for one power by id.", inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
   { name: "get_whats_new", description: "List releases newer than the caller's installed version.", inputSchema: { type: "object", properties: { installedVersion: { type: "string" } }, required: ["installedVersion"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
   { name: "get_install_help", description: "Verified install, update, and troubleshooting instructions per client.", inputSchema: { type: "object", properties: { client: { type: "string" }, errorCategory: { type: "string" } } }, annotations: { readOnlyHint: true, openWorldHint: false } },
   { name: "get_product_status", description: "Service health, current plugin release, and marketplace availability.", inputSchema: { type: "object", properties: {} }, annotations: { readOnlyHint: true, openWorldHint: false } },
   { name: "prepare_feedback", description: "Validate and normalise user-supplied feedback WITHOUT submitting. Returns the exact payload, hash, expiry, and confirmation token to show the user for approval.", inputSchema: { type: "object", properties: { payload: { type: "object", properties: { skillId: { type: "string" }, rating: { type: "integer", minimum: 1, maximum: 5 }, note: { type: "string", maxLength: NOTE_MAX } }, required: ["skillId"] } }, required: ["payload"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
   { name: "submit_feedback", description: "Persist feedback the user explicitly approved. Requires the unmodified payload, its hash, and a valid confirmation token from prepare_feedback.", inputSchema: { type: "object", properties: { payload: { type: "object" }, payloadHash: { type: "string" }, confirmationToken: { type: "string" } }, required: ["payload", "payloadHash", "confirmationToken"] }, annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true } },
-  { name: "prepare_superpower_request", description: "Turn a missing job into a minimal request payload WITHOUT submitting. Returns the exact payload, hash, expiry, and confirmation token to show the user for approval.", inputSchema: { type: "object", properties: { payload: { type: "object", properties: { job: { type: "string", maxLength: NOTE_MAX }, category: { type: "string" } }, required: ["job"] } }, required: ["payload"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
-  { name: "submit_superpower_request", description: "Persist a superpower request the user explicitly approved. Requires the unmodified payload, its hash, and a valid confirmation token from prepare_superpower_request.", inputSchema: { type: "object", properties: { payload: { type: "object" }, payloadHash: { type: "string" }, confirmationToken: { type: "string" } }, required: ["payload", "payloadHash", "confirmationToken"] }, annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true } },
+  { name: "prepare_power_request", description: "Turn a missing job into a minimal request payload WITHOUT submitting. Returns the exact payload, hash, expiry, and confirmation token to show the user for approval.", inputSchema: { type: "object", properties: { payload: { type: "object", properties: { job: { type: "string", maxLength: NOTE_MAX }, category: { type: "string" } }, required: ["job"] } }, required: ["payload"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
+  { name: "submit_power_request", description: "Persist a power request the user explicitly approved. Requires the unmodified payload, its hash, and a valid confirmation token from prepare_power_request.", inputSchema: { type: "object", properties: { payload: { type: "object" }, payloadHash: { type: "string" }, confirmationToken: { type: "string" } }, required: ["payload", "payloadHash", "confirmationToken"] }, annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true } },
   { name: "delete_my_submission", description: "Delete a stored submission. Requires the receipt id and the deletion token shown once at submission time.", inputSchema: { type: "object", properties: { receiptId: { type: "string" }, deletionToken: { type: "string" } }, required: ["receiptId", "deletionToken"] }, annotations: { readOnlyHint: false, destructiveHint: true, openWorldHint: true } },
 ];
 
@@ -285,8 +285,8 @@ async function handleRpc(env: Env, req: Request, msg: any): Promise<object | nul
       return rpcResult(id, {
         protocolVersion: params?.protocolVersion ?? "2025-06-18",
         capabilities: { tools: {}, resources: {} },
-        serverInfo: { name: "operator_superpowers", version: PLUGIN_VERSION },
-        instructions: "Live catalogue, release, and install information for Operator Superpowers, plus explicitly approved feedback and requests. The installed plugin's native skills never require this server.",
+        serverInfo: { name: "operator_powers", version: PLUGIN_VERSION },
+        instructions: "Live catalogue, release, and install information for Operator Powers, plus explicitly approved feedback and requests. The installed plugin's native skills never require this server.",
       });
     case "notifications/initialized":
       return null;
@@ -310,8 +310,8 @@ async function handleRpc(env: Env, req: Request, msg: any): Promise<object | nul
         const allowed = await rateLimit(env, `reads:${fp}:${Math.floor(Date.now() / 60000)}`, READS_PER_MINUTE, 120);
         if (!allowed) result = err("Rate limited. Try again in a minute.");
         else if (name in readTools) result = readTools[name](args);
-        else result = await prepare(env, name.replace("prepare_feedback", "submit_feedback").replace("prepare_superpower_request", "submit_superpower_request"), args);
-      } else if (name === "submit_feedback" || name === "submit_superpower_request" || name === "delete_my_submission") {
+        else result = await prepare(env, name.replace("prepare_feedback", "submit_feedback").replace("prepare_power_request", "submit_power_request"), args);
+      } else if (name === "submit_feedback" || name === "submit_power_request" || name === "delete_my_submission") {
         const allowed = await rateLimit(env, `writes:${fp}:${new Date().toISOString().slice(0, 10)}`, WRITES_PER_DAY, 86400);
         if (!allowed) result = err("Daily submission limit reached for this connection. Your text is safe to copy and retry tomorrow.");
         else if (name === "delete_my_submission") result = await deleteSubmission(env, args);
@@ -450,7 +450,7 @@ async function handleStats(req: Request, env: Env): Promise<Response> {
 // Owner dashboard: static HTML, no data baked in. The page asks for the stats
 // key once (kept in the browser's localStorage) and calls /stats with it.
 const DASHBOARD_HTML = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex"><title>Operator Superpowers — metrics</title>
+<meta name="robots" content="noindex"><title>Operator Powers — metrics</title>
 <style>
 :root{--bg:#0f1222;--card:#181c30;--ink:#e8e6f0;--dim:#8a87a0;--accent:#7c6cf0;--good:#4fc38a;--bad:#e06c75}
 *{box-sizing:border-box;margin:0}body{background:var(--bg);color:var(--ink);font:15px/1.5 ui-sans-serif,system-ui;padding:24px;max-width:1080px;margin:0 auto}
@@ -467,10 +467,10 @@ td.num,th.num{text-align:right}
 button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 18px;cursor:pointer;font-size:14px}
 #err{color:var(--bad);font-size:13px;margin-top:8px}
 </style></head><body>
-<div id="gate"><h1>Operator Superpowers metrics</h1><p class="sub">Paste the stats key (from mcp-service/.stats-key). Stored only in this browser.</p>
+<div id="gate"><h1>Operator Powers metrics</h1><p class="sub">Paste the stats key (from mcp-service/.stats-key). Stored only in this browser.</p>
 <input id="key" type="password" placeholder="stats key"><button onclick="saveKey()">Open dashboard</button><div id="err"></div></div>
 <div id="dash" style="display:none">
-<h1>Operator Superpowers</h1><div class="sub" id="stamp"></div>
+<h1>Operator Powers</h1><div class="sub" id="stamp"></div>
 <div class="tiles" id="tiles"></div>
 <div class="grid" id="cards"></div>
 </div>
