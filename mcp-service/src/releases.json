@@ -1,36 +1,59 @@
 {
   "schemaVersion": 1,
   "version": "1.0.0",
-  "releasedAt": "2026-07-21",
+  "status": "submission-candidate",
+  "preparedAt": "2026-07-22",
   "releases": [
     {
       "version": "1.0.0",
-      "date": "2026-07-21",
-      "headline": "Initial public release",
+      "date": "2026-07-22",
+      "headline": "Version 1 submission candidate",
       "new": [
-        "Operator Audit: audit your recent work locally and get your 5 highest-leverage next tasks",
-        "AGENTS.md Setup: create or optimize the AGENTS.md or CLAUDE.md your AI reads",
-        "Meeting Miner: turn a meeting into decisions, insight, and the next move",
-        "LLM Council: pressure-test a decision from five independent angles",
+        "Operator Audit: audit recent local AI work after separate explicit approval and get five high-leverage next tasks",
+        "AGENTS.md Setup: create or improve the AGENTS.md or CLAUDE.md your AI reads",
+        "Big Model Smell: simplify an over-engineered prompt, workflow, plan, or system",
+        "Workflow and SOP Builder: create a human-run, AI-assisted, automated, or combined process",
+        "Meeting Miner: turn one meeting into decisions, insight, communication feedback, and next actions",
+        "Customer Insight Synthesizer: find patterns across multiple customer evidence sources",
+        "Case Study Builder: turn one real customer or project result into credible proof",
+        "Daydreamer: find non-obvious connections across your own notes and work",
+        "Weekly Review: decide what moved, drifted, should stop, and matters next week",
+        "LLM Council: pressure-test a decision through independent analysis and peer review",
+        "Voice DNA: turn writing samples into a portable written-voice skill",
+        "Brand System Builder: turn visual taste and references into reusable design rules",
         "Plain AI Explainer: explain a difficult AI concept so a smart beginner gets it",
-        "De-Slop: strip the AI tells out of writing without losing your voice",
-        "Instagram Carousel Maker: turn one useful idea into an export-ready carousel",
-        "Voice DNA: turn samples of your writing into your own portable writing-voice skill",
-        "Daydreamer: find the non-obvious connections hiding across your own notes and work",
-        "Weekly Review: fifteen honest minutes on your week, saved and compounding",
-        "Self-improving collection: feedback, requests, and anonymous usage counts decide what each release adds and improves",
-        "System skills: start-here, find-a-power, whats-new, give-feedback, request-a-power"
+        "De-Slop: remove AI-writing tells without losing the writer's voice",
+        "Instagram Carousel Maker: turn one useful idea into an export-ready portrait carousel",
+        "HTML Slideshow: create and verify a responsive browser presentation",
+        "Digital Lead Magnet Maker: build a useful opt-in resource and its delivery copy",
+        "Content Refresher: update an existing asset while preserving useful proof and voice",
+        "Content Repurposing: transform one source into distinct channel-native assets",
+        "Offer Builder: define the buyer, promise, package, boundaries, price logic, and validation test",
+        "Landing Page CRO: improve the conversion path of an existing page",
+        "Content Performance: diagnose content results and choose evidence-based experiments",
+        "Digital Product Launch Builder: build a coordinated launch for a defined product",
+        "System powers: Start Here, Find a Power, What's New, Give Feedback, and Request a Power"
       ],
-      "improved": [],
-      "fixed": [],
+      "improved": [
+        "Six user-facing categories now organize all 28 powers",
+        "Weighted catalogue search favours explicit names and job phrases, respects negative triggers, and returns at most three results",
+        "Routing contracts and deterministic collision tests cover adjacent powers",
+        "All skill descriptions meet Anthropic's current 200-character metadata limit",
+        "Source and provenance ledger records the research basis for every new power"
+      ],
+      "fixed": [
+        "Customer research and feedback synthesis were merged into Customer Insight Synthesizer",
+        "Automation workflow and SOP creation were merged into Workflow and SOP Builder"
+      ],
       "changedPermissions": [],
       "privacy": [
-        "Native skills work without sending prompts, files, transcripts, or outputs to the update server",
+        "Native skills do not send prompts, files, transcripts, or outputs to the update server",
         "Feedback and requests require payload preview and explicit approval",
-        "Anonymous usage metrics (install, daily active, own-skill run counts) are on by default with a documented off switch; no content or identity is ever sent"
+        "Anonymous usage metrics use six fixed fields and have a documented off switch"
       ],
       "knownLimitations": [
-        "A marketplace refresh or new session may be required before an installed update appears"
+        "A marketplace refresh or new session may be required before an installed update appears",
+        "Anthropic's current Software Directory Policy conflicts with Operator Audit's local Claude and Codex history access even when separately approved"
       ]
     }
   ]

@@ -17,6 +17,15 @@ jobs:
         run: node plugins/operator-powers/scripts/verify-version-sync.mjs
       - name: Hook runner tests
         run: node plugins/operator-powers/scripts/test-hook-runner.mjs
+      - name: Install MCP development dependencies
+        run: npm ci
+        working-directory: mcp-service
+      - name: Type-check MCP service
+        run: npx tsc --noEmit
+        working-directory: mcp-service
+      - name: Bundle MCP service without deploying
+        run: npx wrangler deploy --dry-run --outdir /tmp/operator-powers-worker
+        working-directory: mcp-service
       - name: Version sync against tag
         if: startsWith(github.ref, 'refs/tags/v')
         run: node plugins/operator-powers/scripts/verify-version-sync.mjs "${GITHUB_REF_NAME}"

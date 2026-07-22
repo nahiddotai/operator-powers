@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workflow and Sop Builder"
+  short_description: "Build workflows and usable SOPs"
+  default_prompt: "Use $workflow-and-sop-builder to turn this repeated task into a tested workflow and SOP."

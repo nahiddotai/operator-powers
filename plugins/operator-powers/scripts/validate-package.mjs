@@ -31,6 +31,13 @@ if (!changelog.includes(`## ${release.version}`)) errors.push(`CHANGELOG.md has 
 for (const name of ["operator-powers"]) {
   if (claudeManifest.name !== name || codexManifest.name !== name) errors.push("plugin name drifted from operator-powers");
 }
+const iface = codexManifest.interface ?? {};
+if (String(iface.displayName ?? "").length > 30) errors.push("Codex displayName exceeds final directory limit of 30");
+if (String(iface.shortDescription ?? "").length > 30) errors.push("Codex shortDescription exceeds final directory limit of 30");
+if (String(iface.longDescription ?? "").length > 4000) errors.push("Codex longDescription exceeds final directory limit of 4000");
+const openAIListing = read(join(REPO, "submission", "openai", "listing.md"));
+if (!/^- Support: `https:\/\//m.test(openAIListing)) errors.push("OpenAI With MCP listing needs an HTTPS support URL");
+if (!Array.isArray(iface.defaultPrompt) || iface.defaultPrompt.length > 3 || iface.defaultPrompt.some((prompt) => String(prompt).length > 128)) errors.push("Codex starter prompts must be a list of at most 3 entries, each at most 128 characters");
 
 // --- skill frontmatter ---
 const skillsDir = join(PLUGIN, "skills");
@@ -47,7 +54,7 @@ for (const id of skillIds) {
   if (!descMatch) errors.push(`${id}: missing description`);
   else {
     const desc = descMatch[1].replace(/\n/g, " ").trim();
-    if (desc.length > 1024) errors.push(`${id}: description ${desc.length} chars (limit 1024; some hosts silently drop longer)`);
+    if (desc.length > 200) errors.push(`${id}: description ${desc.length} chars (Anthropic directory limit 200)`);
     if (desc.length < 60) warns.push(`${id}: description is very short (${desc.length} chars)`);
   }
 }
@@ -55,6 +62,9 @@ for (const id of skillIds) {
 // --- catalogue integrity ---
 const catalog = json(join(PLUGIN, "catalog", "powers.json"));
 const catalogIds = catalog.powers.map((s) => s.id);
+const categories = json(join(PLUGIN, "catalog", "categories.json")).categories;
+const categoryTitles = new Set(categories.map((category) => category.title));
+if (new Set(catalogIds).size !== catalogIds.length) errors.push("catalogue contains duplicate power ids");
 for (const s of catalog.powers) {
   if (!skillIds.includes(s.id)) errors.push(`catalogue lists '${s.id}' but skills/${s.id} does not exist`);
   const rel = s.skillPath.replace("./", "");
@@ -62,6 +72,8 @@ for (const s of catalog.powers) {
   for (const k of ["oneLineJob", "description", "category", "triggers", "permissions", "privacy", "introducedIn"]) {
     if (!(k in s)) errors.push(`catalogue '${s.id}' missing field ${k}`);
   }
+  if (!categoryTitles.has(s.category)) errors.push(`catalogue '${s.id}' uses unknown category '${s.category}'`);
+  if (!Array.isArray(s.negativeTriggers)) errors.push(`catalogue '${s.id}' negativeTriggers must be an array`);
 }
 for (const id of skillIds) if (!catalogIds.includes(id)) errors.push(`skills/${id} is not in the catalogue`);
 
@@ -93,6 +105,11 @@ for (const doc of ["PRIVACY.md", "TERMS.md", "SECURITY.md", "TROUBLESHOOTING.md"
 for (const f of ["README.md", "CHANGELOG.md", "LICENSE"]) {
   if (!existsSync(join(PLUGIN, f))) errors.push(`${f} missing`);
 }
+for (const doc of ["ROUTING-CONTRACTS.md", "SOURCE-LEDGER.md"]) {
+  if (!existsSync(join(PLUGIN, "docs", doc))) errors.push(`docs/${doc} missing`);
+}
+const openaiTests = json(join(REPO, "submission", "openai", "test-cases.json"));
+if (openaiTests.positive?.length !== 5 || openaiTests.negative?.length !== 3) errors.push("OpenAI submission requires exactly 5 positive and 3 negative test cases");
 
 // --- forbidden content scan (privacy gate) ---
 const FORBIDDEN = [

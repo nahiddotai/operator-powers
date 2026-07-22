@@ -19,6 +19,7 @@ export interface Env {
   STATS_KEY: string; // wrangler secret; grants read access to GET /stats
   WRITES_ENABLED: string; // "true" | "false" kill switch for all write tools
   RATE_KV: KVNamespace;
+  OPENAI_APPS_CHALLENGE?: string; // portal-issued domain verification token
 }
 
 const PLUGIN_VERSION: string = (releases as any).version;
@@ -87,23 +88,51 @@ function err(message: string): ToolResult {
 }
 
 const sps: any[] = (catalog as any).powers;
+const SEARCH_STOP_WORDS = new Set(["a", "an", "and", "are", "as", "at", "be", "by", "can", "do", "for", "from", "i", "in", "is", "it", "me", "my", "of", "on", "or", "please", "the", "this", "to", "we", "with", "you"]);
+
+function normalizeSearch(text: unknown): string {
+  return String(text ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function searchTerms(text: string): string[] {
+  return [...new Set(normalizeSearch(text).split(" ").filter((term) => term.length > 1 && !SEARCH_STOP_WORDS.has(term)))];
+}
+
+function scorePower(power: any, query: string): number {
+  const q = normalizeSearch(query);
+  if (!q) return 1;
+  const negatives = (power.negativeTriggers || []).map(normalizeSearch).filter(Boolean);
+  if (negatives.some((phrase: string) => q.includes(phrase))) return Number.NEGATIVE_INFINITY;
+
+  const id = normalizeSearch(power.id);
+  const title = normalizeSearch(power.title);
+  const job = normalizeSearch(power.oneLineJob);
+  const description = normalizeSearch(power.description);
+  const triggers = (power.triggers || []).map(normalizeSearch).filter(Boolean);
+  let score = 0;
+
+  if (q === id || q === title || q.includes(id) || q.includes(title)) score += 120;
+  for (const trigger of triggers) if (q.includes(trigger)) score += 46 + Math.min(14, trigger.split(" ").length * 2);
+  for (const term of searchTerms(q)) {
+    if (title.includes(term) || id.includes(term)) score += 14;
+    if (triggers.some((trigger: string) => trigger.includes(term))) score += 8;
+    if (job.includes(term)) score += 5;
+    if (description.includes(term)) score += 2;
+  }
+  return score;
+}
 
 const readTools: Record<string, (args: any) => ToolResult> = {
   search_powers: (args) => {
-    const q = String(args?.query ?? "").toLowerCase().trim();
-    const cat = args?.category ? String(args.category).toLowerCase() : null;
+    const q = String(args?.query ?? "").trim();
+    const cat = args?.category ? normalizeSearch(args.category) : null;
     const scored = sps
-      .filter((s) => !cat || s.category.toLowerCase() === cat)
-      .map((s) => {
-        const hay = `${s.title} ${s.oneLineJob} ${s.description} ${(s.triggers || []).join(" ")}`.toLowerCase();
-        const terms = q.split(/\s+/).filter(Boolean);
-        const hits = terms.filter((t) => hay.includes(t)).length;
-        return { s, hits };
-      })
-      .filter((x) => q === "" || x.hits > 0)
-      .sort((a, b) => b.hits - a.hits)
-      .slice(0, 5)
-      .map((x) => ({ id: x.s.id, title: x.s.title, oneLineJob: x.s.oneLineJob, category: x.s.category, introducedIn: x.s.introducedIn }));
+      .filter((s) => !cat || normalizeSearch(s.category) === cat)
+      .map((s) => ({ s, score: scorePower(s, q) }))
+      .filter((x) => Number.isFinite(x.score) && (q === "" || x.score >= 34))
+      .sort((a, b) => b.score - a.score || a.s.title.localeCompare(b.s.title))
+      .slice(0, 3)
+      .map((x) => ({ id: x.s.id, title: x.s.title, oneLineJob: x.s.oneLineJob, category: x.s.category, introducedIn: x.s.introducedIn, matchScore: x.score }));
     return ok({
       results: scored,
       caveat: "This is the current public catalogue. What is installed locally is decided by the plugin's own catalogue; a skill listed here arrives via plugin update if not installed.",
@@ -239,16 +268,16 @@ async function deleteSubmission(env: Env, args: any): Promise<ToolResult> {
 // ---------- MCP tool + resource declarations ----------
 
 const TOOL_DEFS = [
-  { name: "search_powers", description: "Search the current public Operator Powers catalogue. Returns ranked results with an installed-version caveat.", inputSchema: { type: "object", properties: { query: { type: "string" }, category: { type: "string" }, client: { type: "string" } }, required: ["query"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
-  { name: "get_power", description: "Get public metadata for one power by id.", inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
-  { name: "get_whats_new", description: "List releases newer than the caller's installed version.", inputSchema: { type: "object", properties: { installedVersion: { type: "string" } }, required: ["installedVersion"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
-  { name: "get_install_help", description: "Verified install, update, and troubleshooting instructions per client.", inputSchema: { type: "object", properties: { client: { type: "string" }, errorCategory: { type: "string" } } }, annotations: { readOnlyHint: true, openWorldHint: false } },
-  { name: "get_product_status", description: "Service health, current plugin release, and marketplace availability.", inputSchema: { type: "object", properties: {} }, annotations: { readOnlyHint: true, openWorldHint: false } },
-  { name: "prepare_feedback", description: "Validate and normalise user-supplied feedback WITHOUT submitting. Returns the exact payload, hash, expiry, and confirmation token to show the user for approval.", inputSchema: { type: "object", properties: { payload: { type: "object", properties: { skillId: { type: "string" }, rating: { type: "integer", minimum: 1, maximum: 5 }, note: { type: "string", maxLength: NOTE_MAX } }, required: ["skillId"] } }, required: ["payload"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
-  { name: "submit_feedback", description: "Persist feedback the user explicitly approved. Requires the unmodified payload, its hash, and a valid confirmation token from prepare_feedback.", inputSchema: { type: "object", properties: { payload: { type: "object" }, payloadHash: { type: "string" }, confirmationToken: { type: "string" } }, required: ["payload", "payloadHash", "confirmationToken"] }, annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true } },
-  { name: "prepare_power_request", description: "Turn a missing job into a minimal request payload WITHOUT submitting. Returns the exact payload, hash, expiry, and confirmation token to show the user for approval.", inputSchema: { type: "object", properties: { payload: { type: "object", properties: { job: { type: "string", maxLength: NOTE_MAX }, category: { type: "string" } }, required: ["job"] } }, required: ["payload"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
-  { name: "submit_power_request", description: "Persist a power request the user explicitly approved. Requires the unmodified payload, its hash, and a valid confirmation token from prepare_power_request.", inputSchema: { type: "object", properties: { payload: { type: "object" }, payloadHash: { type: "string" }, confirmationToken: { type: "string" } }, required: ["payload", "payloadHash", "confirmationToken"] }, annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true } },
-  { name: "delete_my_submission", description: "Delete a stored submission. Requires the receipt id and the deletion token shown once at submission time.", inputSchema: { type: "object", properties: { receiptId: { type: "string" }, deletionToken: { type: "string" } }, required: ["receiptId", "deletionToken"] }, annotations: { readOnlyHint: false, destructiveHint: true, openWorldHint: true } },
+  { name: "search_powers", title: "Search Operator Powers", description: "Search the current public Operator Powers catalogue. Returns ranked results with an installed-version caveat.", inputSchema: { type: "object", properties: { query: { type: "string" }, category: { type: "string" }, client: { type: "string" } }, required: ["query"] }, annotations: { title: "Search Operator Powers", readOnlyHint: true, openWorldHint: false, destructiveHint: false } },
+  { name: "get_power", title: "Get Power Details", description: "Get public metadata for one power by id.", inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] }, annotations: { title: "Get Power Details", readOnlyHint: true, openWorldHint: false, destructiveHint: false } },
+  { name: "get_whats_new", title: "Get Operator Powers Updates", description: "List releases newer than the caller's installed version.", inputSchema: { type: "object", properties: { installedVersion: { type: "string" } }, required: ["installedVersion"] }, annotations: { title: "Get Operator Powers Updates", readOnlyHint: true, openWorldHint: false, destructiveHint: false } },
+  { name: "get_install_help", title: "Get Installation Help", description: "Verified install, update, and troubleshooting instructions per client.", inputSchema: { type: "object", properties: { client: { type: "string" }, errorCategory: { type: "string" } } }, annotations: { title: "Get Installation Help", readOnlyHint: true, openWorldHint: false, destructiveHint: false } },
+  { name: "get_product_status", title: "Get Product Status", description: "Service health, current plugin release, and marketplace availability.", inputSchema: { type: "object", properties: {} }, annotations: { title: "Get Product Status", readOnlyHint: true, openWorldHint: false, destructiveHint: false } },
+  { name: "prepare_feedback", title: "Preview Feedback", description: "Validate and normalise user-supplied feedback WITHOUT submitting. Returns the exact payload, hash, expiry, and confirmation token to show the user for approval.", inputSchema: { type: "object", properties: { payload: { type: "object", properties: { skillId: { type: "string" }, rating: { type: "integer", minimum: 1, maximum: 5 }, note: { type: "string", maxLength: NOTE_MAX } }, required: ["skillId"] } }, required: ["payload"] }, annotations: { title: "Preview Feedback", readOnlyHint: true, openWorldHint: false, destructiveHint: false } },
+  { name: "submit_feedback", title: "Submit Approved Feedback", description: "Persist feedback the user explicitly approved. Requires the unmodified payload, its hash, and a valid confirmation token from prepare_feedback.", inputSchema: { type: "object", properties: { payload: { type: "object" }, payloadHash: { type: "string" }, confirmationToken: { type: "string" } }, required: ["payload", "payloadHash", "confirmationToken"] }, annotations: { title: "Submit Approved Feedback", readOnlyHint: false, destructiveHint: false, openWorldHint: false } },
+  { name: "prepare_power_request", title: "Preview a Power Request", description: "Turn a missing job into a minimal request payload WITHOUT submitting. Returns the exact payload, hash, expiry, and confirmation token to show the user for approval.", inputSchema: { type: "object", properties: { payload: { type: "object", properties: { job: { type: "string", maxLength: NOTE_MAX }, category: { type: "string" } }, required: ["job"] } }, required: ["payload"] }, annotations: { title: "Preview a Power Request", readOnlyHint: true, openWorldHint: false, destructiveHint: false } },
+  { name: "submit_power_request", title: "Submit an Approved Power Request", description: "Persist a power request the user explicitly approved. Requires the unmodified payload, its hash, and a valid confirmation token from prepare_power_request.", inputSchema: { type: "object", properties: { payload: { type: "object" }, payloadHash: { type: "string" }, confirmationToken: { type: "string" } }, required: ["payload", "payloadHash", "confirmationToken"] }, annotations: { title: "Submit an Approved Power Request", readOnlyHint: false, destructiveHint: false, openWorldHint: false } },
+  { name: "delete_my_submission", title: "Delete My Submission", description: "Delete a stored submission. Requires the receipt id and the deletion token shown once at submission time.", inputSchema: { type: "object", properties: { receiptId: { type: "string" }, deletionToken: { type: "string" } }, required: ["receiptId", "deletionToken"] }, annotations: { title: "Delete My Submission", readOnlyHint: false, destructiveHint: true, openWorldHint: false } },
 ];
 
 const RESOURCES = [
@@ -511,6 +540,10 @@ load();
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
+    if (url.pathname === "/.well-known/openai-apps-challenge" && req.method === "GET") {
+      if (!env.OPENAI_APPS_CHALLENGE) return new Response("Not configured", { status: 404 });
+      return new Response(env.OPENAI_APPS_CHALLENGE, { headers: { "content-type": "text/plain; charset=utf-8" } });
+    }
     if (url.pathname === "/health") return Response.json({ status: "healthy", version: PLUGIN_VERSION });
     if (url.pathname === "/t" && req.method === "POST") return handleTelemetry(req, env);
     if (url.pathname === "/stats" && req.method === "GET") return handleStats(req, env);

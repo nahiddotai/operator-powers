@@ -1,0 +1,4 @@
+interface:
+  display_name: "Offer Builder"
+  short_description: "Build a credible, testable offer"
+  default_prompt: "Use $offer-builder to turn this buyer problem into a clear, testable offer."

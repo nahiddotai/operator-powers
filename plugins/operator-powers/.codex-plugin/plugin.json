@@ -1,7 +1,7 @@
 {
   "name": "operator-powers",
   "version": "1.0.0",
-  "description": "Practical AI skills for non-technical knowledge work: real jobs done inside the AI you already use. A self-improving collection: what users run, rate, and request decides what each update adds.",
+  "description": "Twenty-eight practical AI powers for non-technical operators, covering systems, customer insight, decisions, content assets, offers, and product launches.",
   "author": {
     "name": "nahiddotai",
     "url": "https://github.com/nahiddotai"
@@ -20,8 +20,8 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Operator Powers",
-    "shortDescription": "Practical AI skills for non-technical work.",
-    "longDescription": "A growing, maintained collection of practical AI skills for knowledge workers who aren't engineers. Audit your week, set up your AI to know how you work, mine meetings, pressure-test decisions, explain tricky ideas simply, de-slop your writing, and produce content assets. Kept updated, with new powers added as the most useful ones are found for non-technical people like us.",
+    "shortDescription": "Practical powers for AI work",
+    "longDescription": "A maintained collection of 28 practical powers for non-technical operators. Turn customer evidence into insight, build internal workflows, pressure-test decisions, create content and visual assets, improve offers and pages, and prepare digital product launches inside the AI you already use. Every power has a narrow job contract, explicit routing boundaries, privacy documentation, and a finished deliverable.",
     "developerName": "nahiddotai",
     "category": "Productivity",
     "capabilities": [

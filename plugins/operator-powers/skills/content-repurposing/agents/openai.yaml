@@ -1,0 +1,4 @@
+interface:
+  display_name: "Content Repurposing"
+  short_description: "Create distinct assets from one source"
+  default_prompt: "Use $content-repurposing to turn this source into distinct, channel-native assets."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Brand System Builder"
+  short_description: "Build reusable visual brand rules"
+  default_prompt: "Use $brand-system-builder to turn these goals and references into a practical visual system."

@@ -1,6 +1,6 @@
 ---
 name: de-slop
-description: Strip the telltale AI patterns out of a piece of writing so it reads like a person wrote it, while keeping the meaning and the writer's voice. Use when the user says text sounds like AI, robotic, generic, or "sloppy", asks to humanize or de-slop a draft, wants AI tells removed, or shares AI-assisted writing that needs to pass as natural before publishing. Works on posts, emails, newsletters, docs, scripts, and captions.
+description: Remove AI-sounding language, robotic phrasing, generic polish, or corporate jargon while preserving the user's meaning and personal style.
 ---
 
 # De-Slop

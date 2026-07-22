@@ -1,6 +1,6 @@
 ---
 name: weekly-review
-description: Run an honest end-of-week review that names what moved, what drifted, what to kill, and the single priority for next week. Use when the user asks for a weekly review, Friday review, week wrap-up, asks how their week actually went, or wants an accountability check on their goals or projects. Works from whatever evidence they have — notes, task lists, a calendar export, or just talking it through — and produces a saved one-page review.
+description: Run a focused weekly review when the user wants to assess what moved, what drifted, what to stop, what the week taught them, and the next week's one priority.
 ---
 
 # Weekly Review

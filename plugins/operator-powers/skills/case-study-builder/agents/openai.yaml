@@ -1,0 +1,4 @@
+interface:
+  display_name: "Case Study Builder"
+  short_description: "Turn one real outcome into credible proof"
+  default_prompt: "Use $case-study-builder to turn this customer evidence into a case study with traceable claims."

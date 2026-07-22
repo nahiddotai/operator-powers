@@ -1,6 +1,6 @@
 ---
 name: instagram-carousel-maker
-description: "Create beautifully designed, export-ready Instagram carousel slides as a swipeable HTML preview with PNG export. Use this skill whenever the user wants to create an Instagram carousel, IG carousel, social media carousel, swipeable slides, or slide deck for Instagram. Triggers on any mention of \"Instagram carousel\", \"IG carousel\", \"carousel slides\", \"swipeable post\", \"carousel for Instagram\", or requests to design slides for Instagram posting. Also triggers when the user asks to export carousel slides as images or PNGs for Instagram upload."
+description: Create an Instagram or social carousel from one useful idea, including narrative, slide copy, visual direction, and export checks when tools permit.
 ---
 
 ## Capability Contract

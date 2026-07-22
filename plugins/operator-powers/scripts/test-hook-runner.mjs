@@ -76,6 +76,32 @@ const statePath = (home) => join(home, ".operator-powers", "state.json");
   check("secret prompt still processed normally", secret.code === 0);
 }
 
+// --- routing collisions ---
+{
+  const home = freshHome();
+  const route = (prompt) => run("discover", { prompt }, home).out;
+  const owns = (name, prompt, expected, rival) => {
+    const out = route(prompt);
+    check(`${name}: expected owner`, out.includes(expected));
+    check(`${name}: rival stays out`, !out.includes(rival));
+  };
+
+  owns("one meeting", "Mine this one meeting transcript for insights and next actions", "meeting-miner", "customer-insight-synthesizer");
+  owns("many customer sources", "Synthesize patterns across twelve customer interviews and survey responses", "customer-insight-synthesizer", "meeting-miner");
+  owns("single proof story", "Turn this one client result into a publishable case study", "case-study-builder", "customer-insight-synthesizer");
+  owns("define offer", "Build an offer and package my consulting service", "offer-builder", "digital-product-launch-builder");
+  owns("launch defined product", "Create a product launch plan for my finished course", "digital-product-launch-builder", "offer-builder");
+  owns("page conversion", "This landing page isn't converting, improve the CTA and proof", "landing-page-cro", "offer-builder");
+  owns("visual system", "Create reusable brand guidelines and a visual identity system", "brand-system-builder", "voice-dna");
+  owns("browser deck", "Build a horizontal browser deck as an HTML slideshow", "html-slideshow", "instagram-carousel-maker");
+  owns("lead capture asset", "Create a downloadable checklist as a lead magnet for email opt-ins", "digital-lead-magnet-maker", "plain-ai-explainer");
+  owns("metric diagnosis", "Analyze my content metrics and tell me which posts performed", "content-performance", "content-refresher");
+  owns("same-format update", "Refresh this old article and update its stale facts", "content-refresher", "content-repurposing");
+  owns("cross-format change", "Repurpose this newsletter into posts, emails, and video scripts", "content-repurposing", "content-refresher");
+  owns("business process", "Build an SOP and document this repeatable business workflow", "workflow-and-sop-builder", "agents-md-setup");
+  owns("single-system simplification", "This prompt is over-engineered and uses too many agents, simplify it", "big-model-smell", "operator-audit");
+}
+
 // --- guard-mcp-write ---
 {
   const home = freshHome();

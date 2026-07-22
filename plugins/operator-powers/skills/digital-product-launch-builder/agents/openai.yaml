@@ -1,0 +1,4 @@
+interface:
+  display_name: "Digital Product Launch Builder"
+  short_description: "Build a coordinated digital product launch"
+  default_prompt: "Use $digital-product-launch-builder to create a launch plan and core assets for this defined product."

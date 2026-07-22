@@ -1,0 +1,4 @@
+interface:
+  display_name: "Big Model Smell"
+  short_description: "Simplify unnecessary system complexity"
+  default_prompt: "Use $big-model-smell to find what is over-engineered here and design the smallest working version."

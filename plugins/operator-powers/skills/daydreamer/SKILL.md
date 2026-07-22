@@ -1,6 +1,6 @@
 ---
 name: daydreamer
-description: Find non-obvious connections across the user's recent notes, documents, and work, and turn them into usable insights. Use when the user asks what patterns or connections exist in their work, wants fresh ideas from their own material, feels like they're sitting on insights they can't see, or asks to daydream over their notes or files. Reads only material the user points at; everything stays local.
+description: Find non-obvious connections across the user's own notes, drafts, research, transcripts, or work when they ask to daydream, connect dots, or surface hidden patterns.
 ---
 
 # Daydreamer
