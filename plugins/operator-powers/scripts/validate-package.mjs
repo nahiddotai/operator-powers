@@ -35,7 +35,8 @@ const iface = codexManifest.interface ?? {};
 if (String(iface.displayName ?? "").length > 30) errors.push("Codex displayName exceeds final directory limit of 30");
 if (String(iface.shortDescription ?? "").length > 30) errors.push("Codex shortDescription exceeds final directory limit of 30");
 if (String(iface.longDescription ?? "").length > 4000) errors.push("Codex longDescription exceeds final directory limit of 4000");
-if (!String(iface.supportURL ?? "").startsWith("https://")) errors.push("Codex With MCP listing needs an HTTPS supportURL");
+const openAIListing = read(join(REPO, "submission", "openai", "listing.md"));
+if (!/^- Support: `https:\/\//m.test(openAIListing)) errors.push("OpenAI With MCP listing needs an HTTPS support URL");
 if (!Array.isArray(iface.defaultPrompt) || iface.defaultPrompt.length > 3 || iface.defaultPrompt.some((prompt) => String(prompt).length > 128)) errors.push("Codex starter prompts must be a list of at most 3 entries, each at most 128 characters");
 
 // --- skill frontmatter ---
