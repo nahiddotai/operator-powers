@@ -1,0 +1,4 @@
+interface:
+  display_name: "Digital Lead Magnet Maker"
+  short_description: "Create a useful opt-in resource"
+  default_prompt: "Use $digital-lead-magnet-maker to create a focused lead magnet and its delivery copy."

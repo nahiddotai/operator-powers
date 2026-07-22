@@ -1,6 +1,6 @@
 ---
 name: llm-council
-description: "Run any question, idea, or decision through a council of 5 AI advisors who independently analyze it, peer-review each other anonymously, and synthesize a final verdict. Based on Karpathy's LLM Council methodology. Trigger on 'council this', 'run the council', 'pressure-test this', 'stress-test this', 'debate this', or when the user presents a genuine decision with stakes and multiple options, such as 'should I X or Y', 'which option', 'is this the right move', 'I'm torn between'. Do not trigger on simple yes/no questions, factual lookups, or casual choices without a meaningful tradeoff."
+description: Pressure-test a real decision with independent perspectives, anonymous peer review, and a final verdict when the user wants to compare options or choose a direction.
 ---
 
 # LLM Council

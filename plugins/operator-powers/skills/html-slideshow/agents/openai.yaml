@@ -1,0 +1,4 @@
+interface:
+  display_name: "Html Slideshow"
+  short_description: "Create a responsive browser presentation"
+  default_prompt: "Use $html-slideshow to build and verify a browser-based presentation from this material."

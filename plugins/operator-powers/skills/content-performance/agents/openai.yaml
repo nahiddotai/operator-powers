@@ -1,0 +1,4 @@
+interface:
+  display_name: "Content Performance"
+  short_description: "Diagnose content results and next tests"
+  default_prompt: "Use $content-performance to analyze these results and choose the next evidence-based experiments."

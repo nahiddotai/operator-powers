@@ -1,6 +1,6 @@
 ---
 name: find-a-power
-description: Find the right Operator Powers skill for a job without memorising names. Use when the user asks what powers exist, which skill fits a task, what this plugin can do, wants to browse the catalogue, or describes a job and wants to know if there is a power for it.
+description: Search or browse Operator Powers when the user asks what the plugin can do, describes a job without naming a skill, or asks whether a power exists.
 ---
 
 # Find a Power
@@ -12,10 +12,11 @@ Match what the user is trying to do to the right power, or tell them honestly th
 ## How to Run It
 
 1. Read the local catalogue at `${CLAUDE_PLUGIN_ROOT}/catalog/powers.json` (fall back to `catalog/powers.json` two directories above this skill file). The local catalogue is the source of truth for what is actually installed.
-2. Match the user's request against each entry's `oneLineJob`, `triggers`, and `description`. Respect `negativeTriggers`: if the request matches one, that skill is not a candidate.
-3. Return at most three ranked recommendations. For each: the job it completes, the name, and one sentence on why it matches this request. Lead with the job, not the identifier.
-4. If exactly one clearly fits, offer to start it now with the context the user already gave.
-5. If nothing fits, say so plainly and mention `request-a-power`. Never stretch a skill to a job it does not do.
+2. Match the user's request using the catalogue's weighted order: an explicit power name first, then an exact trigger or deliverable phrase, then title terms, trigger terms, `oneLineJob`, and finally description terms. Shared topic words alone are weak evidence.
+3. Apply `negativeTriggers` as vetoes, then use `${CLAUDE_PLUGIN_ROOT}/docs/ROUTING-CONTRACTS.md` for adjacent jobs. The primary deliverable decides ownership.
+4. Return at most three ranked recommendations. For each: the job it completes, the name, and one sentence on why it matches this request. Lead with the job, not the identifier.
+5. If exactly one clearly fits, offer to start it now with the context the user already gave.
+6. If nothing fits, say so plainly and mention `request-a-power`. Never stretch a skill to a job it does not do.
 
 ## Live Enrichment (Optional)
 
@@ -28,3 +29,4 @@ If the `operator_powers` MCP server is connected and the user wants current info
 
 - Browsing sends nothing anywhere; the MCP read tools receive only the search query, and only when the user wants live information.
 - Never list internal file paths or metadata at the user; jobs and names only, unless they ask for detail.
+- Weighted search is not an opaque personal score. It is a deterministic routing rule that favours explicit job language and uses negative phrases to prevent known collisions.

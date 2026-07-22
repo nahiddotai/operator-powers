@@ -1,0 +1,4 @@
+interface:
+  display_name: "Landing Page Cro"
+  short_description: "Improve an existing page conversion path"
+  default_prompt: "Use $landing-page-cro to diagnose this page and draft its highest-priority conversion changes."

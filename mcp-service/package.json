@@ -8,8 +8,11 @@
     "sync-catalog": "node ../plugins/operator-powers/scripts/build-catalog.mjs"
   },
   "devDependencies": {
-    "wrangler": "^4.0.0",
+    "wrangler": "4.113.0",
     "typescript": "^5.5.0",
-    "@cloudflare/workers-types": "^4.20260601.0"
+    "@cloudflare/workers-types": "5.20260722.1"
+  },
+  "overrides": {
+    "sharp": "0.35.0"
   }
 }

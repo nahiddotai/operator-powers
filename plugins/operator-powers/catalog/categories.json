@@ -12,8 +12,8 @@
       "order": 2
     },
     {
-      "id": "meetings-to-deliverables",
-      "title": "Meetings to Deliverables",
+      "id": "customer-growth-and-insights",
+      "title": "Customer Growth and Insights",
       "order": 3
     },
     {
@@ -22,13 +22,13 @@
       "order": 4
     },
     {
-      "id": "content",
-      "title": "Content",
+      "id": "content-and-assets",
+      "title": "Content and Assets",
       "order": 5
     },
     {
-      "id": "insight-and-rituals",
-      "title": "Insight and Rituals",
+      "id": "product-launch",
+      "title": "Product Launch",
       "order": 6
     }
   ]

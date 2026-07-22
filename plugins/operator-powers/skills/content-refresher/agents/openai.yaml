@@ -1,0 +1,4 @@
+interface:
+  display_name: "Content Refresher"
+  short_description: "Update content without losing its proof"
+  default_prompt: "Use $content-refresher to update this asset while preserving what still works."

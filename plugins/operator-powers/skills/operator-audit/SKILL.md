@@ -1,6 +1,6 @@
 ---
 name: operator-audit
-description: Audit the user's last 7 to 14 days of AI conversation history in this client (Claude Code or Codex) and recommend the 5 highest-leverage tasks for them specifically, based on their real projects, unfinished threads, and repeated work. Use when the user asks for an operator audit, asks what they should work on or focus on, wants a review of their recent work or week, says they feel scattered or behind, or wants to know what they started but never finished. Requires explicit approval before reading any history. Everything runs locally; no history ever leaves the machine.
+description: Audit recent local Claude or Codex work for patterns and next priorities only after a separate, explicit confirmation to read local conversation history.
 ---
 
 # Operator Audit

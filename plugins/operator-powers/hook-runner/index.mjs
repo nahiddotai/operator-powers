@@ -22,6 +22,8 @@ const PLUGIN_ROOT = dirname(dirname(SELF));
 const STATE_DIR = join(homedir(), ".operator-powers");
 const STATE_FILE = join(STATE_DIR, "state.json");
 const MAX_HINTS = 2;
+const DISCOVERY_MIN_SCORE = 34;
+const STOP_WORDS = new Set(["a", "an", "and", "are", "as", "at", "be", "by", "can", "do", "for", "from", "i", "in", "is", "it", "me", "my", "of", "on", "or", "please", "the", "this", "to", "we", "with", "you"]);
 const TELEMETRY_URL = process.env.OPERATOR_POWERS_TELEMETRY_URL ?? "https://operator-powers.nahiddotai.workers.dev/t";
 
 // Every failure fails open (exit 0, no output) except the write guard,
@@ -173,7 +175,38 @@ function skillRun() {
 }
 
 function normalize(text) {
-  return String(text).toLowerCase().replace(/\s+/g, " ").trim();
+  return String(text).toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function searchTerms(text) {
+  return [...new Set(normalize(text).split(" ").filter((term) => term.length > 1 && !STOP_WORDS.has(term)))];
+}
+
+function scorePower(sp, query) {
+  const q = normalize(query);
+  if (!q) return 0;
+  const negatives = Array.isArray(sp.negativeTriggers) ? sp.negativeTriggers.map(normalize).filter(Boolean) : [];
+  if (negatives.some((phrase) => q.includes(phrase))) return Number.NEGATIVE_INFINITY;
+
+  const id = normalize(sp.id);
+  const title = normalize(sp.title);
+  const job = normalize(sp.oneLineJob);
+  const description = normalize(sp.description);
+  const triggers = Array.isArray(sp.triggers) ? sp.triggers.map(normalize).filter(Boolean) : [];
+  const terms = searchTerms(q);
+  let score = 0;
+
+  if (q === id || q === title || q.includes(id) || q.includes(title)) score += 120;
+  for (const trigger of triggers) {
+    if (q.includes(trigger)) score += 46 + Math.min(14, trigger.split(" ").length * 2);
+  }
+  for (const term of terms) {
+    if (title.includes(term) || id.includes(term)) score += 14;
+    if (triggers.some((trigger) => trigger.includes(term))) score += 8;
+    if (job.includes(term)) score += 5;
+    if (description.includes(term)) score += 2;
+  }
+  return score;
 }
 
 function discover() {
@@ -187,18 +220,13 @@ function discover() {
   const catalog = readJson(join(PLUGIN_ROOT, "catalog", "powers.json"));
   if (!catalog || !Array.isArray(catalog.powers)) return;
 
-  const matches = [];
-  for (const sp of catalog.powers) {
-    if (!sp || !Array.isArray(sp.triggers)) continue;
-    if (Array.isArray(sp.negativeTriggers) && sp.negativeTriggers.some((t) => prompt.includes(normalize(t)))) continue;
-    // High confidence only: a multi-word trigger phrase, or two distinct triggers.
-    const hits = sp.triggers.filter((t) => prompt.includes(normalize(t)));
-    const strong = hits.some((t) => normalize(t).includes(" ")) || hits.length >= 2;
-    if (strong) matches.push({ id: sp.id, job: sp.oneLineJob, hits: hits.length });
-  }
+  const matches = catalog.powers
+    .filter((sp) => sp && Array.isArray(sp.triggers))
+    .map((sp) => ({ id: sp.id, title: sp.title, job: sp.oneLineJob, score: scorePower(sp, prompt) }))
+    .filter((match) => Number.isFinite(match.score) && match.score >= DISCOVERY_MIN_SCORE);
   if (matches.length === 0) return;
 
-  matches.sort((a, b) => b.hits - a.hits);
+  matches.sort((a, b) => b.score - a.score || a.title.localeCompare(b.title));
   const top = matches.slice(0, MAX_HINTS);
   const lines = top.map((m) => `${m.job} (installed power: ${m.id})`).join(" | ");
   emitContext("UserPromptSubmit", `Possibly relevant from Operator Powers: ${lines}. Use only if it genuinely fits the user's request.`);

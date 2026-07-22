@@ -1,6 +1,6 @@
 ---
 name: whats-new
-description: Show what changed in Operator Powers after an update. Use when the user asks what's new, what changed, what a plugin update added, which version is installed, or whether they have the latest version of Operator Powers.
+description: Explain what changed in Operator Powers, which version is installed, whether a newer release exists, and how to update.
 ---
 
 # What's New

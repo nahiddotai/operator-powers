@@ -88,23 +88,51 @@ function err(message: string): ToolResult {
 }
 
 const sps: any[] = (catalog as any).powers;
+const SEARCH_STOP_WORDS = new Set(["a", "an", "and", "are", "as", "at", "be", "by", "can", "do", "for", "from", "i", "in", "is", "it", "me", "my", "of", "on", "or", "please", "the", "this", "to", "we", "with", "you"]);
+
+function normalizeSearch(text: unknown): string {
+  return String(text ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function searchTerms(text: string): string[] {
+  return [...new Set(normalizeSearch(text).split(" ").filter((term) => term.length > 1 && !SEARCH_STOP_WORDS.has(term)))];
+}
+
+function scorePower(power: any, query: string): number {
+  const q = normalizeSearch(query);
+  if (!q) return 1;
+  const negatives = (power.negativeTriggers || []).map(normalizeSearch).filter(Boolean);
+  if (negatives.some((phrase: string) => q.includes(phrase))) return Number.NEGATIVE_INFINITY;
+
+  const id = normalizeSearch(power.id);
+  const title = normalizeSearch(power.title);
+  const job = normalizeSearch(power.oneLineJob);
+  const description = normalizeSearch(power.description);
+  const triggers = (power.triggers || []).map(normalizeSearch).filter(Boolean);
+  let score = 0;
+
+  if (q === id || q === title || q.includes(id) || q.includes(title)) score += 120;
+  for (const trigger of triggers) if (q.includes(trigger)) score += 46 + Math.min(14, trigger.split(" ").length * 2);
+  for (const term of searchTerms(q)) {
+    if (title.includes(term) || id.includes(term)) score += 14;
+    if (triggers.some((trigger: string) => trigger.includes(term))) score += 8;
+    if (job.includes(term)) score += 5;
+    if (description.includes(term)) score += 2;
+  }
+  return score;
+}
 
 const readTools: Record<string, (args: any) => ToolResult> = {
   search_powers: (args) => {
-    const q = String(args?.query ?? "").toLowerCase().trim();
-    const cat = args?.category ? String(args.category).toLowerCase() : null;
+    const q = String(args?.query ?? "").trim();
+    const cat = args?.category ? normalizeSearch(args.category) : null;
     const scored = sps
-      .filter((s) => !cat || s.category.toLowerCase() === cat)
-      .map((s) => {
-        const hay = `${s.title} ${s.oneLineJob} ${s.description} ${(s.triggers || []).join(" ")}`.toLowerCase();
-        const terms = q.split(/\s+/).filter(Boolean);
-        const hits = terms.filter((t) => hay.includes(t)).length;
-        return { s, hits };
-      })
-      .filter((x) => q === "" || x.hits > 0)
-      .sort((a, b) => b.hits - a.hits)
-      .slice(0, 5)
-      .map((x) => ({ id: x.s.id, title: x.s.title, oneLineJob: x.s.oneLineJob, category: x.s.category, introducedIn: x.s.introducedIn }));
+      .filter((s) => !cat || normalizeSearch(s.category) === cat)
+      .map((s) => ({ s, score: scorePower(s, q) }))
+      .filter((x) => Number.isFinite(x.score) && (q === "" || x.score >= 34))
+      .sort((a, b) => b.score - a.score || a.s.title.localeCompare(b.s.title))
+      .slice(0, 3)
+      .map((x) => ({ id: x.s.id, title: x.s.title, oneLineJob: x.s.oneLineJob, category: x.s.category, introducedIn: x.s.introducedIn, matchScore: x.score }));
     return ok({
       results: scored,
       caveat: "This is the current public catalogue. What is installed locally is decided by the plugin's own catalogue; a skill listed here arrives via plugin update if not installed.",

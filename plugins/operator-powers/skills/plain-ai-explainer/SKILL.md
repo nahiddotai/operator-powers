@@ -1,6 +1,6 @@
 ---
 name: plain-ai-explainer
-description: Explain a difficult AI, agent, or technical concept in plain language a smart beginner can follow on the first read. Use when the user wants to explain AI tools, agents, models, MCP, skills, automation, or any technical idea to a non-technical audience, or says an explanation feels technical, abstract, waffly, or hard to follow. Produces a clear capability-risk-fix opening, immediate plain definition, concrete examples, and a chosen output format such as an explainer doc, social thread, newsletter section, or talk-track.
+description: Explain a difficult AI concept, model, tool, workflow, term, or change in plain language with an analogy, why it matters, an example, and a practical next step.
 ---
 
 # Plain AI Explainer

@@ -1,6 +1,6 @@
 ---
 name: give-feedback
-description: Send feedback about an Operator Powers skill to its maker. Use when the user says a power helped or fell short, wants to rate a skill, report a problem with one, or send feedback to Nahid about this plugin. Prepares a minimal payload, shows it verbatim, and submits only after explicit approval.
+description: Prepare feedback about an Operator Powers skill, show the exact payload, and submit only after explicit approval. Do not use for feedback on the user's own work.
 ---
 
 # Give Feedback

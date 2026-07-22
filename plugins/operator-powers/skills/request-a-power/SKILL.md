@@ -1,6 +1,6 @@
 ---
 name: request-a-power
-description: Ask the maker of Operator Powers to build a skill for a job the collection does not cover yet. Use when the user wants a power that doesn't exist, wishes the plugin could do something, or wants to request a new skill. Turns the job into a concise request, shows the exact submission, and sends only after explicit approval.
+description: Check for an existing fit, prepare a missing-power request, show the exact payload, and submit only after the user explicitly approves it.
 ---
 
 # Request a Power

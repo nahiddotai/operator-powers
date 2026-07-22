@@ -2,44 +2,6 @@
   "schemaVersion": 1,
   "powers": [
     {
-      "id": "start-here",
-      "title": "Start Here",
-      "type": "system",
-      "oneLineJob": "Understand the collection and complete your first useful job.",
-      "description": "Orientation: explains what runs locally, recommends up to three relevant powers, and starts the one you pick.",
-      "category": "Using the Collection",
-      "triggers": [
-        "start here",
-        "what is nahid's powers",
-        "how does this plugin work",
-        "first power"
-      ],
-      "negativeTriggers": [],
-      "requiredInputs": [],
-      "optionalInputs": [
-        "what you are trying to get done"
-      ],
-      "outputs": [
-        "up to three job-led recommendations",
-        "your first completed job"
-      ],
-      "skillPath": "./skills/start-here",
-      "introducedIn": "1.0.0",
-      "skillVersion": "1.0.0",
-      "supportedClients": [
-        "codex",
-        "chatgpt-work",
-        "claude-code"
-      ],
-      "permissions": {
-        "localReads": "bundled catalogue only",
-        "localWrites": "none",
-        "network": false,
-        "externalWrites": false
-      },
-      "privacy": "Nothing is sent to the update server."
-    },
-    {
       "id": "find-a-power",
       "title": "Find a Power",
       "type": "system",
@@ -76,42 +38,6 @@
         "externalWrites": false
       },
       "privacy": "Only your search query reaches the update server, and only when you want live information."
-    },
-    {
-      "id": "whats-new",
-      "title": "What's New",
-      "type": "system",
-      "oneLineJob": "See what changed after an update.",
-      "description": "Shows the installed version's changes and can check the update server for newer releases.",
-      "category": "Using the Collection",
-      "triggers": [
-        "what's new",
-        "what changed",
-        "latest version",
-        "did the plugin update"
-      ],
-      "negativeTriggers": [],
-      "requiredInputs": [],
-      "optionalInputs": [],
-      "outputs": [
-        "plain-language changelog",
-        "update instructions when newer exists"
-      ],
-      "skillPath": "./skills/whats-new",
-      "introducedIn": "1.0.0",
-      "skillVersion": "1.0.0",
-      "supportedClients": [
-        "codex",
-        "chatgpt-work",
-        "claude-code"
-      ],
-      "permissions": {
-        "localReads": "bundled release metadata",
-        "localWrites": "none",
-        "network": "optional MCP read tools",
-        "externalWrites": false
-      },
-      "privacy": "Only the installed version number reaches the update server, and only when you want live information."
     },
     {
       "id": "give-feedback",
@@ -195,6 +121,80 @@
       "privacy": "Sends only the job description you approve, never your conversation."
     },
     {
+      "id": "start-here",
+      "title": "Start Here",
+      "type": "system",
+      "oneLineJob": "Understand the collection and complete your first useful job.",
+      "description": "Orientation: explains what runs locally, recommends up to three relevant powers, and starts the one you pick.",
+      "category": "Using the Collection",
+      "triggers": [
+        "start here",
+        "what is nahid's powers",
+        "how does this plugin work",
+        "first power"
+      ],
+      "negativeTriggers": [],
+      "requiredInputs": [],
+      "optionalInputs": [
+        "what you are trying to get done"
+      ],
+      "outputs": [
+        "up to three job-led recommendations",
+        "your first completed job"
+      ],
+      "skillPath": "./skills/start-here",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "bundled catalogue only",
+        "localWrites": "none",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Nothing is sent to the update server."
+    },
+    {
+      "id": "whats-new",
+      "title": "What's New",
+      "type": "system",
+      "oneLineJob": "See what changed after an update.",
+      "description": "Shows the installed version's changes and can check the update server for newer releases.",
+      "category": "Using the Collection",
+      "triggers": [
+        "what's new",
+        "what changed",
+        "latest version",
+        "did the plugin update"
+      ],
+      "negativeTriggers": [],
+      "requiredInputs": [],
+      "optionalInputs": [],
+      "outputs": [
+        "plain-language changelog",
+        "update instructions when newer exists"
+      ],
+      "skillPath": "./skills/whats-new",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "bundled release metadata",
+        "localWrites": "none",
+        "network": "optional MCP read tools",
+        "externalWrites": false
+      },
+      "privacy": "Only the installed version number reaches the update server, and only when you want live information."
+    },
+    {
       "id": "agents-md-setup",
       "title": "AGENTS.md Setup",
       "type": "job",
@@ -242,40 +242,39 @@
       "privacy": "Nothing is sent to the update server."
     },
     {
-      "id": "meeting-miner",
-      "title": "Meeting Miner",
+      "id": "big-model-smell",
+      "title": "Big Model Smell",
       "type": "job",
-      "oneLineJob": "Turn a meeting into decisions, insight, and the next move.",
-      "description": "Mines transcripts or notes beyond the summary: content ideas, messaging and offer clues, communication feedback, and won-versus-lost call patterns.",
-      "category": "Meetings to Deliverables",
+      "oneLineJob": "Replace unnecessary complexity with the smallest working design.",
+      "description": "Reviews one oversized prompt, plan, workflow, document, system, or build and returns a simpler design, safe migration, and verification test.",
+      "category": "Setup and Systems",
       "triggers": [
-        "meeting transcript",
-        "meeting notes",
-        "mine this call",
-        "what did we decide",
-        "sales call review",
-        "won vs lost",
-        "insights from this call"
+        "big model smell",
+        "over-engineered",
+        "too complex",
+        "simplify this workflow",
+        "simplify this prompt",
+        "too many agents",
+        "model is overkill"
       ],
       "negativeTriggers": [
-        "schedule a meeting",
-        "join a meeting",
-        "record a meeting",
-        "set up a meeting"
+        "audit my recent work",
+        "review my last two weeks"
       ],
       "requiredInputs": [
-        "a transcript or meeting notes"
+        "the artifact, workflow, prompt, system, or plan to simplify"
       ],
       "optionalInputs": [
-        "desired focus mode",
-        "won/lost outcome labels",
-        "project context"
+        "non-negotiable constraints",
+        "cost or failure concerns"
       ],
       "outputs": [
-        "a structured report for the chosen mode",
-        "one best next move"
+        "complexity diagnosis",
+        "smallest working design",
+        "safe migration",
+        "verification test"
       ],
-      "skillPath": "./skills/meeting-miner",
+      "skillPath": "./skills/big-model-smell",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
       "supportedClients": [
@@ -284,153 +283,12 @@
         "claude-code"
       ],
       "permissions": {
-        "localReads": "user-selected transcripts only",
-        "localWrites": "only when you request an artifact",
+        "localReads": "user-provided material only",
+        "localWrites": "none",
         "network": false,
         "externalWrites": false
       },
-      "privacy": "No content is sent to the update server."
-    },
-    {
-      "id": "llm-council",
-      "title": "LLM Council",
-      "type": "job",
-      "oneLineJob": "Pressure-test a decision from five independent angles.",
-      "description": "Five advisor lenses analyse your decision independently, peer-review each other anonymously, and a chairman synthesises a direct verdict. Honest about how independent the advisors can be on your host.",
-      "category": "Decisions",
-      "triggers": [
-        "council this",
-        "pressure-test this",
-        "stress-test this",
-        "debate this",
-        "should i",
-        "which option",
-        "i'm torn between",
-        "is this the right move"
-      ],
-      "negativeTriggers": [
-        "council tax",
-        "city council",
-        "should i use markdown"
-      ],
-      "requiredInputs": [
-        "a genuine decision with stakes and options"
-      ],
-      "optionalInputs": [
-        "context files, constraints, numbers"
-      ],
-      "outputs": [
-        "a council verdict: agreements, clashes, blind spots, recommendation, first step",
-        "an HTML report and transcript where file writes are supported"
-      ],
-      "skillPath": "./skills/llm-council",
-      "introducedIn": "1.0.0",
-      "skillVersion": "1.0.0",
-      "supportedClients": [
-        "codex",
-        "chatgpt-work",
-        "claude-code"
-      ],
-      "permissions": {
-        "localReads": "workspace context files",
-        "localWrites": "report and transcript where supported",
-        "network": false,
-        "externalWrites": false
-      },
-      "privacy": "No content is sent to the update server."
-    },
-    {
-      "id": "plain-ai-explainer",
-      "title": "Plain AI Explainer",
-      "type": "job",
-      "oneLineJob": "Explain a difficult AI concept so a smart beginner gets it first read.",
-      "description": "Turns any technical AI topic into a plain-language explainer doc, social thread, newsletter section, or talk-track, using a capability-risk-fix opening and a directness test.",
-      "category": "Content",
-      "triggers": [
-        "explain this simply",
-        "plain english explainer",
-        "non-technical explanation",
-        "explain mcp",
-        "explain agents",
-        "too technical",
-        "make this easier to understand"
-      ],
-      "negativeTriggers": [
-        "explain this code line by line",
-        "explain this error"
-      ],
-      "requiredInputs": [
-        "the topic or source to explain"
-      ],
-      "optionalInputs": [
-        "output format",
-        "audience notes"
-      ],
-      "outputs": [
-        "a plain-language explainer in the chosen format with verified format rules"
-      ],
-      "skillPath": "./skills/plain-ai-explainer",
-      "introducedIn": "1.0.0",
-      "skillVersion": "1.0.0",
-      "supportedClients": [
-        "codex",
-        "chatgpt-work",
-        "claude-code"
-      ],
-      "permissions": {
-        "localReads": "sources you provide",
-        "localWrites": "draft file where supported",
-        "network": false,
-        "externalWrites": false
-      },
-      "privacy": "No content is sent to the update server."
-    },
-    {
-      "id": "instagram-carousel-maker",
-      "title": "Instagram Carousel Maker",
-      "type": "job",
-      "oneLineJob": "Turn one useful idea into an export-ready carousel package.",
-      "description": "Designs a branded, swipeable carousel with your colors and fonts: HTML preview plus 1080x1350 PNG export where the host supports it, or a complete structured handoff package where it doesn't.",
-      "category": "Content",
-      "triggers": [
-        "instagram carousel",
-        "ig carousel",
-        "carousel slides",
-        "swipeable post",
-        "slide deck for instagram"
-      ],
-      "negativeTriggers": [
-        "photo carousel widget",
-        "website carousel"
-      ],
-      "requiredInputs": [
-        "the idea or content",
-        "brand name, handle, and primary color"
-      ],
-      "optionalInputs": [
-        "logo",
-        "font preference",
-        "images"
-      ],
-      "outputs": [
-        "swipeable HTML preview",
-        "per-slide PNGs or a design handoff package"
-      ],
-      "skillPath": "./skills/instagram-carousel-maker",
-      "introducedIn": "1.0.0",
-      "skillVersion": "1.0.0",
-      "supportedClients": [
-        "codex",
-        "chatgpt-work",
-        "claude-code"
-      ],
-      "permissions": {
-        "localReads": "content and assets you provide",
-        "localWrites": "HTML and PNG files where supported",
-        "network": "Google Fonts at render time",
-        "externalWrites": false
-      },
-      "privacy": "Never posts to Instagram or any platform. No content is sent to the update server."
+      "privacy": "Nothing is sent anywhere by this skill."
     },
     {
       "id": "operator-audit",
@@ -484,12 +342,515 @@
       "privacy": "History is read locally and never leaves the machine."
     },
     {
+      "id": "workflow-and-sop-builder",
+      "title": "Workflow and SOP Builder",
+      "type": "job",
+      "oneLineJob": "Turn a repeated business task into a workflow people and tools can run.",
+      "description": "Builds a human-run, AI-assisted, automated, or combined workflow with an SOP, owners, decisions, controls, exceptions, and tests.",
+      "category": "Setup and Systems",
+      "triggers": [
+        "build an sop",
+        "standard operating procedure",
+        "document this process",
+        "automate this workflow",
+        "repeatable workflow",
+        "process checklist",
+        "ai-assisted workflow"
+      ],
+      "negativeTriggers": [
+        "agents.md",
+        "claude.md",
+        "custom instructions"
+      ],
+      "requiredInputs": [
+        "the repeated task and desired result"
+      ],
+      "optionalInputs": [
+        "current steps",
+        "systems",
+        "owners",
+        "failure cases"
+      ],
+      "outputs": [
+        "workflow map",
+        "complete SOP",
+        "run checklist",
+        "exception and recovery plan",
+        "test record"
+      ],
+      "skillPath": "./skills/workflow-and-sop-builder",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "user-provided material only",
+        "localWrites": "none",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Nothing is sent anywhere by this skill."
+    },
+    {
+      "id": "case-study-builder",
+      "title": "Case Study Builder",
+      "type": "job",
+      "oneLineJob": "Turn one real customer or project result into credible proof.",
+      "description": "Builds a publishable single-customer or project story with traceable claims, source status, confidentiality checks, and approval gaps.",
+      "category": "Customer Growth and Insights",
+      "triggers": [
+        "case study",
+        "customer success story",
+        "client story",
+        "proof page",
+        "before and after story",
+        "turn this result into proof"
+      ],
+      "negativeTriggers": [
+        "patterns across customers",
+        "synthesize customer research"
+      ],
+      "requiredInputs": [
+        "evidence about one customer, project, or outcome"
+      ],
+      "optionalInputs": [
+        "quotes",
+        "metrics",
+        "permissions",
+        "confidentiality needs"
+      ],
+      "outputs": [
+        "case study",
+        "claim ledger",
+        "publication approval checklist"
+      ],
+      "skillPath": "./skills/case-study-builder",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "user-provided material only",
+        "localWrites": "none",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Nothing is sent anywhere by this skill."
+    },
+    {
+      "id": "customer-insight-synthesizer",
+      "title": "Customer Insight Synthesizer",
+      "type": "job",
+      "oneLineJob": "Find decisions and language across multiple pieces of customer evidence.",
+      "description": "Synthesizes multiple interviews, reviews, surveys, support messages, or mixed evidence into needs, language, objections, tensions, confidence, and actions.",
+      "category": "Customer Growth and Insights",
+      "triggers": [
+        "customer research",
+        "customer insights",
+        "synthesize interviews",
+        "analyze reviews",
+        "survey responses",
+        "support tickets",
+        "voice of customer",
+        "patterns across calls"
+      ],
+      "negativeTriggers": [
+        "one meeting",
+        "single meeting",
+        "write a case study",
+        "customer success story"
+      ],
+      "requiredInputs": [
+        "multiple customer evidence items"
+      ],
+      "optionalInputs": [
+        "customer groups",
+        "outcomes",
+        "research question"
+      ],
+      "outputs": [
+        "source inventory",
+        "evidence-backed patterns",
+        "customer language",
+        "objections",
+        "recommended moves"
+      ],
+      "skillPath": "./skills/customer-insight-synthesizer",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "user-provided material only",
+        "localWrites": "none",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Nothing is sent anywhere by this skill."
+    },
+    {
+      "id": "daydreamer",
+      "title": "Daydreamer",
+      "type": "job",
+      "oneLineJob": "Find the non-obvious connections hiding across your own notes and work.",
+      "description": "Collides distant pieces of the material you point at (notes, documents, recent work), attacks each candidate connection for novelty, evidence, and usefulness, and presents only the survivors with quotes and a concrete next move each.",
+      "category": "Customer Growth and Insights",
+      "triggers": [
+        "daydream",
+        "find connections in my notes",
+        "patterns in my work",
+        "what am i not seeing",
+        "ideas from my own notes",
+        "insights from my files"
+      ],
+      "negativeTriggers": [
+        "web research",
+        "research this topic"
+      ],
+      "requiredInputs": [
+        "the folder, notes, or material to daydream over"
+      ],
+      "optionalInputs": [
+        "where to save the resulting insights"
+      ],
+      "outputs": [
+        "a short ranked list of surviving insights with quoted evidence",
+        "one concrete action per insight"
+      ],
+      "skillPath": "./skills/daydreamer",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "only the material you point at",
+        "localWrites": "an insights note, only where you ask",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Reads only what you point at; nothing leaves your machine."
+    },
+    {
+      "id": "meeting-miner",
+      "title": "Meeting Miner",
+      "type": "job",
+      "oneLineJob": "Turn a meeting into decisions, insight, and the next move.",
+      "description": "Mines transcripts or notes beyond the summary: content ideas, messaging and offer clues, communication feedback, and won-versus-lost call patterns.",
+      "category": "Customer Growth and Insights",
+      "triggers": [
+        "meeting transcript",
+        "meeting notes",
+        "mine this call",
+        "what did we decide",
+        "sales call review",
+        "won vs lost",
+        "insights from this call"
+      ],
+      "negativeTriggers": [
+        "schedule a meeting",
+        "join a meeting",
+        "record a meeting",
+        "set up a meeting"
+      ],
+      "requiredInputs": [
+        "a transcript or meeting notes"
+      ],
+      "optionalInputs": [
+        "desired focus mode",
+        "won/lost outcome labels",
+        "project context"
+      ],
+      "outputs": [
+        "a structured report for the chosen mode",
+        "one best next move"
+      ],
+      "skillPath": "./skills/meeting-miner",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "user-selected transcripts only",
+        "localWrites": "only when you request an artifact",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "No content is sent to the update server."
+    },
+    {
+      "id": "weekly-review",
+      "title": "Weekly Review",
+      "type": "job",
+      "oneLineJob": "Fifteen honest minutes on your week: moved, drifted, kill, and next week's one thing.",
+      "description": "A fixed four-part review (moved, drifted, kill-or-keep, the one thing) built from whatever evidence you have, saved as a dated one-page note, with a callback to last week's priority so the practice compounds.",
+      "category": "Customer Growth and Insights",
+      "triggers": [
+        "weekly review",
+        "friday review",
+        "review my week",
+        "how did my week go",
+        "week wrap up",
+        "accountability check"
+      ],
+      "negativeTriggers": [
+        "code review",
+        "review this draft",
+        "performance review at work"
+      ],
+      "requiredInputs": [
+        "whatever evidence you have, or fifteen minutes to talk it through"
+      ],
+      "optionalInputs": [
+        "where you keep notes",
+        "last week's review"
+      ],
+      "outputs": [
+        "a dated one-page review",
+        "one checkable priority for next week"
+      ],
+      "skillPath": "./skills/weekly-review",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "the evidence you provide or point at",
+        "localWrites": "the review note, where you keep notes",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "The review is written only where you keep notes; nothing is sent anywhere."
+    },
+    {
+      "id": "llm-council",
+      "title": "LLM Council",
+      "type": "job",
+      "oneLineJob": "Pressure-test a decision from five independent angles.",
+      "description": "Five advisor lenses analyse your decision independently, peer-review each other anonymously, and a chairman synthesises a direct verdict. Honest about how independent the advisors can be on your host.",
+      "category": "Decisions",
+      "triggers": [
+        "council this",
+        "pressure-test this",
+        "stress-test this",
+        "debate this",
+        "should i",
+        "which option",
+        "i'm torn between",
+        "is this the right move"
+      ],
+      "negativeTriggers": [
+        "council tax",
+        "city council",
+        "should i use markdown"
+      ],
+      "requiredInputs": [
+        "a genuine decision with stakes and options"
+      ],
+      "optionalInputs": [
+        "context files, constraints, numbers"
+      ],
+      "outputs": [
+        "a council verdict: agreements, clashes, blind spots, recommendation, first step",
+        "an HTML report and transcript where file writes are supported"
+      ],
+      "skillPath": "./skills/llm-council",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "workspace context files",
+        "localWrites": "report and transcript where supported",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "No content is sent to the update server."
+    },
+    {
+      "id": "brand-system-builder",
+      "title": "Brand System Builder",
+      "type": "job",
+      "oneLineJob": "Turn visual taste into a reusable visual identity.",
+      "description": "Creates practical visual rules for colour, typography, spacing, imagery, layout, components, accessibility, and priority applications.",
+      "category": "Content and Assets",
+      "triggers": [
+        "brand system",
+        "visual identity",
+        "brand guidelines",
+        "design system",
+        "colour palette",
+        "typography system",
+        "visual brand"
+      ],
+      "negativeTriggers": [
+        "writing voice",
+        "sound like me",
+        "make one carousel",
+        "make one slideshow"
+      ],
+      "requiredInputs": [
+        "audience and visual goal"
+      ],
+      "optionalInputs": [
+        "existing logo",
+        "screenshots",
+        "references",
+        "priority surfaces"
+      ],
+      "outputs": [
+        "brand foundation",
+        "visual tokens",
+        "layout and imagery rules",
+        "components",
+        "application examples"
+      ],
+      "skillPath": "./skills/brand-system-builder",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "user-provided material only",
+        "localWrites": "none",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Nothing is sent anywhere by this skill."
+    },
+    {
+      "id": "content-refresher",
+      "title": "Content Refresher",
+      "type": "job",
+      "oneLineJob": "Update an existing asset without erasing what still works.",
+      "description": "Rechecks stale facts, repairs structure and clarity, preserves useful proof and voice, and returns the refreshed asset with a change record.",
+      "category": "Content and Assets",
+      "triggers": [
+        "refresh this content",
+        "update this article",
+        "modernize this guide",
+        "stale content",
+        "rewrite this old post",
+        "update this newsletter",
+        "fix outdated content"
+      ],
+      "negativeTriggers": [
+        "analyze content metrics",
+        "repurpose into",
+        "turn this into multiple formats"
+      ],
+      "requiredInputs": [
+        "the existing content"
+      ],
+      "optionalInputs": [
+        "original goal",
+        "audience",
+        "performance evidence",
+        "current sources"
+      ],
+      "outputs": [
+        "refreshed asset",
+        "material change log",
+        "fact-check record",
+        "remaining gaps"
+      ],
+      "skillPath": "./skills/content-refresher",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "user-provided content only",
+        "localWrites": "updated files when requested",
+        "network": "only when current factual verification is required",
+        "externalWrites": false
+      },
+      "privacy": "Only search queries needed to verify changing facts may leave the session; no content is published."
+    },
+    {
+      "id": "content-repurposing",
+      "title": "Content Repurposing",
+      "type": "job",
+      "oneLineJob": "Turn one strong source into distinct channel-native assets.",
+      "description": "Transforms a substantial source into different formats or multiple assets while preserving source truth, rights, voice, and meaningful variation.",
+      "category": "Content and Assets",
+      "triggers": [
+        "repurpose this",
+        "turn this newsletter into posts",
+        "turn this video into content",
+        "content atomization",
+        "multi-channel content",
+        "make multiple assets"
+      ],
+      "negativeTriggers": [
+        "one instagram carousel",
+        "refresh this article",
+        "remove ai tells"
+      ],
+      "requiredInputs": [
+        "one substantial source"
+      ],
+      "optionalInputs": [
+        "target channels",
+        "audience",
+        "number of assets",
+        "format limits"
+      ],
+      "outputs": [
+        "source-truth map",
+        "angle map",
+        "complete channel-native assets",
+        "accuracy and repetition checks"
+      ],
+      "skillPath": "./skills/content-repurposing",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "user-provided material only",
+        "localWrites": "none",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Nothing is sent anywhere by this skill."
+    },
+    {
       "id": "de-slop",
       "title": "De-Slop",
       "type": "job",
       "oneLineJob": "Strip the AI tells out of writing without losing your voice.",
       "description": "Edits a draft to remove telltale AI patterns (em dashes, stock phrases, uniform rhythm, empty claims) while keeping meaning and voice, then teaches you your top recurring tells.",
-      "category": "Content",
+      "category": "Content and Assets",
       "triggers": [
         "de-slop",
         "sounds like ai",
@@ -530,12 +891,210 @@
       "privacy": "The edit happens entirely in the conversation; nothing is sent anywhere."
     },
     {
+      "id": "digital-lead-magnet-maker",
+      "title": "Digital Lead Magnet Maker",
+      "type": "job",
+      "oneLineJob": "Create a useful opt-in resource and its delivery path.",
+      "description": "Builds a focused checklist, guide, worksheet, template, scorecard, or toolkit plus opt-in copy, delivery message, and next-step CTA.",
+      "category": "Content and Assets",
+      "triggers": [
+        "lead magnet",
+        "downloadable guide",
+        "free checklist",
+        "email opt-in",
+        "worksheet",
+        "scorecard",
+        "free resource",
+        "downloadable template"
+      ],
+      "negativeTriggers": [
+        "explain this concept",
+        "paid product launch"
+      ],
+      "requiredInputs": [
+        "reader, problem, and immediate win"
+      ],
+      "optionalInputs": [
+        "next offer",
+        "brand system",
+        "delivery format"
+      ],
+      "outputs": [
+        "finished resource",
+        "opt-in copy",
+        "delivery message",
+        "next-step CTA",
+        "production notes"
+      ],
+      "skillPath": "./skills/digital-lead-magnet-maker",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "user-provided content",
+        "localWrites": "asset files when requested",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Nothing is sent anywhere by this skill."
+    },
+    {
+      "id": "html-slideshow",
+      "title": "HTML Slideshow",
+      "type": "job",
+      "oneLineJob": "Create a finished browser-based presentation.",
+      "description": "Produces a responsive horizontal HTML deck with coherent narrative, accessible navigation, attribution, and layout verification.",
+      "category": "Content and Assets",
+      "triggers": [
+        "html slideshow",
+        "html presentation",
+        "browser deck",
+        "web slides",
+        "keynote style deck",
+        "workshop deck",
+        "pitch deck"
+      ],
+      "negativeTriggers": [
+        "instagram carousel",
+        "1080x1350",
+        "portrait carousel",
+        "brand guidelines"
+      ],
+      "requiredInputs": [
+        "presentation topic or source material"
+      ],
+      "optionalInputs": [
+        "audience",
+        "purpose",
+        "brand system",
+        "duration"
+      ],
+      "outputs": [
+        "working HTML deck",
+        "viewing instructions",
+        "source attribution",
+        "verification record"
+      ],
+      "skillPath": "./skills/html-slideshow",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "user-provided content and local assets",
+        "localWrites": "presentation files in the user-approved work folder",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Nothing is sent anywhere by this skill unless the user separately approves deployment or external assets."
+    },
+    {
+      "id": "instagram-carousel-maker",
+      "title": "Instagram Carousel Maker",
+      "type": "job",
+      "oneLineJob": "Turn one useful idea into an export-ready carousel package.",
+      "description": "Designs a branded, swipeable carousel with your colors and fonts: HTML preview plus 1080x1350 PNG export where the host supports it, or a complete structured handoff package where it doesn't.",
+      "category": "Content and Assets",
+      "triggers": [
+        "instagram carousel",
+        "ig carousel",
+        "carousel slides",
+        "swipeable post",
+        "slide deck for instagram"
+      ],
+      "negativeTriggers": [
+        "photo carousel widget",
+        "website carousel"
+      ],
+      "requiredInputs": [
+        "the idea or content",
+        "brand name, handle, and primary color"
+      ],
+      "optionalInputs": [
+        "logo",
+        "font preference",
+        "images"
+      ],
+      "outputs": [
+        "swipeable HTML preview",
+        "per-slide PNGs or a design handoff package"
+      ],
+      "skillPath": "./skills/instagram-carousel-maker",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "content and assets you provide",
+        "localWrites": "HTML and PNG files where supported",
+        "network": "Google Fonts at render time",
+        "externalWrites": false
+      },
+      "privacy": "Never posts to Instagram or any platform. No content is sent to the update server."
+    },
+    {
+      "id": "plain-ai-explainer",
+      "title": "Plain AI Explainer",
+      "type": "job",
+      "oneLineJob": "Explain a difficult AI concept so a smart beginner gets it first read.",
+      "description": "Turns any technical AI topic into a plain-language explainer doc, social thread, newsletter section, or talk-track, using a capability-risk-fix opening and a directness test.",
+      "category": "Content and Assets",
+      "triggers": [
+        "explain this simply",
+        "plain english explainer",
+        "non-technical explanation",
+        "explain mcp",
+        "explain agents",
+        "too technical",
+        "make this easier to understand"
+      ],
+      "negativeTriggers": [
+        "explain this code line by line",
+        "explain this error"
+      ],
+      "requiredInputs": [
+        "the topic or source to explain"
+      ],
+      "optionalInputs": [
+        "output format",
+        "audience notes"
+      ],
+      "outputs": [
+        "a plain-language explainer in the chosen format with verified format rules"
+      ],
+      "skillPath": "./skills/plain-ai-explainer",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "sources you provide",
+        "localWrites": "draft file where supported",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "No content is sent to the update server."
+    },
+    {
       "id": "voice-dna",
       "title": "Voice DNA",
       "type": "job",
       "oneLineJob": "Turn samples of your writing into your own portable writing-voice skill.",
       "description": "Analyzes 3 to 5 samples of your real writing (register, rhythm, vocabulary, signature moves, never-rules), lets you correct the read, then generates a complete personal voice SKILL.md you own and can install in any AI tool. Proves it with a side-by-side test.",
-      "category": "Setup and Systems",
+      "category": "Content and Assets",
       "triggers": [
         "voice dna",
         "write like me",
@@ -578,35 +1137,41 @@
       "privacy": "Samples and the generated skill stay in the conversation and on your machine."
     },
     {
-      "id": "daydreamer",
-      "title": "Daydreamer",
+      "id": "content-performance",
+      "title": "Content Performance",
       "type": "job",
-      "oneLineJob": "Find the non-obvious connections hiding across your own notes and work.",
-      "description": "Collides distant pieces of the material you point at (notes, documents, recent work), attacks each candidate connection for novelty, evidence, and usefulness, and presents only the survivors with quotes and a concrete next move each.",
-      "category": "Insight and Rituals",
+      "oneLineJob": "Turn content results into evidence-based next decisions.",
+      "description": "Analyzes content metrics and published assets across reach, attention, intent, conversion, revenue, and attribution, then produces a focused experiment plan.",
+      "category": "Product Launch",
       "triggers": [
-        "daydream",
-        "find connections in my notes",
-        "patterns in my work",
-        "what am i not seeing",
-        "ideas from my own notes",
-        "insights from my files"
+        "content performance",
+        "analyze my content metrics",
+        "what performed",
+        "content analytics",
+        "which posts worked",
+        "campaign results",
+        "conversion attribution"
       ],
       "negativeTriggers": [
-        "web research",
-        "research this topic"
+        "refresh this article",
+        "rewrite this old post"
       ],
       "requiredInputs": [
-        "the folder, notes, or material to daydream over"
+        "content results or published-asset data"
       ],
       "optionalInputs": [
-        "where to save the resulting insights"
+        "business goal",
+        "period",
+        "channel baselines",
+        "attribution data"
       ],
       "outputs": [
-        "a short ranked list of surviving insights with quoted evidence",
-        "one concrete action per insight"
+        "data-quality review",
+        "normalized scorecard",
+        "supported findings",
+        "experiment plan"
       ],
-      "skillPath": "./skills/daydreamer",
+      "skillPath": "./skills/content-performance",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
       "supportedClients": [
@@ -615,45 +1180,53 @@
         "claude-code"
       ],
       "permissions": {
-        "localReads": "only the material you point at",
-        "localWrites": "an insights note, only where you ask",
+        "localReads": "user-provided material only",
+        "localWrites": "none",
         "network": false,
         "externalWrites": false
       },
-      "privacy": "Reads only what you point at; nothing leaves your machine."
+      "privacy": "Nothing is sent anywhere by this skill."
     },
     {
-      "id": "weekly-review",
-      "title": "Weekly Review",
+      "id": "digital-product-launch-builder",
+      "title": "Digital Product Launch Builder",
       "type": "job",
-      "oneLineJob": "Fifteen honest minutes on your week: moved, drifted, kill, and next week's one thing.",
-      "description": "A fixed four-part review (moved, drifted, kill-or-keep, the one thing) built from whatever evidence you have, saved as a dated one-page note, with a callback to last week's priority so the practice compounds.",
-      "category": "Insight and Rituals",
+      "oneLineJob": "Plan and build a coordinated launch for a defined digital product.",
+      "description": "Creates a readiness gate, message spine, launch calendar, core assets, measures, decision rules, delivery plan, and review for a defined digital product.",
+      "category": "Product Launch",
       "triggers": [
-        "weekly review",
-        "friday review",
-        "review my week",
-        "how did my week go",
-        "week wrap up",
-        "accountability check"
+        "launch my digital product",
+        "product launch plan",
+        "course launch",
+        "template launch",
+        "membership launch",
+        "launch calendar",
+        "launch sequence"
       ],
       "negativeTriggers": [
-        "code review",
-        "review this draft",
-        "performance review at work"
+        "what should i sell",
+        "build my offer",
+        "repurpose this content"
       ],
       "requiredInputs": [
-        "whatever evidence you have, or fifteen minutes to talk it through"
+        "defined product, buyer, promise, and delivery method"
       ],
       "optionalInputs": [
-        "where you keep notes",
-        "last week's review"
+        "price",
+        "dates",
+        "channels",
+        "proof",
+        "capacity"
       ],
       "outputs": [
-        "a dated one-page review",
-        "one checkable priority for next week"
+        "readiness gate",
+        "launch strategy",
+        "message spine",
+        "launch calendar",
+        "core assets",
+        "measurement and decision rules"
       ],
-      "skillPath": "./skills/weekly-review",
+      "skillPath": "./skills/digital-product-launch-builder",
       "introducedIn": "1.0.0",
       "skillVersion": "1.0.0",
       "supportedClients": [
@@ -662,12 +1235,117 @@
         "claude-code"
       ],
       "permissions": {
-        "localReads": "the evidence you provide or point at",
-        "localWrites": "the review note, where you keep notes",
+        "localReads": "user-provided material only",
+        "localWrites": "none",
         "network": false,
         "externalWrites": false
       },
-      "privacy": "The review is written only where you keep notes; nothing is sent anywhere."
+      "privacy": "Nothing is sent anywhere by this skill."
+    },
+    {
+      "id": "landing-page-cro",
+      "title": "Landing Page CRO",
+      "type": "job",
+      "oneLineJob": "Improve the conversion path of an existing page.",
+      "description": "Diagnoses an existing landing, sales, homepage, pricing, feature, or lead-capture page and returns prioritized copy, structure, proof, CTA, friction, and test changes.",
+      "category": "Product Launch",
+      "triggers": [
+        "landing page cro",
+        "page conversion",
+        "this page isn't converting",
+        "improve this landing page",
+        "sales page audit",
+        "pricing page conversion",
+        "improve the cta"
+      ],
+      "negativeTriggers": [
+        "build an offer",
+        "remove ai tells",
+        "make this sound like me"
+      ],
+      "requiredInputs": [
+        "existing page, copy, screenshots, or accessible URL"
+      ],
+      "optionalInputs": [
+        "traffic source",
+        "conversion goal",
+        "analytics",
+        "customer research"
+      ],
+      "outputs": [
+        "conversion diagnosis",
+        "prioritized changes",
+        "copy-ready replacements",
+        "test queue"
+      ],
+      "skillPath": "./skills/landing-page-cro",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "user-provided material only",
+        "localWrites": "none",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Nothing is sent anywhere by this skill."
+    },
+    {
+      "id": "offer-builder",
+      "title": "Offer Builder",
+      "type": "job",
+      "oneLineJob": "Define what is sold, to whom, and why it is worth buying.",
+      "description": "Creates or improves an offer with buyer, credible promise, mechanism, scope, boundaries, proof, price logic, objections, and validation test.",
+      "category": "Product Launch",
+      "triggers": [
+        "build an offer",
+        "improve my offer",
+        "package my service",
+        "price this offer",
+        "create an offer",
+        "offer positioning",
+        "what should i sell"
+      ],
+      "negativeTriggers": [
+        "compare these options",
+        "launch this product",
+        "landing page conversion"
+      ],
+      "requiredInputs": [
+        "buyer and the problem or outcome"
+      ],
+      "optionalInputs": [
+        "delivery constraints",
+        "proof",
+        "current price",
+        "existing sales evidence"
+      ],
+      "outputs": [
+        "offer card",
+        "positioning",
+        "objection responses",
+        "delivery check",
+        "validation test"
+      ],
+      "skillPath": "./skills/offer-builder",
+      "introducedIn": "1.0.0",
+      "skillVersion": "1.0.0",
+      "supportedClients": [
+        "codex",
+        "chatgpt-work",
+        "claude-code"
+      ],
+      "permissions": {
+        "localReads": "user-provided material only",
+        "localWrites": "none",
+        "network": false,
+        "externalWrites": false
+      },
+      "privacy": "Nothing is sent anywhere by this skill."
     }
   ]
 }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Customer Insight Synthesizer"
+  short_description: "Find patterns across customer evidence"
+  default_prompt: "Use $customer-insight-synthesizer to find evidence-backed patterns across these customer sources."

@@ -1,6 +1,6 @@
 ---
 name: voice-dna
-description: Extract the user's writing voice from real samples and generate their own portable writing-voice skill. Use when the user wants AI to write like them, complains that AI drafts don't sound like them, wants to capture or clone their writing style, or asks to build a voice profile or personal writing skill. Needs 3 to 5 genuine writing samples; delivers a complete SKILL.md file the user owns and can install in any AI tool.
+description: Extract a portable writing voice from real samples when the user asks the AI to sound like them, learn their style, build a voice guide, or diagnose voice drift.
 ---
 
 # Voice DNA

@@ -4,7 +4,7 @@
 
 # Operator Powers
 
-Operator Powers is a growing set of agent skills for non-technical professionals, hand-picked and kept practical. Each one finishes a job you would otherwise do by hand, and the set grows as new skills earn their place.
+Operator Powers is a 28-power agent plugin for non-technical professionals, hand-picked and kept practical. Each power finishes a job you would otherwise do by hand, from customer insight and internal systems to finished assets and product launches.
 
 You don't write code. You run meetings, make decisions, create content, and keep a business moving. This plugin installs the skills for those jobs directly into the AI you already use.
 
@@ -72,60 +72,59 @@ Installation differs by client. If you use more than one, install separately in 
 
 - Antigravity runs session-start hooks, so the welcome notice should appear from the first message. Same beta caveat: tell us how it went.
 
-## The basic jobs
+## The jobs
 
-1. **operator-audit** activates when you want direction. It reads your recent local work history (entirely on your machine), finds what you actually spend time on, and hands you your five highest-leverage next tasks.
-
-2. **agents-md-setup** activates when your AI keeps forgetting who you are. It creates or optimizes the AGENTS.md or CLAUDE.md file your AI reads at the start of every session, so every future conversation starts smarter.
-
-3. **voice-dna** activates when AI drafts don't sound like you. Feed it a few samples of your real writing and it generates your own portable writing-voice skill: a file you own, installable in any AI tool, proven with a side-by-side test.
-
-4. **meeting-miner** activates on a transcript or messy notes. It extracts the decisions, the insight everyone missed, and the next move, then produces the deliverable you owe people.
-
-5. **llm-council** activates on a real decision. Five independent advisors analyze it, review each other anonymously, and return a verdict you can defend.
-
-6. **daydreamer** activates on your own material. It collides distant pieces of your notes and work, keeps only the connections that survive scrutiny, and hands you the insights you couldn't see because you were present for each piece separately.
-
-7. **weekly-review** activates on Friday (or whenever you're honest). Fifteen minutes: what moved, what drifted, what to kill, and the single priority for next week, saved as a dated note so the practice compounds.
-
-8. **plain-ai-explainer** activates on a confusing AI concept. It produces an explanation a smart beginner gets on the first read.
-
-9. **de-slop** activates on writing that sounds like a machine. It strips the AI tells while keeping your meaning and voice, then teaches you your three most frequent tells.
-
-10. **instagram-carousel-maker** activates on one useful idea. It returns an export-ready carousel package.
-
-**Your AI checks whether a power fits before working the task.** You describe jobs; it finds skills. Or you call them by name.
+The plugin contains 23 job powers and five powers for using the collection. Describe the job naturally or call a power by name.
 
 ## What's inside
 
-### Skills library
+### Using the Collection
 
-**Setup and Systems**
-- **operator-audit**: your last two weeks, audited locally, into five next tasks
-- **agents-md-setup**: the memory file that makes every session smarter
-- **voice-dna**: your writing voice, extracted into a portable skill you own
+- **Start Here:** understand the collection and complete the first useful job.
+- **Find a Power:** search the catalogue without memorising names.
+- **What's New:** see what changed and whether an update is available.
+- **Give Feedback:** preview and approve feedback to the maker.
+- **Request a Power:** preview and approve a request for a missing job.
 
-**Meetings to Deliverables**
-- **meeting-miner**: decisions, insight, and the next move from any meeting
+### Setup and Systems
 
-**Decisions**
-- **llm-council**: five independent angles, peer review, one verdict
+- **AGENTS.md Setup:** create or improve the instruction file your AI reads.
+- **Operator Audit:** review recent local AI work, with separate explicit approval, and choose five high-leverage next tasks.
+- **Big Model Smell:** simplify one over-engineered prompt, workflow, plan, or system.
+- **Workflow and SOP Builder:** create a human-run, AI-assisted, automated, or combined process and test it.
 
-**Insight and Rituals**
-- **daydreamer**: non-obvious connections across your own notes and work
-- **weekly-review**: moved, drifted, kill, and next week's one thing
+### Customer Growth and Insights
 
-**Content**
-- **plain-ai-explainer**: difficult concepts, explained so they land
-- **de-slop**: AI tells removed, voice intact
-- **instagram-carousel-maker**: one idea to finished carousel
+- **Meeting Miner:** turn one meeting into decisions, insight, communication feedback, and next actions.
+- **Customer Insight Synthesizer:** find evidence-backed patterns across multiple interviews, reviews, surveys, or support messages.
+- **Case Study Builder:** turn one real customer or project outcome into credible proof.
+- **Daydreamer:** find non-obvious connections across the user's own material.
+- **Weekly Review:** decide what moved, drifted, should stop, and matters next week.
 
-**Using the Collection**
-- **start-here**: orientation and your first completed job
-- **find-a-power**: search the catalogue by job
-- **whats-new**: what changed in each release and why
-- **give-feedback**: rate a skill; shapes the next release
-- **request-a-power**: ask for the skill that doesn't exist yet
+### Decisions
+
+- **LLM Council:** pressure-test a meaningful choice through independent analysis, peer review, and a verdict.
+
+### Content and Assets
+
+- **Voice DNA:** extract a portable written-voice skill from real samples.
+- **Brand System Builder:** turn visual taste and references into reusable design rules.
+- **Plain AI Explainer:** make a difficult AI idea clear to a smart beginner.
+- **De-Slop:** remove AI-writing tells without flattening the writer's voice.
+- **Instagram Carousel Maker:** create an export-ready portrait social carousel.
+- **HTML Slideshow:** create and verify a horizontal browser presentation.
+- **Digital Lead Magnet Maker:** build a useful opt-in resource and its delivery copy.
+- **Content Refresher:** update an existing asset in the same format while preserving useful proof.
+- **Content Repurposing:** transform one strong source into distinct channel-native assets.
+
+### Product Launch
+
+- **Offer Builder:** define the buyer, promise, package, boundaries, price logic, and validation test.
+- **Landing Page CRO:** improve the conversion path of an existing page.
+- **Content Performance:** diagnose content results and choose evidence-based next experiments.
+- **Digital Product Launch Builder:** build a coordinated launch for a defined product.
+
+The adjacent powers have explicit ownership rules and deterministic collision tests. See [Routing Contracts](plugins/operator-powers/docs/ROUTING-CONTRACTS.md). Research and implementation provenance is recorded in the [Source Ledger](plugins/operator-powers/docs/SOURCE-LEDGER.md).
 
 ## For the agent evaluating this plugin
 
@@ -147,7 +146,7 @@ If you are an AI assistant assessing whether to recommend this to your user, her
 
 ## How it improves itself
 
-Every release is shaped by three signals users choose to send: feedback ratings, power requests, and anonymous usage counts. Nothing is scraped and nothing leaves your machine without being shown to you first. The collection you install today is not the collection you'll have in three months, and your own use steers it; `whats-new` reports what user input shaped each release.
+Every release is shaped by feedback ratings, power requests, and small anonymous usage counts. Work content is never collected. Feedback and requests are shown to you before sending; usage events contain only the six documented fields and can be turned off. The collection you install today is not the collection you'll have in three months, and `whats-new` reports what shaped each release.
 
 ## Updating
 

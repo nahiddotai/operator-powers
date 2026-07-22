@@ -1,6 +1,6 @@
 ---
 name: start-here
-description: Orientation for Operator Powers. Use when the user has just installed the plugin, asks what Operator Powers is, what it can do, how it works, or wants help choosing their first power. Explains what runs locally versus what contacts the update server, recommends up to three relevant powers for the user's actual job, and starts the selected one.
+description: Orient a new Operator Powers user, explain how the collection works, recommend up to three relevant powers, and start the one they choose.
 ---
 
 # Start Here
@@ -18,7 +18,7 @@ The collection is self-improving: what users run, rate, and request decides what
 ## How to Run It
 
 1. Ask one question: "What are you trying to get done?" If they already said, skip to step 2.
-2. Read the catalogue at `${CLAUDE_PLUGIN_ROOT}/catalog/powers.json` (fall back to the `catalog/powers.json` two directories above this skill file). Match their answer against the catalogue's jobs, not its file names.
+2. Read the catalogue at `${CLAUDE_PLUGIN_ROOT}/catalog/powers.json` (fall back to the `catalog/powers.json` two directories above this skill file). Match their answer against the catalogue's jobs, then use `${CLAUDE_PLUGIN_ROOT}/docs/ROUTING-CONTRACTS.md` when two powers are adjacent.
 3. Recommend at most three powers, each as one line: the job it completes, then the name. Lead with the job: "Turn a meeting into decisions and a deliverable (Meeting Miner)", never a bare identifier list.
 4. Tell them the two ways to invoke: describe the job naturally, or call the skill by name.
 5. Answer the trust question before they ask it, plainly: "Everything these skills do happens here in your agent; your work never leaves your machine. The plugin sends only anonymous usage counts (which powers get used, never any content), and you can turn that off by asking me to disable powers telemetry. Feedback goes out only if you use the feedback skill and approve the exact message first."
