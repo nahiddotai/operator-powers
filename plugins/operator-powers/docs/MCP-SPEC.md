@@ -31,6 +31,8 @@ Write protocol (annotated non-read-only):
 
 Cloudflare D1, table `submissions` (see `schema.sql`): approved fields, ISO timestamp, salted deletion-token hash, plugin version. No IP column, no email, no conversation content. Retention 12 months.
 
+The maintainer can review the 100 most recent feedback and request records in the `STATS_KEY`-protected owner dashboard. The public MCP tools do not expose this queue.
+
 ## Rate limits
 
 Per daily-rotating fingerprint (truncated IP + coarse UA + date, hashed; never stored raw): 60 reads/minute, 10 writes/day. Global write ceiling: 500/day. Over-limit responses are honest errors the skills surface as such.

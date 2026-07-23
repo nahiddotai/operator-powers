@@ -13,6 +13,14 @@ Turn available content results into decisions while separating reach, engagement
 - Does not own: refreshing one asset without metric analysis (`content-refresher`).
 - Finished deliverable: normalized scorecard, supported findings, uncertainty, and next experiments.
 
+## Required data disclosure
+
+If no real performance metrics are available, say so at the top of the response before offering any interpretation:
+
+> No real performance data was available. This review uses [name the alternative evidence] instead, so it can assess [what that evidence supports] but not reach, engagement, conversion, revenue, or causality.
+
+Name the result a `Content Evidence Review`, not a performance review. Do not fill the scorecard with invented proxies. If the user needs performance conclusions, list the smallest data export or fields required to produce them.
+
 ## Workflow
 
 1. Establish the business goal, period, channels, content set, audience size, distribution, and conversion definition.

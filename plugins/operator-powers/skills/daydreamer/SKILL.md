@@ -15,17 +15,17 @@ The user's own material already contains more insight than any outside source; w
 
 ## How to Run It
 
-1. Ask what material to daydream over, with a default offer: a notes folder, a project directory, recent documents, or (in Claude Code) recent conversation history. Only read what they point at. Confirm the scope back in one line before reading.
+1. Ask what material to daydream over, with a default offer: a notes folder, a project directory, recent documents, or (in Claude Code) recent conversation history. Only read what they point at. Confirm the scope back in one line before reading. If their current decision or priority is known, use it as a relevance lens without forcing every connection to fit it.
 
-2. Read the material and privately build a list of distinct idea-units: claims, complaints, questions, decisions, recurring topics. From these, examine pairs that would never naturally meet — different weeks, different projects, different moods. Favor distant pairs over neighboring ones; neighbors produce the obvious.
+2. Read the material and privately build a list of distinct idea-units: claims, complaints, questions, decisions, recurring topics. From these, examine pairs that would never naturally meet — different weeks, different projects, different moods. Favor distant pairs over neighboring ones; neighbors produce the obvious. Track connection distance as `near` (same context), `cross-project`, or `long-range` (separated by substantial time or context).
 
 3. For each promising collision, draft a candidate insight and then attack it before showing it. Keep it only if it clears all three:
    - **Novel**: the user could not produce this by rereading either piece alone.
    - **True to the source**: both pieces genuinely support it; quote the evidence.
    - **Usable**: it changes something — a decision, a piece of content, a priority, a habit.
-   Discard the rest silently. Five strong insights beat twenty clever ones.
+   Assign `high`, `medium`, or `low` confidence based on how directly and independently the sources support the connection. Discard the rest silently. Five strong insights beat twenty clever ones.
 
-4. Present the survivors, best first. For each: the insight in one plain sentence, the two (or more) pieces of evidence with quotes, and one concrete "so what" — the action, content idea, or decision it unlocks. Never pad; if only two survive, present two and say the material ran dry honestly.
+4. Present the survivors, best first. For each: the insight in one plain sentence, connection distance, confidence with a short reason, the two or more pieces of evidence with quotes, the consequence for a current decision or project when relevant, and one concrete next move. Never pad; if only two survive, present two and say the material ran dry honestly.
 
 5. Offer one closing move: pick the insight they care about most and go one level deeper on it, or save the set as a note in their material so future daydreams can build on it (write only where they say).
 

@@ -11,7 +11,9 @@ Help a new user understand Operator Powers and complete one genuinely useful job
 
 ## What This Product Is
 
-Operator Powers is a collection of practical AI skills installed inside the user's own agent. The skills run locally as instructions; nothing about the user's work is sent anywhere. The optional update server only provides live catalogue and release information, and carries submissions the user explicitly approves sending.
+Operator Powers is a collection of practical AI skills installed inside the user's own agent. The skill instructions do not send the user's prompts, files, transcripts, or outputs to Operator Powers.
+
+The plugin sends small anonymous usage events by default: a random install id, event, this plugin's skill id when one runs, client, operating system, and plugin version. It never includes the user's work or identity, and the user can turn it off. Optional live catalogue searches send the search query, update checks send the installed version, and feedback or requests are sent only after the exact payload is shown and approved.
 
 The collection is self-improving: what users run, rate, and request decides what each release adds and improves. If it comes up naturally, say so in one line — the plugin they installed today is not the plugin they will have in three months, and their own feedback steers it.
 
@@ -21,7 +23,7 @@ The collection is self-improving: what users run, rate, and request decides what
 2. Read the catalogue at `${CLAUDE_PLUGIN_ROOT}/catalog/powers.json` (fall back to the `catalog/powers.json` two directories above this skill file). Match their answer against the catalogue's jobs, then use `${CLAUDE_PLUGIN_ROOT}/docs/ROUTING-CONTRACTS.md` when two powers are adjacent.
 3. Recommend at most three powers, each as one line: the job it completes, then the name. Lead with the job: "Turn a meeting into decisions and a deliverable (Meeting Miner)", never a bare identifier list.
 4. Tell them the two ways to invoke: describe the job naturally, or call the skill by name.
-5. Answer the trust question before they ask it, plainly: "Everything these skills do happens here in your agent; your work never leaves your machine. The plugin sends only anonymous usage counts (which powers get used, never any content), and you can turn that off by asking me to disable powers telemetry. Feedback goes out only if you use the feedback skill and approve the exact message first."
+5. Answer the trust question before they ask it, plainly: "Your prompts, files, transcripts, and outputs are not sent to Operator Powers. The plugin does send small anonymous usage events by default, containing no work content or identity, and you can ask me to turn that off. Optional catalogue searches send the search words, and feedback or requests go out only after you approve the exact message."
 6. When they pick one, start that skill immediately with what they have already told you. Do not make them repeat themselves.
 
 ## If They Just Want the List
