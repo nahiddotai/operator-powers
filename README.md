@@ -4,6 +4,8 @@
 
 # Operator Powers
 
+AI skills to operate and grow.
+
 Operator Powers is a 28-power agent plugin for non-technical professionals, hand-picked and kept practical. Each power finishes a job you would otherwise do by hand, from customer insight and internal systems to finished assets and product launches.
 
 You don't write code. You run meetings, make decisions, create content, and keep a business moving. This plugin installs the skills for those jobs directly into the AI you already use.

@@ -3,7 +3,7 @@
 - Package name: `operator-powers`
 - Version: `1.0.0`
 - Display name: `Operator Powers`
-- Short description: `Practical powers for AI work`
+- Short description: `AI skills to operate and grow`
 - Developer: `nahiddotai`
 - Category: `Productivity`
 - Website: `https://github.com/nahiddotai/operator-powers`
@@ -14,9 +14,9 @@
 
 ## Long description
 
-Operator Powers is a maintained collection of 28 practical powers for non-technical operators. Turn customer evidence into insight, build internal workflows, pressure-test decisions, create content and visual assets, improve offers and pages, and prepare digital product launches inside the AI you already use.
+Operator Powers is a maintained collection of 28 practical AI skills for non-technical operators. Turn customer evidence into insight, build internal workflows, pressure-test decisions, create content and visual assets, improve offers and landing pages, and prepare digital product launches.
 
-Every power has a narrow job contract, explicit routing boundaries, privacy documentation, and a finished deliverable. Skills work locally. The optional MCP server provides catalogue and release information plus feedback and request tools that require a prepare, preview, explicit approval, and submit sequence.
+Every power has a narrow job, clear routing boundaries, and a finished deliverable. Skills work locally. The optional MCP server provides catalogue and release information plus feedback and request tools that require a prepare, preview, explicit approval, and submit sequence.
 
 ## Capabilities
 

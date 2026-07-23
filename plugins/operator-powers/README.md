@@ -1,6 +1,6 @@
 # Operator Powers
 
-Practical AI skills for non-technical knowledge work. One plugin, installed into the AI you already use.
+AI skills to operate and grow. One plugin, installed into the AI you already use.
 
 **Install once. Use practical AI skills where you already work. The collection is self-improving: what users run, rate, and request decides what each update adds, and updates arrive through normal plugin updates.**
 
