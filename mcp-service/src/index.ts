@@ -419,7 +419,7 @@ async function handleStats(req: Request, env: Env): Promise<Response> {
   const cutoff14 = new Date(Date.now() - 14 * 864e5).toISOString();
   const day7 = cutoff7.slice(0, 10);
   const day14 = cutoff14.slice(0, 10);
-  const [totals, active, countries, clients, versions, topSkills, daily, submissions,
+  const [totals, active, countries, clients, versions, topSkills, daily, submissions, recentSubmissions,
          growthWeekly, skillEngagement, gateway, timeToFirstRun, skillsThisWeek, skillsLastWeek] = await Promise.all([
     q("SELECT COUNT(*) AS installs FROM telemetry_installs"),
     q("SELECT SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS active_7d, SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS active_30d, SUM(CASE WHEN last_seen < ? THEN 1 ELSE 0 END) AS dormant_30d FROM telemetry_installs", cutoff7, cutoff30, cutoff30),
@@ -429,6 +429,8 @@ async function handleStats(req: Request, env: Env): Promise<Response> {
     q("SELECT skill, SUM(count) AS runs FROM telemetry_daily WHERE event='skill_run' AND day >= ? GROUP BY skill ORDER BY runs DESC", day30),
     q("SELECT day, event, SUM(count) AS count FROM telemetry_daily WHERE day >= ? GROUP BY day, event ORDER BY day", day30),
     q("SELECT type, COUNT(*) AS count FROM submissions GROUP BY type"),
+    q(`SELECT id AS receipt_id, type, skill_id, rating, note, job, category, created_at, plugin_version
+       FROM submissions ORDER BY created_at DESC LIMIT 100`),
     // Install growth by ISO week of first_seen (last ~12 weeks).
     q("SELECT substr(first_seen,1,10) AS day, COUNT(*) AS installs FROM telemetry_installs WHERE first_seen >= ? GROUP BY substr(first_seen,1,10) ORDER BY day", new Date(Date.now() - 84 * 864e5).toISOString()),
     // Per-skill engagement: reach, depth, and repeat rate.
@@ -473,6 +475,7 @@ async function handleStats(req: Request, env: Env): Promise<Response> {
     skillRunsWeekOverWeek: weekOverWeek,
     daily30d: daily,
     feedbackAndRequests: submissions,
+    recentFeedbackAndRequests: recentSubmissions,
   });
 }
 
@@ -490,6 +493,7 @@ h1{font-size:20px;margin-bottom:4px}h2{font-size:13px;text-transform:uppercase;l
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:14px}
 .tile{background:var(--card);border-radius:12px;padding:14px}.tile .n{font-size:26px;font-weight:700}.tile .l{font-size:12px;color:var(--dim)}
 table{border-collapse:collapse;width:100%;font-size:13px}td,th{text-align:left;padding:4px 10px 4px 0;border-bottom:1px solid #262a42}th{color:var(--dim);font-weight:500}
+td{max-width:360px;white-space:normal;overflow-wrap:anywhere;vertical-align:top}
 td.num,th.num{text-align:right}
 .delta-up{color:var(--good)}.delta-down{color:var(--bad)}
 #gate{margin:40px auto;max-width:420px;text-align:center}input{background:var(--card);border:1px solid #2c3050;color:var(--ink);border-radius:8px;padding:10px 12px;width:100%;margin:10px 0}
@@ -507,10 +511,11 @@ button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10
 const $=id=>document.getElementById(id);
 function saveKey(){localStorage.setItem("statsKey",$("key").value.trim());load()}
 function tile(n,l){return '<div class="tile"><div class="n">'+n+'</div><div class="l">'+l+'</div></div>'}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function table(title,rows,cols){
- if(!rows||!rows.length)return '<div class="card"><h2>'+title+'</h2><p class="sub">No data yet.</p></div>';
- let h='<div class="card"><h2>'+title+'</h2><table><tr>'+cols.map(c=>'<th class="'+(c.num?'num':'')+'">'+c.label+'</th>').join('')+'</tr>';
- for(const r of rows){h+='<tr>'+cols.map(c=>{let v=r[c.key];if(c.fmt)v=c.fmt(v,r);return '<td class="'+(c.num?'num':'')+'">'+(v??'')+'</td>'}).join('')+'</tr>'}
+ if(!rows||!rows.length)return '<div class="card"><h2>'+esc(title)+'</h2><p class="sub">No data yet.</p></div>';
+ let h='<div class="card"><h2>'+esc(title)+'</h2><table><tr>'+cols.map(c=>'<th class="'+(c.num?'num':'')+'">'+esc(c.label)+'</th>').join('')+'</tr>';
+ for(const r of rows){h+='<tr>'+cols.map(c=>{let v=r[c.key];if(c.fmt)v=c.fmt(v,r);else v=esc(v);return '<td class="'+(c.num?'num':'')+'">'+(v??'')+'</td>'}).join('')+'</tr>'}
  return h+'</table></div>'}
 async function load(){
  const key=localStorage.getItem("statsKey");if(!key)return;
@@ -532,7 +537,8 @@ async function load(){
   table("By version (are updates landing?)",d.byVersion,[{key:"version",label:"Version"},{key:"installs",label:"Installs",num:1},{key:"active_7d",label:"Active 7d",num:1}])+
   table("By country",d.byCountry,[{key:"country",label:"Country"},{key:"installs",label:"Installs",num:1}])+
   table("Installs per day (12 weeks)",d.installGrowthByDay,[{key:"day",label:"Day"},{key:"installs",label:"New installs",num:1}])+
-  table("Feedback and requests",d.feedbackAndRequests,[{key:"type",label:"Type"},{key:"count",label:"Count",num:1}]);
+  table("Feedback and requests",d.feedbackAndRequests,[{key:"type",label:"Type"},{key:"count",label:"Count",num:1}])+
+  table("Recent feedback and requests",d.recentFeedbackAndRequests,[{key:"created_at",label:"When"},{key:"type",label:"Type"},{key:"skill_id",label:"Skill"},{key:"rating",label:"Rating",num:1},{key:"job",label:"Requested job"},{key:"note",label:"Feedback"},{key:"category",label:"Category"},{key:"plugin_version",label:"Version"}]);
 }
 load();
 </script></body></html>`;

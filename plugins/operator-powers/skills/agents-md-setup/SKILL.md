@@ -30,22 +30,36 @@ Ask which AI tool they mainly use, then target the right file:
 
 If they use more than one tool, write one source file and produce a copy or paste-block for each surface. Do not invent file locations for tools you are not sure about; say what you verified and what they should check in that tool's docs.
 
+Before writing, separate the scope:
+
+| Scope | Put here | Keep out |
+|---|---|---|
+| Global | Identity, communication preferences, common tools, standing approval boundaries, and rules that apply across work | Project commands, temporary priorities, current build status, or facts that belong to one repository |
+| Project | Purpose, audience, stack, commands, file conventions, verification steps, project-specific constraints, and local approval boundaries | Unrelated personal context or preferences already covered globally |
+
+If the user needs both, propose a global file and a project file rather than duplicating everything. Explain which facts belong in each before writing.
+
 ## Step 2: The Interview
 
 Ask in two short rounds, not one giant questionnaire. Skip anything already known from the conversation or workspace.
 
-Round one, who they are:
+For a global file, ask:
 
 1. What do you do, in one or two sentences? (role, business, or job)
 2. Who do you do it for? (clients, audience, employer, yourself)
 3. What are the two or three tasks you'll use AI for most?
-
-Round two, how they work:
-
 4. How should the AI talk to you? (short and direct, detailed, casual, formal; anything that annoys you)
 5. What should it always know? (tools you use, constraints, working hours, budget realities, quality bars)
 6. What must it never do without asking? (send things, spend money, delete things, contact people, publish)
 7. Any recurring formats? (how you like documents, reports, code, or posts structured)
+
+For a project file, ask only what the workspace does not already show:
+
+1. What is this project for, and who is it for?
+2. What commands, tools, files, or workflows should the agent use?
+3. What counts as finished and how should it be verified?
+4. What project-specific actions require approval?
+5. Which current facts are durable enough to record, and which are temporary status that should stay out?
 
 If an answer is vague, reflect it back sharper and confirm: "So: you run a bookkeeping practice, mostly write client emails and monthly reports, and you want short answers unless you ask for detail. Right?"
 
@@ -72,10 +86,13 @@ Structure the file in this order, using the user's own words wherever possible:
 [the hard boundaries: sending, spending, deleting, publishing, contacting]
 ```
 
+For a project file, replace the personal sections with: Project purpose, how this project works, commands and tools, quality and verification, durable project facts, and approval boundaries.
+
 Rules:
 
 - Keep it under 60 lines. Agents follow short files better than long ones.
 - Every line must be something the AI would otherwise get wrong. Cut anything generic ("be helpful") that any AI does by default.
+- Keep global preferences and project facts in their correct scope. Do not copy the same context into both files without a concrete reason.
 - Boundaries go in as absolutes ("never send an email without showing me first"), not preferences.
 - No secrets: no passwords, API keys, or account numbers in this file, ever. If the user offers them, refuse and explain the file is plain text.
 

@@ -16,18 +16,27 @@ Make an existing asset current and more useful without erasing the proof and cha
 ## Workflow
 
 1. Establish audience, original purpose, current goal, format constraints, and what must remain.
-2. Mark claims that are time-sensitive, unsupported, contradicted, or dependent on dead links.
-3. Identify what still works: proof, examples, voice, search intent, reader questions, and conversion path.
-4. Verify changing facts with current primary sources when browsing is available.
-5. Repair the opening, structure, examples, clarity, evidence, and next action.
-6. Keep original claims that remain supported. Remove rather than fabricate replacements.
-7. Deliver the full refreshed asset and a concise record of material changes.
+2. Choose the honest route before rewriting:
+   - `Refresh`: the reader job is still useful and the asset can be made current.
+   - `Consolidate`: its useful material belongs inside a stronger existing asset.
+   - `Retire`: the reader job, offer, or premise is no longer useful or supportable.
+3. Explain the route briefly. Do not polish an asset that should be consolidated or retired.
+4. Mark claims that are time-sensitive, unsupported, contradicted, or dependent on dead links.
+5. Identify what still works: proof, examples, voice, search intent, reader questions, and conversion path.
+6. Verify changing facts with current primary sources when browsing is available.
+7. Repair the opening, structure, examples, clarity, evidence, and next action.
+8. Preserve at least one recognisable original scene, example, opinion, or phrase when it remains useful and supported.
+9. Keep original claims that remain supported. Remove rather than fabricate replacements.
+10. Deliver the full refreshed asset for the refresh route, or a concise consolidation or retirement recommendation with the reusable material identified.
 
 ## Output
 
 ```markdown
 # Refreshed Content
 [Complete updated asset]
+
+## Refresh Decision
+[Refresh, consolidate, or retire, with the reason]
 
 ## Material Changes
 [What changed and why]
