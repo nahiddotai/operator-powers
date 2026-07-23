@@ -17,11 +17,20 @@ Create native assets from one proven source without chopping it into repetitive 
 
 1. Read the complete source and identify its thesis, proof, scenes, examples, useful details, and rights constraints.
 2. Establish target audience, channels, number of assets, objectives, and format limits.
-3. Build an angle map. Each asset needs a distinct reader job, not merely a new hook.
-4. Match the native structure of each channel while preserving factual meaning and voice.
-5. Keep claims traceable to the source. Label new interpretation.
-6. Check repetition across topic, opening scene, proof, and conclusion.
-7. Deliver complete publish-ready drafts, but do not publish without approval.
+3. Build an angle map. Each asset needs a distinct reader job, source moment, and payoff, not merely a new hook.
+4. Define the native craft constraints for each channel: reader context, opening behaviour, length, pacing, structure, visual or spoken needs, and CTA conventions.
+5. Draft from the source's strongest scenes, mechanisms, examples, tensions, or consequences. Do not reduce the source to generic tips.
+6. Preserve the writer's recognisable voice markers while adapting the structure to the channel. Do not replace their voice with a generic platform voice.
+7. Keep claims traceable to the source. Label new interpretation.
+8. Revise once for specificity and difference: remove generic hooks, unsupported advice, repeated proof, repeated conclusions, and lines that could belong to any creator.
+9. Deliver complete publish-ready drafts, but do not publish without approval.
+
+## Craft bar
+
+- Each asset must give the audience a different reason to care, not the same lesson in a different length.
+- Use a concrete scene, example, mechanism, or consequence when the source contains one.
+- Match the channel without imitating its worst habits: avoid empty hook formulas, listicle rhythm, forced questions, and filler CTAs.
+- When the source is too thin to support the requested number of strong assets, produce fewer and explain why.
 
 ## Output
 
