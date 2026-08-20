@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.1 - Codex Skill telemetry correction
+
+Released: 2026-08-20.
+
+### Fixed
+
+- Replaced the unsupported `PostToolUse("Skill")` telemetry path with exact explicit `$skill-name` detection through `UserPromptSubmit`.
+- Renamed `skill_run` to `explicit_skill_invocation` so the metric no longer implies that implicit Skill use or successful completion is measured.
+- Restricted the Worker telemetry endpoint to the six documented anonymous fields, valid Operator Powers Skill ids, and supported client values.
+
+### Privacy
+
+- Prompt text remains local and is never included in the telemetry payload or stored in D1.
+- Implicit Skill selection remains unmeasured because Codex exposes no public hook for it.
+
 ## 1.0.0 - Submission candidate
 
 Prepared: 2026-07-22. Not yet submitted or published.

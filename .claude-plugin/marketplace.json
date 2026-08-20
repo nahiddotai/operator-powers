@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Nahid's published plugin collection.",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "plugins": [
     {
       "name": "operator-powers",
       "source": "./plugins/operator-powers",
       "description": "AI skills to operate and grow. Twenty-eight practical powers for non-technical operators.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "nahiddotai",
         "url": "https://github.com/nahiddotai"

@@ -22,6 +22,15 @@
             "timeout": 1
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hook-runner/index.mjs\" explicit-skill-invocation",
+            "timeout": 2
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -31,18 +40,6 @@
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hook-runner/index.mjs\" guard-mcp-write",
-            "timeout": 2
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Skill",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hook-runner/index.mjs\" skill-run",
             "timeout": 2
           }
         ]

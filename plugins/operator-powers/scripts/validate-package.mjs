@@ -91,7 +91,9 @@ for (const event of ["SessionStart", "UserPromptSubmit", "PreToolUse"]) {
   if (!hooks.hooks[event]) errors.push(`hooks.json missing ${event}`);
 }
 const hookCmds = JSON.stringify(hooks);
-if (!/session-start|discover|guard-mcp-write/.test(hookCmds)) errors.push("hooks.json does not reference the runner subcommands");
+if (!/session-start|discover|guard-mcp-write|explicit-skill-invocation/.test(hookCmds)) errors.push("hooks.json does not reference the runner subcommands");
+if (hooks.hooks.PostToolUse?.some((group) => group.matcher === "Skill")) errors.push("Codex native Skills are not a PostToolUse Skill tool; use the explicit invocation fallback");
+if (!hooks.hooks.UserPromptSubmit?.some((group) => group.hooks?.some((hook) => /explicit-skill-invocation/.test(hook.command ?? "")))) errors.push("explicit Skill telemetry must use the supported UserPromptSubmit fallback");
 if (!existsSync(join(PLUGIN, "hook-runner", "index.mjs"))) errors.push("hook-runner/index.mjs missing");
 const mcpConf = json(join(PLUGIN, ".mcp.json"));
 const mcpUrl = mcpConf.mcpServers?.operator_powers?.url ?? "";

@@ -33,6 +33,14 @@ function check(name, cond) {
 function freshHome() { return mkdtempSync(join(tmpdir(), "nsp-test-")); }
 const statePath = (home) => join(home, ".operator-powers", "state.json");
 
+// Verify the packaged Codex wiring, not a made-up PostToolUse Skill fixture.
+{
+  const hooks = JSON.parse(readFileSync(join(HERE, "..", "hooks", "hooks.json"), "utf8"));
+  const userPromptCommands = (hooks.hooks.UserPromptSubmit || []).flatMap((group) => group.hooks || []).map((hook) => hook.command || "");
+  check("Codex explicit telemetry is wired to UserPromptSubmit", userPromptCommands.some((command) => command.includes("explicit-skill-invocation")));
+  check("fabricated PostToolUse Skill matcher is absent", !(hooks.hooks.PostToolUse || []).some((group) => group.matcher === "Skill"));
+}
+
 // --- session-start ---
 {
   const home = freshHome();
@@ -149,17 +157,31 @@ check("unknown subcommand exits silently", run("bogus", {}, freshHome()).out ===
   await new Promise((r) => setTimeout(r, 600));
   check("same-day second session sends no heartbeat", pings.length === 1);
 
-  run("skill-run", { tool_name: "Skill", tool_input: { skill: "operator-powers:meeting-miner" } }, home, T);
+  run("explicit-skill-invocation", { hook_event_name: "UserPromptSubmit", prompt: "$meeting-miner turn these notes into decisions" }, home, { ...T, CODEX_HOME: join(home, ".codex") });
   await waitPings(2);
-  check("our skill run is counted", pings.length === 2 && pings[1].event === "skill_run" && pings[1].skill === "meeting-miner");
+  check("explicit Operator Powers skill invocation is counted", pings.length === 2 && pings[1].event === "explicit_skill_invocation" && pings[1].skill === "meeting-miner");
+  check("Codex client is detected", pings[1]?.client === "codex");
+  check("prompt text is never sent", !JSON.stringify(pings[1]).includes("turn these notes"));
 
-  run("skill-run", { tool_name: "Skill", tool_input: { skill: "someone-elses-skill" } }, home, T);
+  run("explicit-skill-invocation", { hook_event_name: "UserPromptSubmit", prompt: "$someone-elses-skill do its job" }, home, T);
   await new Promise((r) => setTimeout(r, 600));
   check("other people's skills are never reported", pings.length === 2);
 
+  run("explicit-skill-invocation", { hook_event_name: "UserPromptSubmit", prompt: "$not-a-real-operator-power do its job" }, home, T);
+  await new Promise((r) => setTimeout(r, 600));
+  check("invalid skill is rejected", pings.length === 2);
+
+  run("explicit-skill-invocation", { hook_event_name: "UserPromptSubmit", prompt: "please use meeting-miner for this" }, home, T);
+  await new Promise((r) => setTimeout(r, 600));
+  check("plain or fuzzy skill mention is not counted", pings.length === 2);
+
+  run("explicit-skill-invocation", { hook_event_name: "UserPromptSubmit", prompt: "email me at person@example.com about $meeting-minerish" }, home, T);
+  await new Promise((r) => setTimeout(r, 600));
+  check("partial token and email text are not counted", pings.length === 2);
+
   const before = pings.length;
   writeFileSync(statePath(home), JSON.stringify({ ...JSON.parse(readFileSync(statePath(home), "utf8")), telemetry: false }));
-  run("skill-run", { tool_name: "Skill", tool_input: { skill: "operator-powers:meeting-miner" } }, home, T);
+  run("explicit-skill-invocation", { hook_event_name: "UserPromptSubmit", prompt: "$meeting-miner do the job" }, home, T);
   await new Promise((r) => setTimeout(r, 600));
   check("state off switch stops all events", pings.length === before);
 

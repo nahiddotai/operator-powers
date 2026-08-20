@@ -6,7 +6,7 @@ Prepared against the current public requirements on 2026-07-22. Requirements can
 
 Prepared locally:
 
-- With-MCP package structure and version `1.0.0`.
+- With-MCP package structure and version `1.0.1`.
 - Listing fields within final-submission limits, including support URL.
 - Exactly five positive and three negative reviewer tests.
 - MCP annotation values and paste-ready reasons for every tool.

@@ -1,9 +1,32 @@
 {
   "schemaVersion": 1,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "status": "submission-candidate",
-  "preparedAt": "2026-07-22",
+  "preparedAt": "2026-08-20",
   "releases": [
+    {
+      "version": "1.0.1",
+      "date": "2026-08-20",
+      "headline": "Truthful Codex Skill telemetry",
+      "new": [],
+      "improved": [
+        "Codex explicit Skill telemetry now uses UserPromptSubmit and counts only exact $skill-name invocations",
+        "Telemetry payload validation accepts only the documented six anonymous fields"
+      ],
+      "fixed": [
+        "Removed fabricated PostToolUse Skill tracking that could not observe native Codex Skill activation",
+        "Dashboard metrics now distinguish explicit invocations from unobservable implicit Skill usage"
+      ],
+      "changedPermissions": [],
+      "privacy": [
+        "Prompt text is used only for exact local token detection and is never transmitted or stored",
+        "Implicit Skill usage, prompts, files, outputs, transcripts, paths, and identity remain uncollected"
+      ],
+      "knownLimitations": [
+        "Codex does not expose a public hook for implicit Skill selection",
+        "Public-directory users receive this bundled hook update only after version 1.0.1 is reviewed and published"
+      ]
+    },
     {
       "version": "1.0.0",
       "date": "2026-07-22",
