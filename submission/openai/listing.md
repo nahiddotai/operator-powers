@@ -1,7 +1,7 @@
 # OpenAI directory listing
 
 - Package name: `operator-powers`
-- Version: `1.0.0`
+- Version: `1.0.1`
 - Display name: `Operator Powers`
 - Short description: `AI skills to operate and grow`
 - Developer: `nahiddotai`

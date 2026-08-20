@@ -359,7 +359,7 @@ async function handleRpc(env: Env, req: Request, msg: any): Promise<object | nul
 // POST /t accepts one fixed-shape event and nothing else. No IPs stored;
 // country comes from Cloudflare's edge metadata. See docs/PRIVACY.md.
 
-const TELEMETRY_EVENTS = new Set(["install", "heartbeat", "skill_run"]);
+const TELEMETRY_EVENTS = new Set(["install", "heartbeat", "explicit_skill_invocation"]);
 
 async function handleTelemetry(req: Request, env: Env): Promise<Response> {
   let body: any;
@@ -370,12 +370,16 @@ async function handleTelemetry(req: Request, env: Env): Promise<Response> {
   }
   if (!body || typeof body !== "object" || Array.isArray(body)) return new Response(null, { status: 400 });
   const allowedFields = new Set(["installId", "event", "skill", "client", "os", "version"]);
-  if (Object.keys(body).some((key) => !allowedFields.has(key))) return new Response(null, { status: 400 });
+  const bodyKeys = Object.keys(body);
+  if (bodyKeys.length !== allowedFields.size || bodyKeys.some((key) => !allowedFields.has(key))) return new Response(null, { status: 400 });
   const { installId, event, skill, client, os, version } = body;
-  if (typeof installId !== "string" || !/^[a-f0-9-]{8,64}$/i.test(installId)) return new Response(null, { status: 400 });
+  if (typeof installId !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(installId)) return new Response(null, { status: 400 });
   if (!TELEMETRY_EVENTS.has(event)) return new Response(null, { status: 400 });
   const knownSkill = skill == null ? null : sps.some((s) => s.id === skill) ? skill : null;
-  if (event === "skill_run" && !knownSkill) return new Response(null, { status: 400 });
+  if (event === "explicit_skill_invocation" && !knownSkill) return new Response(null, { status: 400 });
+  if (event !== "explicit_skill_invocation" && skill !== null) return new Response(null, { status: 400 });
+  if (!new Set(["claude-code", "codex", "unknown"]).has(client)) return new Response(null, { status: 400 });
+  if (typeof os !== "string" || typeof version !== "string") return new Response(null, { status: 400 });
   const safe = (v: unknown, max: number) => (typeof v === "string" ? v.slice(0, max).replace(/[^\w.-]/g, "") : "unknown");
   const clientSafe = safe(client, 24) || "unknown";
   const osSafe = safe(os, 16) || "unknown";
@@ -400,7 +404,7 @@ async function handleTelemetry(req: Request, env: Env): Promise<Response> {
        ON CONFLICT(day, event, skill, client, country, version) DO UPDATE SET count = count + 1`
     ).bind(day, event, knownSkill ?? "", clientSafe, country, versionSafe),
   ];
-  if (event === "skill_run" && knownSkill) {
+  if (event === "explicit_skill_invocation" && knownSkill) {
     writes.push(
       env.DB.prepare(
         `INSERT INTO telemetry_skill_installs (install_id, skill, first_run, last_run, runs)
@@ -432,7 +436,7 @@ async function handleStats(req: Request, env: Env): Promise<Response> {
     q("SELECT country, COUNT(*) AS installs FROM telemetry_installs GROUP BY country ORDER BY installs DESC LIMIT 20"),
     q("SELECT client, COUNT(*) AS installs FROM telemetry_installs GROUP BY client ORDER BY installs DESC"),
     q("SELECT version, COUNT(*) AS installs, SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS active_7d FROM telemetry_installs GROUP BY version ORDER BY installs DESC LIMIT 10", cutoff7),
-    q("SELECT skill, SUM(count) AS runs FROM telemetry_daily WHERE event='skill_run' AND day >= ? GROUP BY skill ORDER BY runs DESC", day30),
+    q("SELECT skill, SUM(count) AS runs FROM telemetry_daily WHERE event='explicit_skill_invocation' AND day >= ? GROUP BY skill ORDER BY runs DESC", day30),
     q("SELECT day, event, SUM(count) AS count FROM telemetry_daily WHERE day >= ? GROUP BY day, event ORDER BY day", day30),
     q("SELECT type, COUNT(*) AS count FROM submissions GROUP BY type"),
     q(`SELECT id AS receipt_id, type, skill_id, rating, note, job, category, created_at, plugin_version
@@ -457,8 +461,8 @@ async function handleStats(req: Request, env: Env): Promise<Response> {
        JOIN (SELECT install_id, MIN(first_run) AS fr FROM telemetry_skill_installs GROUP BY install_id) f
          ON f.install_id = i.install_id
        GROUP BY bucket`),
-    q("SELECT skill, SUM(count) AS runs FROM telemetry_daily WHERE event='skill_run' AND day >= ? GROUP BY skill", day7),
-    q("SELECT skill, SUM(count) AS runs FROM telemetry_daily WHERE event='skill_run' AND day >= ? AND day < ? GROUP BY skill", day14, day7),
+    q("SELECT skill, SUM(count) AS runs FROM telemetry_daily WHERE event='explicit_skill_invocation' AND day >= ? GROUP BY skill", day7),
+    q("SELECT skill, SUM(count) AS runs FROM telemetry_daily WHERE event='explicit_skill_invocation' AND day >= ? AND day < ? GROUP BY skill", day14, day7),
   ]);
   // Week-over-week deltas per skill: the raw material for data-driven content.
   const lastMap = new Map((skillsLastWeek as any[]).map((r) => [r.skill, Number(r.runs)]));
@@ -513,7 +517,7 @@ button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10
 <input id="key" type="password" placeholder="stats key"><button onclick="saveKey()">Open dashboard</button><div id="err"></div></div>
 <div id="dash" style="display:none">
 <h1>Operator Powers</h1><div class="sub"><span id="stamp"></span><button class="secondary" onclick="forgetKey()">Forget key</button></div>
-<div class="notice">Coverage: these are anonymous <strong>activated installations</strong> and hook-observed power runs—not OpenAI Marketplace download/install totals. Clients with telemetry disabled, hooks not trusted, or surfaces that do not run local hooks are not counted.</div>
+<div class="notice">Coverage: these are anonymous <strong>activated installations</strong> and exact <code>$skill-name</code> invocations—not OpenAI Marketplace totals or implicit Skill usage. Clients with telemetry disabled, hooks not trusted, or surfaces that do not run local hooks are not counted.</div>
 <div class="tiles" id="tiles"></div>
 <div class="grid" id="cards"></div>
 </div>
@@ -539,11 +543,11 @@ async function load(){
  $("tiles").innerHTML=tile(d.activatedInstallationsTotal??d.installsTotal,"activated installations")+tile(a.active_7d??0,"active, 7 days")+tile(a.active_30d??0,"active, 30 days")+tile(a.dormant_30d??0,"dormant 30+ days")+tile((d.byCountry||[]).length,"observed countries");
  const delta=(v,r)=>{const c=r.delta>0?"delta-up":(r.delta<0?"delta-down":"");const s=r.delta>0?"+"+r.delta:r.delta;return '<span class="'+c+'">'+s+'</span>'};
  $("cards").innerHTML=
-  table("Skill runs, week over week (content angles live here)",d.skillRunsWeekOverWeek,[{key:"skill",label:"Skill"},{key:"thisWeek",label:"This wk",num:1},{key:"lastWeek",label:"Last wk",num:1},{key:"delta",label:"Δ",num:1,fmt:delta}])+
-  table("Power engagement (repeat rate = activated installations returning)",d.skillEngagement,[{key:"skill",label:"Power"},{key:"unique_installs",label:"Activated",num:1},{key:"total_runs",label:"Runs",num:1},{key:"repeat_rate",label:"Repeat",num:1}])+
-  table("Gateway skills (the first thing people run)",d.gatewaySkills,[{key:"skill",label:"Skill"},{key:"first_runs",label:"First runs",num:1}])+
-  table("Time from activation to first observed power run",d.timeToFirstSkillRun,[{key:"bucket",label:"When"},{key:"installs",label:"Activated",num:1}])+
-  table("Top skills, 30 days",d.topSkills30d,[{key:"skill",label:"Skill"},{key:"runs",label:"Runs",num:1}])+
+  table("Explicit Skill invocations, week over week",d.skillRunsWeekOverWeek,[{key:"skill",label:"Skill"},{key:"thisWeek",label:"This wk",num:1},{key:"lastWeek",label:"Last wk",num:1},{key:"delta",label:"Δ",num:1,fmt:delta}])+
+  table("Explicit invocation engagement",d.skillEngagement,[{key:"skill",label:"Power"},{key:"unique_installs",label:"Installations",num:1},{key:"total_runs",label:"Invocations",num:1},{key:"repeat_rate",label:"Repeat",num:1}])+
+  table("First explicitly invoked skills",d.gatewaySkills,[{key:"skill",label:"Skill"},{key:"first_runs",label:"First invocations",num:1}])+
+  table("Time from activation to first explicit invocation",d.timeToFirstSkillRun,[{key:"bucket",label:"When"},{key:"installs",label:"Activated",num:1}])+
+  table("Top explicitly invoked skills, 30 days",d.topSkills30d,[{key:"skill",label:"Skill"},{key:"runs",label:"Invocations",num:1}])+
   table("Observed events, 30 days",d.daily30d,[{key:"day",label:"Day"},{key:"event",label:"Event"},{key:"count",label:"Count",num:1}])+
   table("Activated installations by client",d.byClient,[{key:"client",label:"Client"},{key:"installs",label:"Activated",num:1}])+
   table("Activated installations by version",d.byVersion,[{key:"version",label:"Version"},{key:"installs",label:"Activated",num:1},{key:"active_7d",label:"Active 7d",num:1}])+

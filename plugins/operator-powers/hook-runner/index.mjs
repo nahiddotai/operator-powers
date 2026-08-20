@@ -8,7 +8,8 @@
 // client, OS, plugin version. Never prompts, files, outputs, or paths.
 // Disable: set "telemetry": false in the state file, or set the
 // OPERATOR_POWERS_NO_TELEMETRY environment variable.
-// Subcommands: session-start | discover | guard-mcp-write | skill-run | send-ping
+// Subcommands: session-start | discover | guard-mcp-write |
+// explicit-skill-invocation | send-ping
 
 import { readFileSync, writeFileSync, mkdirSync, renameSync } from "node:fs";
 import { homedir } from "node:os";
@@ -67,7 +68,9 @@ function telemetryEnabled(state) {
 
 function detectClient() {
   if (process.env.CLAUDECODE || process.env.CLAUDE_CODE_ENTRYPOINT) return "claude-code";
-  if (process.env.CODEX_HOME || process.env.CODEX_SANDBOX || process.env.OPENAI_CODEX) return "codex";
+  // PLUGIN_ROOT and PLUGIN_DATA are Codex-specific hook extensions. Codex also
+  // sets the CLAUDE_* aliases, so those compatibility aliases are not enough.
+  if (process.env.PLUGIN_ROOT || process.env.PLUGIN_DATA || process.env.CODEX_HOME || process.env.CODEX_SANDBOX || process.env.OPENAI_CODEX) return "codex";
   return "unknown";
 }
 
@@ -160,18 +163,22 @@ function sessionStart() {
   emitContext("SessionStart", message);
 }
 
-function skillRun() {
+function explicitSkillInvocation() {
   const input = readStdin();
-  const raw = String(input.tool_input?.skill ?? input.tool_input?.name ?? "");
-  if (!raw) return;
+  const prompt = typeof input.prompt === "string" ? input.prompt : "";
+  if (!prompt) return;
   const catalog = readJson(join(PLUGIN_ROOT, "catalog", "powers.json"));
   if (!catalog || !Array.isArray(catalog.powers)) return;
-  // Count ONLY this plugin's own skills; anything else is not our business.
-  const ours = catalog.powers.find((sp) => raw === sp.id || raw.endsWith(`:${sp.id}`));
-  if (!ours) return;
+  const skillIds = new Set(catalog.powers.map((sp) => sp?.id).filter((id) => typeof id === "string"));
+  // Codex's public explicit invocation contract is $skill-name. Match only a
+  // complete token, never fuzzy language, and de-duplicate repeats in one prompt.
+  const invoked = new Set();
+  const token = /(?:^|[\s([{])\$([a-z0-9][a-z0-9-]*)(?=$|[\s,.;:!?)}\]])/gi;
+  for (const match of prompt.matchAll(token)) if (skillIds.has(match[1])) invoked.add(match[1]);
+  if (invoked.size === 0) return;
   const state = loadState();
   if (!state.installId) { state.installId = randomUUID(); saveState(state); }
-  sendEvent(state, "skill_run", ours.id);
+  for (const skillId of invoked) sendEvent(state, "explicit_skill_invocation", skillId);
 }
 
 function normalize(text) {
@@ -279,7 +286,7 @@ try {
   if (cmd === "session-start") sessionStart();
   else if (cmd === "discover") discover();
   else if (cmd === "guard-mcp-write") guardMcpWrite();
-  else if (cmd === "skill-run") skillRun();
+  else if (cmd === "explicit-skill-invocation") explicitSkillInvocation();
   else if (cmd === "send-ping") await sendPing();
   // Unknown subcommands exit silently; the runner accepts only the fixed commands above.
 } catch {
