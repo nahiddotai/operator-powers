@@ -368,7 +368,10 @@ async function handleTelemetry(req: Request, env: Env): Promise<Response> {
   } catch {
     return new Response(null, { status: 400 });
   }
-  const { installId, event, skill, client, os, version } = body ?? {};
+  if (!body || typeof body !== "object" || Array.isArray(body)) return new Response(null, { status: 400 });
+  const allowedFields = new Set(["installId", "event", "skill", "client", "os", "version"]);
+  if (Object.keys(body).some((key) => !allowedFields.has(key))) return new Response(null, { status: 400 });
+  const { installId, event, skill, client, os, version } = body;
   if (typeof installId !== "string" || !/^[a-f0-9-]{8,64}$/i.test(installId)) return new Response(null, { status: 400 });
   if (!TELEMETRY_EVENTS.has(event)) return new Response(null, { status: 400 });
   const knownSkill = skill == null ? null : sps.some((s) => s.id === skill) ? skill : null;
@@ -411,7 +414,10 @@ async function handleTelemetry(req: Request, env: Env): Promise<Response> {
 }
 
 async function handleStats(req: Request, env: Env): Promise<Response> {
-  if (!env.STATS_KEY || req.headers.get("x-stats-key") !== env.STATS_KEY) return new Response("Forbidden", { status: 403 });
+  const suppliedKey = req.headers.get("x-stats-key") ?? "";
+  if (!env.STATS_KEY || !timingSafeEqual(suppliedKey, env.STATS_KEY)) {
+    return new Response("Forbidden", { status: 403, headers: { "cache-control": "no-store" } });
+  }
   const q = async (sql: string, ...binds: unknown[]) => (await env.DB.prepare(sql).bind(...binds).all()).results;
   const cutoff7 = new Date(Date.now() - 7 * 864e5).toISOString();
   const cutoff30 = new Date(Date.now() - 30 * 864e5).toISOString();
@@ -460,9 +466,12 @@ async function handleStats(req: Request, env: Env): Promise<Response> {
     const prev = lastMap.get(r.skill) ?? 0;
     return { skill: r.skill, thisWeek: Number(r.runs), lastWeek: prev, delta: Number(r.runs) - prev };
   }).sort((a, b) => b.delta - a.delta);
+  const activatedInstallationsTotal = (totals[0] as any)?.installs ?? 0;
   return Response.json({
     generatedAt: new Date().toISOString(),
-    installsTotal: (totals[0] as any)?.installs ?? 0,
+    activatedInstallationsTotal,
+    // Kept for older dashboard clients; this is activation telemetry, not a marketplace install count.
+    installsTotal: activatedInstallationsTotal,
     active: active[0] ?? {},
     installGrowthByDay: growthWeekly,
     byCountry: countries,
@@ -476,18 +485,18 @@ async function handleStats(req: Request, env: Env): Promise<Response> {
     daily30d: daily,
     feedbackAndRequests: submissions,
     recentFeedbackAndRequests: recentSubmissions,
-  });
+  }, { headers: { "cache-control": "no-store" } });
 }
 
 // Owner dashboard: static HTML, no data baked in. The page asks for the stats
-// key once (kept in the browser's localStorage) and calls /stats with it.
+// key once (kept only for the current browser tab) and calls /stats with it.
 const DASHBOARD_HTML = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex"><title>Operator Powers — metrics</title>
 <style>
 :root{--bg:#0f1222;--card:#181c30;--ink:#e8e6f0;--dim:#8a87a0;--accent:#7c6cf0;--good:#4fc38a;--bad:#e06c75}
 *{box-sizing:border-box;margin:0}body{background:var(--bg);color:var(--ink);font:15px/1.5 ui-sans-serif,system-ui;padding:24px;max-width:1080px;margin:0 auto}
 h1{font-size:20px;margin-bottom:4px}h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin:0 0 10px}
-.sub{color:var(--dim);margin-bottom:20px;font-size:13px}
+.sub{color:var(--dim);margin-bottom:20px;font-size:13px}.notice{background:#15192c;border:1px solid #303657;border-radius:10px;padding:12px 14px;margin-bottom:14px;color:var(--dim);font-size:13px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
 .card{background:var(--card);border-radius:12px;padding:16px;overflow-x:auto}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:14px}
@@ -497,19 +506,21 @@ td{max-width:360px;white-space:normal;overflow-wrap:anywhere;vertical-align:top}
 td.num,th.num{text-align:right}
 .delta-up{color:var(--good)}.delta-down{color:var(--bad)}
 #gate{margin:40px auto;max-width:420px;text-align:center}input{background:var(--card);border:1px solid #2c3050;color:var(--ink);border-radius:8px;padding:10px 12px;width:100%;margin:10px 0}
-button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 18px;cursor:pointer;font-size:14px}
+button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 18px;cursor:pointer;font-size:14px}.secondary{background:#2c3050;margin-left:8px}
 #err{color:var(--bad);font-size:13px;margin-top:8px}
 </style></head><body>
-<div id="gate"><h1>Operator Powers metrics</h1><p class="sub">Paste the stats key (from mcp-service/.stats-key). Stored only in this browser.</p>
+<div id="gate"><h1>Operator Powers metrics</h1><p class="sub">Paste the Cloudflare Worker stats key. It is kept only in this browser tab.</p>
 <input id="key" type="password" placeholder="stats key"><button onclick="saveKey()">Open dashboard</button><div id="err"></div></div>
 <div id="dash" style="display:none">
-<h1>Operator Powers</h1><div class="sub" id="stamp"></div>
+<h1>Operator Powers</h1><div class="sub"><span id="stamp"></span><button class="secondary" onclick="forgetKey()">Forget key</button></div>
+<div class="notice">Coverage: these are anonymous <strong>activated installations</strong> and hook-observed power runs—not OpenAI Marketplace download/install totals. Clients with telemetry disabled, hooks not trusted, or surfaces that do not run local hooks are not counted.</div>
 <div class="tiles" id="tiles"></div>
 <div class="grid" id="cards"></div>
 </div>
 <script>
 const $=id=>document.getElementById(id);
-function saveKey(){localStorage.setItem("statsKey",$("key").value.trim());load()}
+function saveKey(){sessionStorage.setItem("statsKey",$("key").value.trim());load()}
+function forgetKey(){sessionStorage.removeItem("statsKey");location.reload()}
 function tile(n,l){return '<div class="tile"><div class="n">'+n+'</div><div class="l">'+l+'</div></div>'}
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function table(title,rows,cols){
@@ -518,25 +529,26 @@ function table(title,rows,cols){
  for(const r of rows){h+='<tr>'+cols.map(c=>{let v=r[c.key];if(c.fmt)v=c.fmt(v,r);else v=esc(v);return '<td class="'+(c.num?'num':'')+'">'+(v??'')+'</td>'}).join('')+'</tr>'}
  return h+'</table></div>'}
 async function load(){
- const key=localStorage.getItem("statsKey");if(!key)return;
+ const key=sessionStorage.getItem("statsKey");if(!key)return;
  const res=await fetch("/stats",{headers:{"x-stats-key":key}});
- if(!res.ok){$("gate").style.display="block";$("dash").style.display="none";$("err").textContent="That key was rejected ("+res.status+").";localStorage.removeItem("statsKey");return}
+ if(!res.ok){$("gate").style.display="block";$("dash").style.display="none";$("err").textContent="That key was rejected ("+res.status+").";sessionStorage.removeItem("statsKey");return}
  const d=await res.json();
  $("gate").style.display="none";$("dash").style.display="block";
  $("stamp").textContent="Generated "+d.generatedAt;
  const a=d.active||{};
- $("tiles").innerHTML=tile(d.installsTotal,"installs")+tile(a.active_7d??0,"active, 7 days")+tile(a.active_30d??0,"active, 30 days")+tile(a.dormant_30d??0,"dormant 30+ days")+tile((d.byCountry||[]).length,"countries");
+ $("tiles").innerHTML=tile(d.activatedInstallationsTotal??d.installsTotal,"activated installations")+tile(a.active_7d??0,"active, 7 days")+tile(a.active_30d??0,"active, 30 days")+tile(a.dormant_30d??0,"dormant 30+ days")+tile((d.byCountry||[]).length,"observed countries");
  const delta=(v,r)=>{const c=r.delta>0?"delta-up":(r.delta<0?"delta-down":"");const s=r.delta>0?"+"+r.delta:r.delta;return '<span class="'+c+'">'+s+'</span>'};
  $("cards").innerHTML=
   table("Skill runs, week over week (content angles live here)",d.skillRunsWeekOverWeek,[{key:"skill",label:"Skill"},{key:"thisWeek",label:"This wk",num:1},{key:"lastWeek",label:"Last wk",num:1},{key:"delta",label:"Δ",num:1,fmt:delta}])+
-  table("Skill engagement (repeat rate = comes back)",d.skillEngagement,[{key:"skill",label:"Skill"},{key:"unique_installs",label:"Users",num:1},{key:"total_runs",label:"Runs",num:1},{key:"repeat_rate",label:"Repeat",num:1}])+
+  table("Power engagement (repeat rate = activated installations returning)",d.skillEngagement,[{key:"skill",label:"Power"},{key:"unique_installs",label:"Activated",num:1},{key:"total_runs",label:"Runs",num:1},{key:"repeat_rate",label:"Repeat",num:1}])+
   table("Gateway skills (the first thing people run)",d.gatewaySkills,[{key:"skill",label:"Skill"},{key:"first_runs",label:"First runs",num:1}])+
-  table("Time from install to first skill run",d.timeToFirstSkillRun,[{key:"bucket",label:"When"},{key:"installs",label:"Installs",num:1}])+
+  table("Time from activation to first observed power run",d.timeToFirstSkillRun,[{key:"bucket",label:"When"},{key:"installs",label:"Activated",num:1}])+
   table("Top skills, 30 days",d.topSkills30d,[{key:"skill",label:"Skill"},{key:"runs",label:"Runs",num:1}])+
-  table("By client",d.byClient,[{key:"client",label:"Client"},{key:"installs",label:"Installs",num:1}])+
-  table("By version (are updates landing?)",d.byVersion,[{key:"version",label:"Version"},{key:"installs",label:"Installs",num:1},{key:"active_7d",label:"Active 7d",num:1}])+
-  table("By country",d.byCountry,[{key:"country",label:"Country"},{key:"installs",label:"Installs",num:1}])+
-  table("Installs per day (12 weeks)",d.installGrowthByDay,[{key:"day",label:"Day"},{key:"installs",label:"New installs",num:1}])+
+  table("Observed events, 30 days",d.daily30d,[{key:"day",label:"Day"},{key:"event",label:"Event"},{key:"count",label:"Count",num:1}])+
+  table("Activated installations by client",d.byClient,[{key:"client",label:"Client"},{key:"installs",label:"Activated",num:1}])+
+  table("Activated installations by version",d.byVersion,[{key:"version",label:"Version"},{key:"installs",label:"Activated",num:1},{key:"active_7d",label:"Active 7d",num:1}])+
+  table("Activated installations by country",d.byCountry,[{key:"country",label:"Country"},{key:"installs",label:"Activated",num:1}])+
+  table("New activations per day (12 weeks)",d.installGrowthByDay,[{key:"day",label:"Day"},{key:"installs",label:"New activations",num:1}])+
   table("Feedback and requests",d.feedbackAndRequests,[{key:"type",label:"Type"},{key:"count",label:"Count",num:1}])+
   table("Recent feedback and requests",d.recentFeedbackAndRequests,[{key:"created_at",label:"When"},{key:"type",label:"Type"},{key:"skill_id",label:"Skill"},{key:"rating",label:"Rating",num:1},{key:"job",label:"Requested job"},{key:"note",label:"Feedback"},{key:"category",label:"Category"},{key:"plugin_version",label:"Version"}]);
 }
@@ -553,7 +565,15 @@ export default {
     if (url.pathname === "/health") return Response.json({ status: "healthy", version: PLUGIN_VERSION });
     if (url.pathname === "/t" && req.method === "POST") return handleTelemetry(req, env);
     if (url.pathname === "/stats" && req.method === "GET") return handleStats(req, env);
-    if (url.pathname === "/dashboard" && req.method === "GET") return new Response(DASHBOARD_HTML, { headers: { "content-type": "text/html; charset=utf-8", "x-robots-tag": "noindex" } });
+    if (url.pathname === "/dashboard" && req.method === "GET") return new Response(DASHBOARD_HTML, { headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "no-store",
+      "content-security-policy": "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
+      "referrer-policy": "no-referrer",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-robots-tag": "noindex",
+    } });
     if (url.pathname !== "/mcp") return new Response("Not found", { status: 404 });
     if (req.method === "GET") return new Response(null, { status: 405 }); // no server-initiated stream
     if (req.method !== "POST") return new Response(null, { status: 405 });

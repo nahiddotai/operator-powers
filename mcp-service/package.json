@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
+    "deploy:production": "wrangler d1 execute operator-powers --remote --file schema.sql && wrangler deploy",
+    "types": "wrangler types",
+    "typecheck": "tsc --noEmit",
     "sync-catalog": "node ../plugins/operator-powers/scripts/build-catalog.mjs"
   },
   "devDependencies": {

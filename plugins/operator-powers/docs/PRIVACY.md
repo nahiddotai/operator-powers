@@ -4,13 +4,15 @@ Plain-language summary: the skills run inside your own AI tool. Your prompts, fi
 
 ## What runs locally
 
-- All fifteen skills are instruction files executed by your own agent. They send nothing to us.
+- All bundled powers are instruction files executed by your own agent. They send nothing to us.
 - The discovery hint hook reads your prompt in memory, checks it against the bundled catalogue, and discards it. Your prompt is never written to disk or sent anywhere.
 - The session hook reads only the plugin's own release file and one small local state file.
 
 ## Anonymous usage metrics (and the off switch)
 
-So the maker can see whether the plugin is being used and which powers earn their place, the plugin sends small anonymous usage events: one when it is first installed, at most one still-in-use ping per day, and one when a power from this plugin runs. Each event contains exactly six fields: a random install id (generated on your machine, linked to no identity), the event name, the power id (only this plugin's own skills, never any other tool), which client (Claude Code or Codex), your operating system name, and the plugin version. The payload shape is fixed in the open-source hook runner and the server rejects anything else, so your prompts, files, outputs, transcripts, and paths are structurally excluded, not just promised away.
+So the maker can see whether the plugin is being used and which powers earn their place, the plugin sends small anonymous usage events: one when it is first activated in a supported local client after its hooks are trusted, at most one still-in-use ping per day, and one when a power from this plugin runs through a supported hook event. Each event contains exactly six fields: a random install id (generated on your machine, linked to no identity), the event name, the power id (only this plugin's own skills, never any other tool), which client (Claude Code or Codex), your operating system name, and the plugin version. The payload shape is fixed in the open-source hook runner and the server rejects anything else, so your prompts, files, outputs, transcripts, and paths are structurally excluded, not just promised away.
+
+These metrics are activation and hook-observed usage counts, not OpenAI Marketplace download or install totals. Clients with telemetry disabled, hooks not trusted, or surfaces that do not run local hooks (including some chat, mobile, and workspace surfaces) are not represented in the dashboard.
 
 Skill-run counts are kept per anonymous install id (which of this plugin's skills ran, how many times, first and last run date). This exists so the maker can see whether skills are used once or earn repeat use, and it maps to no identity: the install id is random, generated on your machine, and deleting the state file below starts a fresh one.
 

@@ -1,0 +1,34 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "operator-powers",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-20",
+
+  // Secrets (set with `wrangler secret put`):
+  //   TOKEN_SECRET - HMAC key for confirmation and deletion tokens
+  //   STATS_KEY - owner key for GET /stats and /dashboard
+  //   OPENAI_APPS_CHALLENGE - optional portal domain-verification token
+  "vars": {
+    "WRITES_ENABLED": "true"
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "operator-powers",
+      "database_id": "6250148b-d7e1-4524-8ec2-5bf874db930c"
+    }
+  ],
+
+  "kv_namespaces": [
+    {
+      "binding": "RATE_KV",
+      "id": "e15f87ec56cf4c93a5c46ab64b0f0bb8"
+    }
+  ],
+
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}
