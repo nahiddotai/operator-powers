@@ -200,6 +200,9 @@ def load_sfx(name):
                          capture_output=True, check=True).stdout
     a = np.frombuffer(raw, dtype=np.float32).reshape(-1, 2).T.astype(np.float64)
     pk = np.abs(a).max() or 1
+    # trim leading silence so each effect starts on its cue (files carry 25-1500ms of lead-in)
+    onset = int(np.argmax(np.abs(a).max(axis=0) > pk * 0.05))
+    a = a[:, max(0, onset - int(0.002 * SR)):]
     return a / pk
 
 
