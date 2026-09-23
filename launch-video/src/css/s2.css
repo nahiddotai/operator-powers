@@ -1,0 +1,18 @@
+/* S2 product */
+#s2 { background: #ffffff; }
+.s2-ground {
+  background:
+    radial-gradient(900px 620px at 22% 18%, rgba(222,218,255,.75), rgba(255,255,255,0) 70%),
+    radial-gradient(1000px 700px at 82% 92%, rgba(214,230,255,.7), rgba(255,255,255,0) 70%);
+}
+#s2wrap { transform-origin: 960px 480px; }
+#s2tile { left: 856px; top: 292px; width: 208px; height: 208px; border-radius: 22%;
+  box-shadow: 0 34px 70px rgba(40,30,130,.26), 0 10px 22px rgba(40,30,130,.14); }
+#s2tile svg { display: block; }
+#s2rings { left: 960px; top: 396px; width: 0; height: 0; }
+.s2ring { position: absolute; left: -104px; top: -104px; width: 208px; height: 208px; border-radius: 30%;
+  border: 1.5px solid rgba(110,98,245,.28); box-shadow: 0 0 60px rgba(120,108,246,.18) inset, 0 0 40px rgba(120,108,246,.10); display: block; opacity: 0; }
+.s2word { left: 0; top: 548px; width: 1920px; display: flex; justify-content: center; gap: 26px;
+  font-size: 108px; font-weight: 600; letter-spacing: -0.045em; line-height: 1.08; }
+.s2sub { left: 0; top: 694px; width: 1920px; height: 56px; overflow: hidden; }
+.s2line { position: absolute; left: 0; top: 0; width: 1920px; text-align: center; font-size: 38px; font-weight: 400; color: #5d5d5d; letter-spacing: -0.015em; line-height: 56px; }

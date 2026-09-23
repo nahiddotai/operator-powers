@@ -1,0 +1,50 @@
+/* S6 iPhone */
+#s6 { background: transparent; }
+.s6win { position: absolute; left: 140px; top: 170px; width: 1180px; height: 700px; border-radius: 22px; background: rgba(255,255,255,.9);
+  box-shadow: 0 30px 80px rgba(30,30,90,.22); overflow: hidden; filter: blur(9px); }
+.s6side { position: absolute; left: 0; top: 0; bottom: 0; width: 210px; background: #f6f6f8; padding: 70px 18px; display: flex; flex-direction: column; gap: 16px; }
+.s6side i { display: block; height: 14px; border-radius: 7px; background: #e4e4ea; } .s6side i.s { width: 60%; }
+.s6main { position: absolute; left: 210px; top: 0; right: 0; bottom: 0; }
+.s6main b { position: absolute; left: 330px; top: 210px; width: 300px; height: 22px; border-radius: 11px; background: #d9d9e0; }
+.s6comp { position: absolute; left: 180px; top: 270px; width: 600px; height: 90px; border-radius: 26px; border: 2px solid #e8e8ee; }
+.s6card { position: absolute; left: 180px; top: 400px; width: 600px; height: 200px; border-radius: 20px; background: #f3f2ff; }
+.s6h { position: absolute; left: 150px; top: 0; width: 620px; height: 1080px; display: flex; flex-direction: column; justify-content: center; gap: 18px; }
+.s6t { font-size: 76px; font-weight: 600; line-height: 1.05; letter-spacing: -0.045em; color: #0d0d0d; }
+.s6t .w { opacity: 0; }
+#s6lab { opacity: 0; }
+.s6stage { perspective: 2200px; }
+.phone { position: absolute; left: 1086px; top: 90px; width: 440px; height: 900px; border-radius: 76px; background: linear-gradient(145deg, #3a3a40, #121214 40%, #2a2a2e);
+  padding: 14px; box-shadow: 0 60px 120px rgba(30,20,90,.35), 0 20px 40px rgba(30,20,90,.2), inset 0 0 0 2px rgba(255,255,255,.12); transform-origin: 50% 55%; }
+.scr { position: relative; width: 412px; height: 872px; border-radius: 62px; background: #fff; overflow: hidden; font-size: 16px; }
+.island { position: absolute; left: 146px; top: 14px; width: 120px; height: 36px; border-radius: 18px; background: #000; }
+.stat { position: absolute; left: 0; top: 0; width: 100%; height: 56px; padding: 18px 34px 0 44px; justify-content: space-between; font-size: 17px; }
+.stat b { font-weight: 600; }
+.stat .ic { width: 18px; height: 18px; stroke-width: 2.4; }
+.stat .bat { display: block; width: 26px; height: 13px; border-radius: 4px; border: 1.6px solid #0d0d0d; margin-left: 6px; background: linear-gradient(90deg, #0d0d0d 70%, transparent 70%); background-clip: content-box; padding: 1.5px; }
+.pnav { position: absolute; left: 0; top: 62px; width: 100%; height: 48px; padding: 0 20px; justify-content: space-between; }
+.pnav .ic { width: 24px; height: 24px; stroke-width: 1.9; }
+.pnav b { gap: 4px; font-size: 18px; font-weight: 600; }
+.pnav b .ic { width: 16px; height: 16px; color: #8f8f8f; }
+.pthread { position: absolute; left: 18px; right: 18px; top: 128px; display: flex; flex-direction: column; gap: 14px; }
+.pu { align-self: flex-end; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.pu .ubub { font-size: 16.5px; padding: 10px 16px; max-width: 290px; }
+.pu .att { height: 50px; } .pu .att .atti { width: 34px; height: 34px; }
+.pw { padding: 16px 16px 8px; }
+.pw .wh { margin-bottom: 8px; }
+.pr { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid #f0f0f0; font-size: 15.5px; }
+.pr em { font-style: normal; font-size: 12.5px; font-weight: 600; padding: 4px 9px; border-radius: 999px; width: 70px; text-align: center; flex: none; }
+.pr .g { background: #e3f6ef; color: #0b7d5f; } .pr .a { background: #fff4de; color: #a86200; } .pr .r { background: #fdeceb; color: #c2412f; } .pr .n { background: #eeecfe; color: #4b40d6; }
+.pcomp { position: absolute; left: 14px; right: 14px; bottom: 40px; height: 54px; gap: 8px; }
+.pplus { width: 44px; height: 44px; border-radius: 50%; background: #f2f2f2; display: flex; align-items: center; justify-content: center; flex: none; }
+.pplus .ic { width: 22px; height: 22px; }
+.ppill { position: relative; flex: 1; height: 50px; border-radius: 25px; border: 1px solid #e3e3e3; padding: 0 14px 0 18px; font-size: 16.5px; }
+.ppill .ph { position: absolute; left: 18px; top: 14px; }
+#ptype { white-space: nowrap; overflow: hidden; }
+.pmic { margin-left: auto; width: 21px; height: 21px; color: #3d3d3d; flex: none; }
+.pwave { position: absolute; left: 18px; top: 0; height: 48px; gap: 3px; opacity: 0; }
+.pwave i { display: block; width: 3px; height: 6px; border-radius: 2px; background: #0d0d0d; }
+.pvoice { width: 50px; height: 50px; border-radius: 50%; background: #0d0d0d; color: #fff; display: flex; align-items: center; justify-content: center; flex: none; }
+.pvoice .ic { width: 22px; height: 22px; stroke-width: 2.1; }
+.ptouch { position: absolute; right: 0; top: 2px; width: 50px; height: 50px; border-radius: 50%; background: rgba(97,85,243,.35); opacity: 0; }
+.homebar { position: absolute; left: 136px; bottom: 10px; width: 140px; height: 5px; border-radius: 3px; background: #0d0d0d; }
+.pgreet { position: absolute; left: 0; top: 400px; width: 100%; text-align: center; font-size: 24px; font-weight: 500; letter-spacing: -0.02em; color: #0d0d0d; }

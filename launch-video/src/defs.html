@@ -1,0 +1,59 @@
+<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <!-- OP monogram gradients (userSpace, 1024 grid) -->
+    <linearGradient id="gO" gradientUnits="userSpaceOnUse" x1="251" y1="547" x2="581" y2="217">
+      <stop offset="0" stop-color="#5e52f2" /><stop offset="0.5" stop-color="#a397f5" /><stop offset="1" stop-color="#f0edfc" />
+    </linearGradient>
+    <linearGradient id="gP" gradientUnits="userSpaceOnUse" x1="502" y1="789" x2="767" y2="484">
+      <stop offset="0" stop-color="#5e52f2" /><stop offset="0.52" stop-color="#a99df6" /><stop offset="1" stop-color="#f0edfc" />
+    </linearGradient>
+    <linearGradient id="gTile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1334" /><stop offset="1" stop-color="#020719" />
+    </linearGradient>
+    <radialGradient id="gTileGlow" cx="0.3" cy="0.25" r="0.9">
+      <stop offset="0" stop-color="#27306a" stop-opacity=".55" /><stop offset="1" stop-color="#020719" stop-opacity="0" />
+    </radialGradient>
+
+    <symbol id="op-mark" viewBox="0 0 1024 1024">
+      <rect width="1024" height="1024" rx="228" fill="url(#gTile)" />
+      <rect width="1024" height="1024" rx="228" fill="url(#gTileGlow)" />
+      <rect x="2" y="2" width="1020" height="1020" rx="226" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="4" />
+      <circle cx="416" cy="382" r="133" fill="none" stroke="url(#gO)" stroke-width="64" />
+      <path d="M531.5 789 V513.5 H656 A80.75 80.75 0 0 1 656 675 H531.5" fill="none" stroke="url(#gP)" stroke-width="60" stroke-linejoin="miter" />
+    </symbol>
+
+    <!-- directional motion blur for whip pans (stdDeviation animated) -->
+    <filter id="mbx" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+      <feGaussianBlur id="mbxg" stdDeviation="0 0" />
+    </filter>
+    <filter id="mby" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+      <feGaussianBlur id="mbyg" stdDeviation="0 0" />
+    </filter>
+
+    <!-- icons: lucide-style 24 grid -->
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3" /><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3" /></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" /></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5" /><path d="m20.5 20.5-4.2-4.2" /></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.4 2.6a2.1 2.1 0 1 1 3 3L12 15l-4 1 1-4Z" /></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.6" /><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6" /><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6" /><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6" /></symbol>
+    <symbol id="i-term" viewBox="0 0 24 24"><path d="m4 17 6-6-6-6M12 19h8" /></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" /></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" /></symbol>
+    <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2" /><circle cx="12" cy="12" r="1.2" /><circle cx="19" cy="12" r="1.2" /></symbol>
+    <symbol id="i-side" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M9.5 3v18" /></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.5 13.8 9l5.7 1.9-5.7 1.9L12 18.5l-1.8-5.7-5.7-1.9L10.2 9Z" /></symbol>
+    <symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 10v4M7.5 6.5v11M12 3.5v17M16.5 7.5v9M21 10v4" /></symbol>
+    <symbol id="i-headph" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" /></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 8h16M4 16h12" /></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12" /></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6" /></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M21.5 20a6.5 6.5 0 0 0-4-6" /></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5" /><path d="M3 9.5h18M8 2.5v4M16 2.5v4" /></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7Z" /></symbol>
+    <symbol id="i-signal" viewBox="0 0 24 24"><path d="M2 20h2M7 20v-4M12 20v-8M17 20V8M22 20V4" /></symbol>
+  </defs>
+</svg>

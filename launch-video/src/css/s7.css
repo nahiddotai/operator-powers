@@ -1,0 +1,17 @@
+/* S7 promise + S8 end card */
+#s7, #s8 { background: #fbfbfd; }
+.s7-ground { background: radial-gradient(900px 500px at 50% 50%, rgba(226,222,255,.45), rgba(251,251,253,0) 70%); }
+#s7rings { left: 960px; top: 540px; width: 0; height: 0; }
+.s7ring { position: absolute; left: -110px; top: -110px; width: 220px; height: 220px; border-radius: 50%; display: block; opacity: 0;
+  border: 1.5px solid rgba(110,98,245,.25); box-shadow: 0 0 70px rgba(120,108,246,.20) inset, 0 0 50px rgba(120,108,246,.12); }
+.s7row { position: absolute; left: 0; top: 490px; width: 1920px; height: 100px; }
+.s7tw { position: absolute; left: 0; top: 0; height: 100px; white-space: nowrap; }
+.s7t { display: inline-block; font-size: 78px; font-weight: 600; letter-spacing: -0.045em; line-height: 100px; color: #0d0d0d; padding-right: 26px; white-space: nowrap; }
+.s7mark { position: absolute; left: 0; top: 18px; width: 64px; height: 64px; }
+.s7mark svg { position: absolute; left: -72px; top: -72px; transform: scale(.3077); transform-origin: 104px 104px; border-radius: 22%;
+  filter: drop-shadow(0 10px 22px rgba(40,30,130,.25)); }
+.s8-glow { background: radial-gradient(520px 320px at 50% 38%, rgba(214,208,255,.55), rgba(251,251,253,0) 70%); opacity: 0; }
+#s8tile { left: 856px; top: 292px; width: 208px; height: 208px; border-radius: 22%; box-shadow: 0 34px 70px rgba(40,30,130,.22), 0 10px 22px rgba(40,30,130,.12); }
+#s8tile svg { display: block; }
+.s8word { left: 0; top: 552px; width: 1920px; text-align: center; font-size: 96px; font-weight: 600; letter-spacing: -0.045em; color: #1d1d1f; line-height: 1.1; }
+.s8now { left: 0; top: 684px; width: 1920px; text-align: center; font-size: 44px; font-weight: 500; letter-spacing: -0.02em; color: #86868b; }

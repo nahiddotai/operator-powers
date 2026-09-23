@@ -1,0 +1,7 @@
+renders/*
+!renders/.gitkeep
+.hyperframes/
+snapshots/
+node_modules/
+assets/soundtrack.wav
+assets/*.tmp.wav

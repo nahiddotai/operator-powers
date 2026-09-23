@@ -1,0 +1,83 @@
+/* ---------- base ---------- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #ffffff; }
+#root {
+  position: relative; width: 1920px; height: 1080px; overflow: hidden;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #0d0d0d; background: #ffffff;
+  -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision;
+}
+:root {
+  --ink: #0d0d0d; --ink2: #5d5d5d; --ink3: #8f8f8f; --line: #e6e6e6;
+  --side: #f9f9f9; --bubble: #f4f4f4; --acc: #6155f3; --acc-soft: #b9b2f8;
+  --ok: #10a37f;
+}
+
+/* ---------- scene scaffolding ---------- */
+.scene { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+.layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+.stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; perspective: 2400px; perspective-origin: 50% 50%; }
+.cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; transform-style: preserve-3d; }
+.abs { position: absolute; }
+.row { display: flex; align-items: center; }
+.col { display: flex; flex-direction: column; }
+.nowrap { white-space: nowrap; }
+.w { display: inline-block; white-space: pre; }
+
+/* ---------- global background + flash ---------- */
+#bg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+#bg canvas { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: block; }
+#grain {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0.06; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+#flash { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: #ffffff; opacity: 0; pointer-events: none; }
+
+/* ---------- cursor + ripple ---------- */
+.cursor { position: absolute; left: 0; top: 0; width: 34px; height: 40px; transform-origin: 0 0; z-index: 50; }
+.cursor svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 3px 5px rgba(0,0,0,.28)); display: block; }
+.ripple { position: absolute; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; border: 2px solid rgba(97,85,243,.55); opacity: 0; }
+
+/* ---------- OP mark ---------- */
+.opmark { display: block; }
+.optile { border-radius: 22%; overflow: hidden; background: #030a1f; box-shadow: 0 1px 0 rgba(255,255,255,.06) inset; }
+
+/* ---------- icons ---------- */
+.ic { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* ---------- ChatGPT desktop window ---------- */
+.win {
+  position: absolute; background: #ffffff; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.10), 0 30px 80px rgba(16,18,60,.28), 0 8px 24px rgba(16,18,60,.14);
+  font-size: 15px; color: var(--ink);
+}
+.win .side { position: absolute; left: 0; top: 0; bottom: 0; width: 260px; background: var(--side); border-right: 1px solid #ededed; }
+.win .main { position: absolute; left: 260px; top: 0; right: 0; bottom: 0; background: #fff; overflow: hidden; }
+.lights { position: absolute; left: 18px; top: 18px; display: flex; gap: 8px; }
+.lights i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+.navi { display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 10px; margin: 0 8px; border-radius: 10px; font-size: 14.5px; color: #0d0d0d; }
+.navi .ic { width: 18px; height: 18px; stroke-width: 1.7; color: #3d3d3d; }
+.side .sec { font-size: 13px; color: var(--ink3); padding: 18px 18px 6px; }
+.chatitem { height: 34px; line-height: 34px; padding: 0 18px; margin: 0 8px; border-radius: 10px; font-size: 14.5px; color: #1f1f1f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pill-btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; font-weight: 500; }
+
+/* ChatGPT composer */
+.composer {
+  position: absolute; background: #fff; border-radius: 28px; border: 1px solid #e3e3e3;
+  box-shadow: 0 4px 16px rgba(0,0,0,.05), 0 0 1px rgba(0,0,0,.08);
+}
+.composer .ph { color: var(--ink3); }
+.circle-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: none; }
+.chip { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px 0 6px; border-radius: 999px; background: #f1f0fe; color: #3b32c4; font-size: 14px; font-weight: 500; white-space: nowrap; }
+
+/* user bubble + assistant */
+.ubub { background: var(--bubble); border-radius: 22px; padding: 11px 18px; font-size: 15.5px; line-height: 1.45; color: #0d0d0d; max-width: 520px; }
+.tool-line { display: flex; align-items: center; gap: 8px; font-size: 14.5px; color: var(--ink2); }
+.card { background: #fff; border: 1px solid #e8e8e8; border-radius: 18px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+
+/* glass (Codex) */
+.glass {
+  background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.42);
+  backdrop-filter: blur(26px) saturate(1.5); -webkit-backdrop-filter: blur(26px) saturate(1.5);
+  box-shadow: 0 24px 70px rgba(18,20,70,.20), 0 1px 0 rgba(255,255,255,.35) inset;
+}

@@ -1,0 +1,29 @@
+/* S5 Codex */
+#s5 { background: transparent; color: #fff; }
+.cxlabel { left: 0; top: 0; height: 46px; padding: 0 20px 0 16px; gap: 10px; border-radius: 23px; font-size: 20px; font-weight: 500; color: rgba(255,255,255,.92); }
+.cxlabel .ic { width: 20px; height: 20px; }
+.cxh { left: 0; top: 378px; width: 1920px; text-align: center; font-size: 60px; font-weight: 500; letter-spacing: -0.035em; color: #fff; text-shadow: 0 2px 30px rgba(20,20,80,.18); }
+.cxcomp { left: 330px; top: 486px; width: 1260px; height: 96px; border-radius: 48px; padding: 0 20px 0 28px; gap: 16px; }
+.cxplus { width: 30px; height: 30px; color: #fff; stroke-width: 1.8; }
+.cxchip { gap: 8px; height: 44px; padding: 0 16px 0 8px; border-radius: 22px; background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.35); font-size: 19px; font-weight: 500; white-space: nowrap; }
+.cxchip svg { border-radius: 8px; }
+.cxtext { font-size: 30px; font-weight: 400; white-space: nowrap; color: #fff; letter-spacing: -0.01em; }
+.cxw { display: inline-block; }
+.cxcaret { display: inline-block; width: 2px; height: 34px; background: #fff; vertical-align: -6px; margin-left: 2px; opacity: 0; }
+.cxright { margin-left: auto; gap: 22px; }
+.cxmodel { gap: 6px; font-size: 21px; color: rgba(255,255,255,.85); }
+.cxmodel .ic { width: 18px; height: 18px; }
+.cxmic { width: 28px; height: 28px; color: #fff; }
+.cxsend { width: 58px; height: 58px; border-radius: 50%; background: #fff; color: #1b1f3b; display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%; }
+.cxsend .ic { width: 26px; height: 26px; stroke-width: 2.2; }
+#s5tasks { opacity: 0; }
+.cxth { position: absolute; left: 0; top: 262px; width: 1920px; text-align: center; font-size: 56px; font-weight: 500; letter-spacing: -0.035em; color: #fff; text-shadow: 0 2px 30px rgba(20,20,80,.2); }
+.cxlist { position: absolute; left: 470px; top: 400px; width: 980px; display: flex; flex-direction: column; gap: 18px; }
+.cxtask { height: 110px; border-radius: 28px; padding: 0 30px 0 28px; gap: 20px; }
+.cxtask svg { border-radius: 12px; flex: none; }
+.cxtask b { font-size: 27px; font-weight: 600; letter-spacing: -0.02em; } .cxtask .col span { font-size: 19px; color: rgba(255,255,255,.78); margin-top: 2px; }
+.cxprog { margin-left: auto; width: 220px; height: 8px; border-radius: 4px; background: rgba(255,255,255,.25); overflow: hidden; }
+.cxprog i { display: block; height: 100%; width: 100%; background: #fff; border-radius: 4px; transform-origin: 0 50%; transform: scaleX(0); }
+.cxok { position: absolute; right: 30px; gap: 8px; height: 44px; padding: 0 18px 0 14px; border-radius: 22px; background: rgba(255,255,255,.95); color: #0b7d5f; font-size: 19px; font-weight: 600; opacity: 0; }
+.cxtask { position: relative; }
+.cxok .ic { width: 20px; height: 20px; stroke-width: 2.6; }

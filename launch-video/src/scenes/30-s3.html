@@ -1,0 +1,205 @@
+<!-- S3 INSTALL IN CHATGPT 10.0-19.5 + S4 OUTCOMES 19.5-34.0 (one continuous window) -->
+<section id="s3" class="scene clip" data-start="10" data-duration="24" data-track-index="1">
+  <div class="stage" id="s3stage">
+    <div class="cam" id="s3cam">
+      <div class="win" id="cgwin" style="left:200px;top:110px;width:1520px;height:860px">
+        <!-- ===== sidebar ===== -->
+        <div class="side" id="cgside">
+          <div class="lights"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+          <svg class="ic abs" style="left:222px;top:14px;color:#5d5d5d"><use href="#i-side" /></svg>
+          <div class="col" style="padding-top:60px">
+            <div class="navi"><svg class="ic"><use href="#i-pen" /></svg>New chat</div>
+            <div class="navi"><svg class="ic"><use href="#i-search" /></svg>Search chats</div>
+            <div class="navi" id="navPlugins"><svg class="ic"><use href="#i-grid" /></svg>Plugins</div>
+            <div class="navi"><svg class="ic"><use href="#i-term" /></svg>Codex</div>
+            <div class="navi"><svg class="ic"><use href="#i-book" /></svg>Library</div>
+            <div id="navOPwrap" style="height:0;overflow:hidden">
+              <div class="navi" id="navOP" style="margin-top:2px"><svg class="opi" viewBox="0 0 1024 1024" width="20" height="20"><use href="#op-mark" /></svg>Operator Powers</div>
+            </div>
+            <div class="sec">Chats</div>
+            <div class="chatitem">Q3 planning call notes</div>
+            <div class="chatitem">Newsletter: the pricing story</div>
+            <div class="chatitem">Podcast ep. 42 outline</div>
+            <div class="chatitem">Onboarding SOP draft</div>
+            <div class="chatitem">Landing page feedback</div>
+            <div class="chatitem">Hiring plan for Q4</div>
+            <div class="chatitem">Webinar follow-up emails</div>
+            <div class="chatitem">Case study: Lumen</div>
+          </div>
+          <div class="cguser row"><span class="av">N</span><div class="col"><b>Nahid</b><span>Work</span></div></div>
+        </div>
+
+        <!-- ===== main ===== -->
+        <div class="main" id="cgmain">
+          <div class="cghead row">
+            <div class="row" style="gap:4px;font-size:17px;font-weight:500">ChatGPT<svg class="ic" style="width:16px;height:16px;color:#8f8f8f"><use href="#i-chev" /></svg></div>
+            <div class="row" style="margin-left:auto;gap:18px;color:#3d3d3d"><svg class="ic" style="width:18px;height:18px"><use href="#i-share" /></svg><svg class="ic" style="width:18px;height:18px"><use href="#i-dots" /></svg></div>
+          </div>
+
+          <!-- home -->
+          <div class="view" id="vHome">
+            <div class="homeh" id="homeh">What can I help with?</div>
+            <div class="composer cgcomp" id="homecomp">
+              <div id="attWrap" class="attwrap">
+                <div class="att row"><span class="atti" style="background:#ff7a59"><svg class="ic"><use href="#i-headph" /></svg></span><div class="col"><b>Q3-planning-call.m4a</b><span>Audio · 92 min</span></div></div>
+              </div>
+              <div class="ctext"><span class="ph" id="homeph">Ask anything</span><span id="hometype"></span><span class="caret" id="homecaret"></span></div>
+              <div class="ctools row">
+                <span class="circle-btn tool-ghost"><svg class="ic"><use href="#i-plus" /></svg></span>
+                <span class="chip" id="homechip"><svg viewBox="0 0 1024 1024" width="22" height="22"><use href="#op-mark" /></svg>Operator Powers</span>
+                <span style="margin-left:auto" class="circle-btn tool-ghost"><svg class="ic"><use href="#i-mic" /></svg></span>
+                <span class="circle-btn sendb" id="homesend"><svg class="ic" id="homesendW"><use href="#i-wave" /></svg><svg class="ic abs" id="homesendU" style="opacity:0"><use href="#i-up" /></svg></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- plugins directory -->
+          <div class="view" id="vPlugins" style="opacity:0">
+            <div class="ph1">Plugins</div>
+            <div class="ph2">Add skills and tools to ChatGPT</div>
+            <div class="psearch row" id="psearch"><svg class="ic"><use href="#i-search" /></svg><span class="ptxt"><span class="ph pph" id="psph">Search plugins</span><span id="pstype"></span><span class="caret" id="pscaret"></span></span></div>
+            <div class="ptabs row"><span class="on">Featured</span><span>Productivity</span><span>Writing</span><span>Research</span><span>Design</span><span>Lifestyle</span></div>
+            <div id="pgrid">
+              <div class="psec">Featured</div>
+              <div class="pgrid">
+                <div class="pcard row"><span class="pic" style="background:linear-gradient(135deg,#ffb86b,#ff6b6b)"><svg class="ic"><use href="#i-grid" /></svg></span><div class="col"><b>Slide Studio</b><span>Decks from an outline</span></div></div>
+                <div class="pcard row"><span class="pic" style="background:linear-gradient(135deg,#6be3ff,#3b82f6)"><svg class="ic"><use href="#i-search" /></svg></span><div class="col"><b>Research Kit</b><span>Sources, notes and summaries</span></div></div>
+                <div class="pcard row"><span class="pic" style="background:linear-gradient(135deg,#8ef0b0,#10a37f)"><svg class="ic"><use href="#i-globe" /></svg></span><div class="col"><b>Trip Planner</b><span>Itineraries and bookings</span></div></div>
+                <div class="pcard row"><span class="pic" style="background:linear-gradient(135deg,#f7a8ff,#a855f7)"><svg class="ic"><use href="#i-file" /></svg></span><div class="col"><b>Doc Signer</b><span>Contracts and approvals</span></div></div>
+                <div class="pcard row"><span class="pic" style="background:linear-gradient(135deg,#ffe07a,#f59e0b)"><svg class="ic"><use href="#i-cal" /></svg></span><div class="col"><b>Calendar Assist</b><span>Scheduling across teams</span></div></div>
+                <div class="pcard row"><span class="pic" style="background:linear-gradient(135deg,#9ab6ff,#4f46e5)"><svg class="ic"><use href="#i-bolt" /></svg></span><div class="col"><b>Sheets Helper</b><span>Formulas and clean-up</span></div></div>
+              </div>
+            </div>
+            <div id="presults" style="opacity:0">
+              <div class="psec">Results</div>
+              <div class="presult row" id="presult">
+                <svg viewBox="0 0 1024 1024" width="60" height="60" class="presi"><use href="#op-mark" /></svg>
+                <div class="col"><b>Operator Powers</b><span>AI skills to operate and grow</span></div>
+                <span class="pdev">nahiddotai</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- chat thread -->
+          <div class="view" id="vChat" style="opacity:0">
+            <div id="thread">
+              <!-- V1 meeting miner -->
+              <div class="ex" id="ex1">
+                <div class="umsg">
+                  <div class="att row"><span class="atti" style="background:#ff7a59"><svg class="ic"><use href="#i-headph" /></svg></span><div class="col"><b>Q3-planning-call.m4a</b><span>Audio · 92 min</span></div></div>
+                  <div class="ubub">Find the decision buried in this call.</div>
+                </div>
+                <div class="tool-line" id="tl1"><svg viewBox="0 0 1024 1024" width="22" height="22"><use href="#op-mark" /></svg><span class="shim">Used Meeting Miner</span><svg class="ic" style="width:16px;height:16px"><use href="#i-chev" /></svg></div>
+                <div class="card wdg" id="w1">
+                  <div class="wh row"><svg viewBox="0 0 1024 1024" width="26" height="26"><use href="#op-mark" /></svg><b>Meeting Miner</b><span>Q3 planning call · 92 min</span></div>
+                  <div class="wl">Decisions</div>
+                  <div class="drow row"><i class="ck"><svg class="ic"><use href="#i-check" /></svg></i><span>Launch moves to October 14</span><em>Nadia</em></div>
+                  <div class="drow row"><i class="ck"><svg class="ic"><use href="#i-check" /></svg></i><span>Cut the webinar, keep the waitlist</span><em>Sam</em></div>
+                  <div class="drow row"><i class="ck"><svg class="ic"><use href="#i-check" /></svg></i><span>Pricing page ships before launch</span><em>Priya</em></div>
+                  <div class="missed row"><svg class="ic"><use href="#i-spark" /></svg><div><b>What everyone missed:</b> nobody owns the email sequence, and the launch depends on it.</div></div>
+                  <div class="wfoot row"><span class="tag">7 next steps</span><span class="tag">3 owners</span><span class="tag">2 open risks</span></div>
+                </div>
+              </div>
+
+              <!-- V2 content repurposing -->
+              <div class="ex" id="ex2">
+                <div class="umsg">
+                  <div class="att row"><span class="atti" style="background:#8b5cf6"><svg class="ic"><use href="#i-headph" /></svg></span><div class="col"><b>ep-42-final.mp3</b><span>Audio · 38 min</span></div></div>
+                  <div class="ubub">Turn this episode into a week of posts.</div>
+                </div>
+                <div class="tool-line" id="tl2"><svg viewBox="0 0 1024 1024" width="22" height="22"><use href="#op-mark" /></svg><span class="shim">Used Content Repurposing</span><svg class="ic" style="width:16px;height:16px"><use href="#i-chev" /></svg></div>
+                <div class="card wdg" id="w2">
+                  <div class="wh row"><svg viewBox="0 0 1024 1024" width="26" height="26"><use href="#op-mark" /></svg><b>Content Repurposing</b><span>From ep. 42 · 7 posts</span></div>
+                  <div class="posts row">
+                    <div class="post p-li"><div class="pt">LinkedIn</div><b>I almost quit the podcast at episode 12.</b><i></i><i></i><i class="s"></i></div>
+                    <div class="post p-th"><div class="pt">Threads</div><b>The one question I ask before every launch</b><i></i><i class="s"></i><div class="thr">1/6</div></div>
+                    <div class="post p-nl"><div class="pt">Newsletter</div><div class="nlbar"></div><b>Issue 42: the launch I almost cancelled</b><i></i><i class="s"></i></div>
+                    <div class="post p-ca"><div class="pt">Carousel</div><div class="slides"><span></span><span></span><span class="top">5 lessons from 100 launches</span></div></div>
+                  </div>
+                  <div class="week row"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+                </div>
+              </div>
+
+              <!-- V3 llm council -->
+              <div class="ex" id="ex3">
+                <div class="umsg"><div class="ubub">Should I raise my price to $49? Run the council.</div></div>
+                <div class="tool-line" id="tl3"><svg viewBox="0 0 1024 1024" width="22" height="22"><use href="#op-mark" /></svg><span class="shim">Used LLM Council</span><svg class="ic" style="width:16px;height:16px"><use href="#i-chev" /></svg></div>
+                <div class="card wdg" id="w3">
+                  <div class="wh row"><svg viewBox="0 0 1024 1024" width="26" height="26"><use href="#op-mark" /></svg><b>LLM Council</b><span>5 advisors · peer reviewed</span></div>
+                  <div class="adv row"><i style="background:#6155f3">O</i><b>The Operator</b><span>Churn is low enough to absorb it</span><em class="for">For</em></div>
+                  <div class="adv row"><i style="background:#ef6b5b">S</i><b>The Skeptic</b><span>Onboarding is still the weak spot</span><em class="ag">Against</em></div>
+                  <div class="adv row"><i style="background:#10a37f">C</i><b>The Customer</b><span>Fine, if setup gets faster</span><em class="dep">Depends</em></div>
+                  <div class="adv row"><i style="background:#f59e0b">N</i><b>The Numbers</b><span>+18% revenue at 6% churn</span><em class="for">For</em></div>
+                  <div class="verdict"><span>Verdict</span>Raise to $49 for new customers. Keep current customers at $39 for 90 days.</div>
+                </div>
+              </div>
+
+              <!-- V4 customer insight -->
+              <div class="ex" id="ex4">
+                <div class="umsg">
+                  <div class="att row"><span class="atti" style="background:#3b82f6"><svg class="ic"><use href="#i-file" /></svg></span><div class="col"><b>interviews.zip</b><span>12 transcripts</span></div></div>
+                  <div class="ubub">What do my customers keep saying?</div>
+                </div>
+                <div class="tool-line" id="tl4"><svg viewBox="0 0 1024 1024" width="22" height="22"><use href="#op-mark" /></svg><span class="shim">Used Customer Insight Synthesizer</span><svg class="ic" style="width:16px;height:16px"><use href="#i-chev" /></svg></div>
+                <div class="card wdg" id="w4">
+                  <div class="wh row"><svg viewBox="0 0 1024 1024" width="26" height="26"><use href="#op-mark" /></svg><b>Customer Insight Synthesizer</b><span>12 interviews · 3 patterns</span></div>
+                  <div class="pat"><div class="row"><b>Setup takes too long</b><em>9 of 12</em></div><div class="bar"><i style="width:75%"></i></div><q>I gave up on day two and came back a month later.</q></div>
+                  <div class="pat"><div class="row"><b>They want templates, not a blank page</b><em>7 of 12</em></div><div class="bar"><i style="width:58%"></i></div><q>Just show me what good looks like.</q></div>
+                  <div class="pat"><div class="row"><b>The pricing page raises more questions</b><em>5 of 12</em></div><div class="bar"><i style="width:42%"></i></div><q>I couldn't tell which plan I needed.</q></div>
+                </div>
+              </div>
+            </div>
+            <div class="composer cgcomp chatcomp">
+              <div class="ctext"><span class="ph">Ask anything</span></div>
+              <div class="ctools row">
+                <span class="circle-btn tool-ghost"><svg class="ic"><use href="#i-plus" /></svg></span>
+                <span class="chip"><svg viewBox="0 0 1024 1024" width="22" height="22"><use href="#op-mark" /></svg>Operator Powers</span>
+                <span style="margin-left:auto" class="circle-btn tool-ghost"><svg class="ic"><use href="#i-mic" /></svg></span>
+                <span class="circle-btn sendb"><svg class="ic"><use href="#i-wave" /></svg></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ===== plugin detail modal ===== -->
+        <div class="dim" id="pdim"></div>
+        <div class="pmodal" id="pmodal">
+          <svg class="ic pclose" style="width:22px;height:22px"><use href="#i-x" /></svg>
+          <div class="row" style="gap:20px;align-items:center">
+            <svg viewBox="0 0 1024 1024" width="88" height="88" style="border-radius:21px;box-shadow:0 6px 18px rgba(20,20,70,.18)"><use href="#op-mark" /></svg>
+            <div class="col" style="gap:4px">
+              <div class="pmname">Operator Powers</div>
+              <div class="pmdev">nahiddotai · Productivity</div>
+            </div>
+            <div class="pinstall" id="pinstall">
+              <span class="lab" id="pinLab">Install</span>
+              <span class="spin" id="pinSpin"></span>
+              <span class="done row" id="pinDone"><svg class="ic"><use href="#i-check" /></svg>Installed</span>
+            </div>
+          </div>
+          <div class="pmtag">AI skills to operate and grow</div>
+          <div class="pmdesc">A maintained collection of 28 practical AI skills for non-technical operators. Turn customer evidence into insight, build workflows, pressure-test decisions, create content and prepare product launches.</div>
+          <div class="pmchips row"><span>Skills</span><span>MCP</span><span>Hooks</span></div>
+          <div class="pmh">Try asking</div>
+          <div class="pmtry row"><svg class="ic"><use href="#i-spark" /></svg>Audit my last two weeks and tell me what to focus on.</div>
+          <div class="pmtry row"><svg class="ic"><use href="#i-spark" /></svg>Turn these meeting notes into decisions and next steps.</div>
+          <div class="pmtry row"><svg class="ic"><use href="#i-spark" /></svg>Set up my AGENTS.md so my AI understands how I work.</div>
+          <div class="pmh">Information</div>
+          <div class="pminfo"><span>Category</span><b>Productivity</b><span>Developer</span><b>nahiddotai</b><span>Version</span><b>1.0.1</b></div>
+        </div>
+        <!-- toast -->
+        <div class="toast row" id="toast"><svg viewBox="0 0 1024 1024" width="24" height="24"><use href="#op-mark" /></svg><b>Operator Powers is installed</b><span>28 skills ready</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4 overlay: scrim + outcome headlines (screen space) -->
+  <div class="layer" id="s4ov">
+    <div class="s4scrim" id="s4scrim"></div>
+    <div class="s4h" id="h1"><div class="s4lab">Meetings</div><div class="s4t"><span class="w">A</span> <span class="w">90-minute</span> <span class="w">call,</span> <span class="w">down</span> <span class="w">to</span> <span class="w">three</span> <span class="w">decisions.</span></div></div>
+    <div class="s4h" id="h2"><div class="s4lab">Content</div><div class="s4t"><span class="w">One</span> <span class="w">episode,</span> <span class="w">a</span> <span class="w">whole</span> <span class="w">week</span> <span class="w">of</span> <span class="w">posts.</span></div></div>
+    <div class="s4h" id="h3"><div class="s4lab">Decisions</div><div class="s4t"><span class="w">Pressure-test</span> <span class="w">the</span> <span class="w">call</span> <span class="w">before</span> <span class="w">you</span> <span class="w">make</span> <span class="w">it.</span></div></div>
+    <div class="s4h" id="h4"><div class="s4lab">Customers</div><div class="s4t"><span class="w">Twelve</span> <span class="w">interviews,</span> <span class="w">the</span> <span class="w">patterns</span> <span class="w">that</span> <span class="w">matter.</span></div></div>
+  </div>
+</section>

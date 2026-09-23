@@ -1,0 +1,1633 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>Operator Powers launch</title>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+/* ---------- base ---------- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #ffffff; }
+#root {
+  position: relative; width: 1920px; height: 1080px; overflow: hidden;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #0d0d0d; background: #ffffff;
+  -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision;
+}
+:root {
+  --ink: #0d0d0d; --ink2: #5d5d5d; --ink3: #8f8f8f; --line: #e6e6e6;
+  --side: #f9f9f9; --bubble: #f4f4f4; --acc: #6155f3; --acc-soft: #b9b2f8;
+  --ok: #10a37f;
+}
+
+/* ---------- scene scaffolding ---------- */
+.scene { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+.layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+.stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; perspective: 2400px; perspective-origin: 50% 50%; }
+.cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; transform-style: preserve-3d; }
+.abs { position: absolute; }
+.row { display: flex; align-items: center; }
+.col { display: flex; flex-direction: column; }
+.nowrap { white-space: nowrap; }
+.w { display: inline-block; white-space: pre; }
+
+/* ---------- global background + flash ---------- */
+#bg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+#bg canvas { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: block; }
+#grain {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0.06; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+#flash { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: #ffffff; opacity: 0; pointer-events: none; }
+
+/* ---------- cursor + ripple ---------- */
+.cursor { position: absolute; left: 0; top: 0; width: 34px; height: 40px; transform-origin: 0 0; z-index: 50; }
+.cursor svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 3px 5px rgba(0,0,0,.28)); display: block; }
+.ripple { position: absolute; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; border: 2px solid rgba(97,85,243,.55); opacity: 0; }
+
+/* ---------- OP mark ---------- */
+.opmark { display: block; }
+.optile { border-radius: 22%; overflow: hidden; background: #030a1f; box-shadow: 0 1px 0 rgba(255,255,255,.06) inset; }
+
+/* ---------- icons ---------- */
+.ic { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* ---------- ChatGPT desktop window ---------- */
+.win {
+  position: absolute; background: #ffffff; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.10), 0 30px 80px rgba(16,18,60,.28), 0 8px 24px rgba(16,18,60,.14);
+  font-size: 15px; color: var(--ink);
+}
+.win .side { position: absolute; left: 0; top: 0; bottom: 0; width: 260px; background: var(--side); border-right: 1px solid #ededed; }
+.win .main { position: absolute; left: 260px; top: 0; right: 0; bottom: 0; background: #fff; overflow: hidden; }
+.lights { position: absolute; left: 18px; top: 18px; display: flex; gap: 8px; }
+.lights i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+.navi { display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 10px; margin: 0 8px; border-radius: 10px; font-size: 14.5px; color: #0d0d0d; }
+.navi .ic { width: 18px; height: 18px; stroke-width: 1.7; color: #3d3d3d; }
+.side .sec { font-size: 13px; color: var(--ink3); padding: 18px 18px 6px; }
+.chatitem { height: 34px; line-height: 34px; padding: 0 18px; margin: 0 8px; border-radius: 10px; font-size: 14.5px; color: #1f1f1f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pill-btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; font-weight: 500; }
+
+/* ChatGPT composer */
+.composer {
+  position: absolute; background: #fff; border-radius: 28px; border: 1px solid #e3e3e3;
+  box-shadow: 0 4px 16px rgba(0,0,0,.05), 0 0 1px rgba(0,0,0,.08);
+}
+.composer .ph { color: var(--ink3); }
+.circle-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: none; }
+.chip { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px 0 6px; border-radius: 999px; background: #f1f0fe; color: #3b32c4; font-size: 14px; font-weight: 500; white-space: nowrap; }
+
+/* user bubble + assistant */
+.ubub { background: var(--bubble); border-radius: 22px; padding: 11px 18px; font-size: 15.5px; line-height: 1.45; color: #0d0d0d; max-width: 520px; }
+.tool-line { display: flex; align-items: center; gap: 8px; font-size: 14.5px; color: var(--ink2); }
+.card { background: #fff; border: 1px solid #e8e8e8; border-radius: 18px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+
+/* glass (Codex) */
+.glass {
+  background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.42);
+  backdrop-filter: blur(26px) saturate(1.5); -webkit-backdrop-filter: blur(26px) saturate(1.5);
+  box-shadow: 0 24px 70px rgba(18,20,70,.20), 0 1px 0 rgba(255,255,255,.35) inset;
+}
+
+/* S1 hook */
+#s1 { background: #ffffff; }
+.s1-ground { background: radial-gradient(1200px 520px at 50% 108%, rgba(214,210,255,.45), rgba(255,255,255,0) 70%); }
+#s1line {
+  position: absolute; left: 0; top: 490px; width: 1920px; height: 100px;
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  font-size: 72px; font-weight: 500; letter-spacing: -0.035em; line-height: 1;
+}
+.s1job { overflow: hidden; }
+.s1micwrap { position: relative; display: block; width: 0; height: 96px; flex: none; }
+.s1pill {
+  position: absolute; left: 0; top: 0; height: 96px; width: 96px; border-radius: 48px;
+  background: #ffffff; box-shadow: 0 10px 40px rgba(60,60,140,.10), 0 0 0 1px rgba(20,20,60,.06);
+  overflow: hidden;
+}
+.s1mic {
+  position: absolute; left: 0; top: 0; width: 96px; height: 96px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; color: #0d0d0d;
+}
+.s1mic .ic { width: 40px; height: 40px; stroke-width: 1.9; }
+.s1bars { position: absolute; left: 112px; top: 0; height: 96px; display: flex; align-items: center; gap: 7px; }
+.s1bars i { display: block; width: 5px; height: 10px; border-radius: 3px; background: #a9b4f7; }
+#s1yourai { font-size: 80px; font-weight: 600; letter-spacing: -0.045em; line-height: 1; color: transparent;
+  background: linear-gradient(90deg, #0d0d0d 0%, #0d0d0d 42%, #aab2d4 58%, #aab2d4 100%);
+  background-size: 260% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; padding: 0 6px 12px; }
+.s1tip { font-size: 38px; font-weight: 450; color: #fff; background: rgba(44,44,48,.9); border-radius: 16px; padding: 14px 26px; letter-spacing: -0.01em; }
+#s1b { display: flex; align-items: center; justify-content: center; }
+.s1fin { font-size: 132px; font-weight: 600; letter-spacing: -0.05em; line-height: 1; display: flex; gap: 32px; }
+
+/* S2 product */
+#s2 { background: #ffffff; }
+.s2-ground {
+  background:
+    radial-gradient(900px 620px at 22% 18%, rgba(222,218,255,.75), rgba(255,255,255,0) 70%),
+    radial-gradient(1000px 700px at 82% 92%, rgba(214,230,255,.7), rgba(255,255,255,0) 70%);
+}
+#s2wrap { transform-origin: 960px 480px; }
+#s2tile { left: 856px; top: 292px; width: 208px; height: 208px; border-radius: 22%;
+  box-shadow: 0 34px 70px rgba(40,30,130,.26), 0 10px 22px rgba(40,30,130,.14); }
+#s2tile svg { display: block; }
+#s2rings { left: 960px; top: 396px; width: 0; height: 0; }
+.s2ring { position: absolute; left: -104px; top: -104px; width: 208px; height: 208px; border-radius: 30%;
+  border: 1.5px solid rgba(110,98,245,.28); box-shadow: 0 0 60px rgba(120,108,246,.18) inset, 0 0 40px rgba(120,108,246,.10); display: block; opacity: 0; }
+.s2word { left: 0; top: 548px; width: 1920px; display: flex; justify-content: center; gap: 26px;
+  font-size: 108px; font-weight: 600; letter-spacing: -0.045em; line-height: 1.08; }
+.s2sub { left: 0; top: 694px; width: 1920px; height: 56px; overflow: hidden; }
+.s2line { position: absolute; left: 0; top: 0; width: 1920px; text-align: center; font-size: 38px; font-weight: 400; color: #5d5d5d; letter-spacing: -0.015em; line-height: 56px; }
+
+/* S3/S4 ChatGPT desktop */
+#s3 { background: transparent; }
+#cgwin { transform-origin: 50% 50%; }
+.opi { border-radius: 5px; flex: none; }
+.cguser { position: absolute; left: 12px; bottom: 14px; gap: 10px; font-size: 14px; }
+.cguser .av { width: 32px; height: 32px; border-radius: 50%; background: #6155f3; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
+.cguser b { font-weight: 500; } .cguser span { color: var(--ink3); font-size: 12.5px; }
+.cghead { position: absolute; left: 0; top: 0; right: 0; height: 56px; padding: 0 22px; z-index: 3; background: #fff; }
+.view { position: absolute; left: 0; top: 56px; right: 0; bottom: 0; }
+
+/* home */
+.homeh { position: absolute; left: 0; right: 0; top: 232px; text-align: center; font-size: 30px; font-weight: 500; letter-spacing: -0.02em; }
+.cgcomp { left: 246px; width: 768px; }
+#homecomp { top: 300px; min-height: 116px; }
+.attwrap { height: 0; overflow: hidden; padding: 0 14px; }
+.att { gap: 10px; height: 56px; padding: 0 16px 0 8px; border: 1px solid #e8e8e8; border-radius: 16px; background: #fff; width: max-content; }
+.att .atti { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; }
+.att .atti .ic { width: 20px; height: 20px; }
+.att b { font-size: 14px; font-weight: 600; } .att span { font-size: 12.5px; color: var(--ink3); }
+.attwrap .att { margin-top: 14px; }
+.ctext { height: 52px; padding: 16px 22px 0; font-size: 16.5px; white-space: nowrap; position: relative; }
+.ctext .ph { position: absolute; left: 22px; top: 16px; }
+.caret { display: inline-block; width: 2px; height: 20px; background: #0d0d0d; vertical-align: -3px; margin-left: 1px; opacity: 0; }
+.ctools { height: 60px; padding: 0 12px 0 12px; gap: 8px; }
+.tool-ghost { color: #3d3d3d; }
+.tool-ghost .ic { width: 20px; height: 20px; }
+.sendb { background: #0d0d0d; color: #fff; position: relative; }
+.sendb .ic { width: 18px; height: 18px; stroke-width: 2.1; }
+#homechip { opacity: 0; }
+
+/* plugins */
+.ph1 { position: absolute; left: 110px; top: 40px; font-size: 32px; font-weight: 600; letter-spacing: -0.02em; }
+.ph2 { position: absolute; left: 110px; top: 86px; font-size: 16px; color: var(--ink2); }
+.psearch { position: absolute; left: 110px; top: 130px; width: 540px; height: 46px; border-radius: 23px; background: #f4f4f4; padding: 0 18px; gap: 10px; font-size: 16px; color: #0d0d0d; }
+.psearch .ic { width: 18px; height: 18px; color: #8f8f8f; }
+.ptxt { position: relative; white-space: nowrap; }
+.pph { position: absolute; left: 0; top: 0; white-space: nowrap; }
+.ptabs { position: absolute; left: 110px; top: 196px; gap: 6px; font-size: 14.5px; color: var(--ink2); }
+.ptabs span { padding: 8px 14px; border-radius: 999px; }
+.ptabs .on { background: #f0f0f0; color: #0d0d0d; font-weight: 500; }
+#pgrid, #presults { position: absolute; left: 110px; top: 256px; width: 1040px; }
+.psec { font-size: 18px; font-weight: 600; margin-bottom: 14px; letter-spacing: -0.01em; }
+.pgrid { display: grid; grid-template-columns: repeat(3, 336px); gap: 16px; }
+.pcard { gap: 14px; height: 92px; padding: 0 18px; border: 1px solid #ececec; border-radius: 18px; background: #fff; }
+.pcard .pic { width: 50px; height: 50px; border-radius: 13px; display: flex; align-items: center; justify-content: center; color: #fff; flex: none; }
+.pcard .pic .ic { width: 22px; height: 22px; stroke-width: 2; }
+.pcard b { font-size: 15.5px; font-weight: 600; } .pcard span { font-size: 13.5px; color: var(--ink2); margin-top: 2px; }
+.presult { gap: 18px; width: 700px; height: 104px; padding: 0 22px; border: 1px solid #e6e6e6; border-radius: 20px; background: #fff; box-shadow: 0 6px 22px rgba(0,0,0,.06); transform-origin: 30% 50%; }
+.presi { border-radius: 15px; flex: none; }
+.presult b { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; } .presult span { font-size: 15px; color: var(--ink2); margin-top: 3px; }
+.pdev { margin-left: auto; font-size: 14px; color: var(--ink3); }
+
+/* modal */
+.dim { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,.30); opacity: 0; }
+.pmodal { position: absolute; left: 350px; top: 60px; width: 820px; height: 740px; background: #fff; border-radius: 26px; padding: 40px 42px;
+  box-shadow: 0 30px 90px rgba(0,0,0,.25); opacity: 0; transform-origin: 50% 60%; }
+.pclose { position: absolute; right: 26px; top: 24px; color: #5d5d5d; }
+.pmname { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
+.pmdev { font-size: 15.5px; color: var(--ink2); }
+.pinstall { position: relative; margin-left: auto; margin-right: 40px; width: 132px; height: 44px; border-radius: 22px; background: #0d0d0d; color: #fff;
+  font-size: 16px; font-weight: 500; transform-origin: 50% 50%; }
+.pinstall > * { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.pinstall .spin { width: 20px; height: 20px; left: 56px; top: 12px; border-radius: 50%; border: 2.4px solid rgba(255,255,255,.3); border-top-color: #fff; opacity: 0; }
+.pinstall .done { gap: 6px; color: #0d0d0d; opacity: 0; }
+.pinstall .done .ic { width: 18px; height: 18px; color: var(--ok); stroke-width: 2.4; }
+.pmtag { font-size: 19px; font-weight: 500; margin-top: 28px; letter-spacing: -0.01em; }
+.pmdesc { font-size: 16px; line-height: 1.6; color: var(--ink2); margin-top: 8px; max-width: 730px; }
+.pmchips { gap: 8px; margin-top: 16px; }
+.pmchips span { font-size: 13.5px; font-weight: 500; padding: 6px 12px; border-radius: 999px; background: #f2f2f2; color: #3d3d3d; }
+.pmh { font-size: 16px; font-weight: 600; margin-top: 26px; margin-bottom: 10px; }
+.pmtry { gap: 10px; height: 46px; padding: 0 16px; border-radius: 14px; background: #f7f7f7; font-size: 15px; margin-bottom: 8px; color: #1f1f1f; }
+.pmtry .ic { width: 17px; height: 17px; color: var(--acc); }
+.pminfo { display: grid; grid-template-columns: 160px 1fr; row-gap: 8px; font-size: 15px; }
+.pminfo span { color: var(--ink3); } .pminfo b { font-weight: 500; }
+
+/* toast */
+.toast { position: absolute; left: 0; top: 18px; gap: 10px; height: 48px; padding: 0 20px 0 12px; border-radius: 24px;
+  background: #0d0d0d; color: #fff; font-size: 15px; box-shadow: 0 10px 30px rgba(0,0,0,.2); z-index: 5; opacity: 0; white-space: nowrap; }
+.toast svg { border-radius: 6px; } .toast b { font-weight: 500; } .toast span { color: #a8a8a8; }
+
+/* chat thread */
+#thread { position: absolute; left: 246px; top: 26px; width: 768px; }
+.ex { display: flex; flex-direction: column; gap: 16px; padding-bottom: 90px; }
+.umsg { align-self: flex-end; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.tool-line { margin-top: 6px; }
+.tool-line svg:first-child { border-radius: 6px; }
+.shim { background: linear-gradient(90deg, #5d5d5d 0%, #5d5d5d 40%, #d0d0d0 50%, #5d5d5d 60%, #5d5d5d 100%); background-size: 300% 100%; background-position: 100% 0;
+  -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 500; }
+.chatcomp { top: 700px; min-height: 116px; }
+
+/* widgets */
+.wdg { padding: 20px 24px 22px; transform-origin: 50% 0%; }
+.wh { gap: 10px; font-size: 15px; margin-bottom: 14px; }
+.wh svg { border-radius: 7px; }
+.wh b { font-weight: 600; font-size: 16px; } .wh span { color: var(--ink3); font-size: 14px; }
+.wl { font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); margin: 4px 0 6px; }
+.drow { gap: 12px; height: 46px; border-bottom: 1px solid #f0f0f0; font-size: 16.5px; }
+.drow .ck { width: 24px; height: 24px; border-radius: 50%; background: #eeecfe; color: var(--acc); display: flex; align-items: center; justify-content: center; flex: none; }
+.drow .ck .ic { width: 14px; height: 14px; stroke-width: 2.6; }
+.drow em { margin-left: auto; font-style: normal; font-size: 13.5px; font-weight: 500; color: #3d3d3d; background: #f2f2f2; padding: 4px 10px; border-radius: 999px; }
+.missed { gap: 12px; align-items: flex-start; margin-top: 14px; padding: 14px 16px; border-radius: 14px; background: #f5f3ff; font-size: 15.5px; line-height: 1.45; color: #2a2560; }
+.missed .ic { width: 18px; height: 18px; color: var(--acc); margin-top: 2px; }
+.missed b { font-weight: 600; }
+.wfoot { gap: 8px; margin-top: 14px; }
+.tag { font-size: 13.5px; font-weight: 500; padding: 6px 12px; border-radius: 999px; border: 1px solid #e6e6e6; color: #3d3d3d; }
+
+.posts { gap: 12px; align-items: stretch; }
+.post { position: relative; width: 170px; height: 214px; border-radius: 14px; border: 1px solid #ececec; padding: 12px; background: #fff; display: flex; flex-direction: column; gap: 7px; overflow: hidden; }
+.post .pt { font-size: 11.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--ink3); }
+.post b { font-size: 14.5px; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; }
+.post i { display: block; height: 7px; border-radius: 4px; background: #eeeeee; }
+.post i.s { width: 60%; }
+.p-li { border-top: 3px solid #0a66c2; } .p-th { border-top: 3px solid #0d0d0d; } .p-nl { border-top: 3px solid #f59e0b; } .p-ca { border-top: 3px solid #6155f3; }
+.thr { margin-top: auto; font-size: 12px; color: var(--ink3); }
+.nlbar { height: 34px; border-radius: 8px; background: linear-gradient(135deg, #ffe7c2, #ffd08a); }
+.slides { position: relative; flex: 1; }
+.slides span { position: absolute; width: 118px; height: 132px; border-radius: 10px; background: #e9e6ff; }
+.slides span:nth-child(1) { left: 24px; top: 16px; background: #d9d4ff; }
+.slides span:nth-child(2) { left: 12px; top: 8px; background: #c3bbff; }
+.slides .top { left: 0; top: 0; background: #6155f3; color: #fff; font-size: 15px; font-weight: 600; line-height: 1.2; padding: 12px; letter-spacing: -0.01em; }
+.week { gap: 8px; margin-top: 14px; }
+.week span { flex: 1; text-align: center; font-size: 13px; font-weight: 500; color: #3d3d3d; padding: 7px 0; border-radius: 10px; background: #f5f3ff; }
+
+.adv { gap: 12px; height: 50px; border-bottom: 1px solid #f0f0f0; font-size: 15.5px; }
+.adv i { width: 30px; height: 30px; border-radius: 50%; color: #fff; font-style: normal; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center; flex: none; }
+.adv b { font-weight: 600; width: 130px; flex: none; } .adv span { color: var(--ink2); }
+.adv em { margin-left: auto; font-style: normal; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+.adv em.for { background: #e3f6ef; color: #0b7d5f; } .adv em.ag { background: #fdeceb; color: #c2412f; } .adv em.dep { background: #fff4de; color: #a86200; }
+.verdict { margin-top: 16px; padding: 16px 18px; border-radius: 14px; background: #0d0d0d; color: #fff; font-size: 16.5px; line-height: 1.45; font-weight: 500; }
+.verdict span { display: block; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #b9b2f8; margin-bottom: 4px; }
+
+.pat { padding: 12px 0 14px; border-bottom: 1px solid #f0f0f0; }
+.pat:last-child { border-bottom: 0; }
+.pat .row { justify-content: space-between; font-size: 16.5px; }
+.pat b { font-weight: 600; } .pat em { font-style: normal; font-size: 14px; font-weight: 600; color: var(--acc); }
+.pat .bar { height: 8px; border-radius: 4px; background: #f0f0f0; margin: 10px 0 8px; overflow: hidden; }
+.pat .bar i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #8b7ff6, #6155f3); transform-origin: 0 50%; }
+.pat q { font-size: 14.5px; color: var(--ink2); font-style: italic; quotes: "\201C" "\201D"; }
+
+/* S4 overlay */
+.s4scrim { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; opacity: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,.97) 0%, rgba(255,255,255,.94) 27%, rgba(255,255,255,.55) 34%, rgba(255,255,255,0) 40%); }
+.s4h { position: absolute; left: 112px; top: 0; width: 560px; height: 1080px; display: flex; flex-direction: column; justify-content: center; gap: 18px; }
+.s4lab { font-size: 22px; font-weight: 600; color: var(--acc); letter-spacing: .01em; opacity: 0; }
+.s4t { font-size: 66px; font-weight: 600; line-height: 1.08; letter-spacing: -0.04em; color: #0d0d0d; }
+.s4t .w { opacity: 0; }
+
+/* S4b montage */
+#s4b { background: #f7f7fb; }
+.mt-ground { background:
+  radial-gradient(900px 600px at 20% 20%, rgba(214,208,255,.55), rgba(247,247,251,0) 70%),
+  radial-gradient(900px 600px at 85% 85%, rgba(208,226,255,.6), rgba(247,247,251,0) 70%); }
+.mt-stage { perspective: 1300px; perspective-origin: 50% 50%; }
+#mtworld { position: absolute; left: 960px; top: 540px; width: 0; height: 0; transform-style: preserve-3d; }
+.mc { position: absolute; left: -230px; top: -150px; width: 460px; height: 300px; background: #fff; border-radius: 22px; padding: 22px 24px;
+  box-shadow: 0 30px 70px rgba(40,40,110,.16), 0 0 0 1px rgba(20,20,60,.06); font-size: 16px; color: #0d0d0d; overflow: hidden; }
+.mch { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: #5d5d5d; margin-bottom: 18px; }
+.mch svg { width: 26px; height: 26px; border-radius: 7px; }
+.car1 { width: 170px; height: 196px; border-radius: 14px; background: #6155f3; color: #fff; font-size: 22px; font-weight: 600; line-height: 1.15; padding: 16px; letter-spacing: -0.02em; }
+.car2 { width: 110px; height: 196px; border-radius: 14px; background: #c9c2fa; }
+.car3 { width: 90px; height: 196px; border-radius: 14px; background: #ebe8fe; }
+.flow { gap: 8px; margin: 10px 0 24px; }
+.flow span { padding: 12px 14px; border-radius: 12px; background: #f3f3f6; font-size: 15px; font-weight: 600; }
+.flow span.hl { background: #6155f3; color: #fff; }
+.flow i { width: 18px; height: 2px; background: #c8c8d0; display: block; }
+.lines { display: flex; flex-direction: column; gap: 10px; }
+.lines i { display: block; height: 10px; border-radius: 5px; background: #efeff3; }
+.lines i.s { width: 62%; }
+.ring { width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(#6155f3 0 87%, #ecebfe 87% 100%); display: flex; align-items: center; justify-content: center; flex: none; }
+.ring b { width: 118px; height: 118px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 46px; font-weight: 600; letter-spacing: -0.03em; }
+.kv { display: flex; justify-content: space-between; font-size: 15px; padding: 9px 0; border-bottom: 1px solid #f0f0f3; }
+.kv em { font-style: normal; font-weight: 600; color: #0b7d5f; }
+.gantt { display: flex; flex-direction: column; gap: 16px; }
+.gantt div { position: relative; height: 34px; border-radius: 8px; background: #f5f5f8; }
+.gantt span { position: absolute; left: 10px; top: 8px; font-size: 14px; font-weight: 600; z-index: 2; color: #0d0d0d; mix-blend-mode: multiply; }
+.gantt i { position: absolute; top: 0; height: 34px; border-radius: 8px; background: #d9d4ff; display: block; }
+.big { font-size: 30px; font-weight: 600; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 18px; }
+.pdf { width: 150px; height: 200px; border-radius: 10px; background: linear-gradient(160deg, #1b1f3b, #3a2fb8); color: #fff; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; flex: none; }
+.pdf b { font-size: 21px; line-height: 1.15; letter-spacing: -0.02em; } .pdf span { font-size: 13px; opacity: .7; }
+.wr { display: flex; flex-direction: column; gap: 14px; font-size: 18px; }
+.wr div { display: flex; align-items: center; gap: 12px; }
+.wr em { font-style: normal; font-size: 13px; font-weight: 600; padding: 5px 10px; border-radius: 999px; width: 76px; text-align: center; }
+.wr .g { background: #e3f6ef; color: #0b7d5f; } .wr .a { background: #fff4de; color: #a86200; } .wr .r { background: #fdeceb; color: #c2412f; }
+.sw { width: 66px; height: 150px; border-radius: 14px; display: block; }
+.aa { font-size: 96px; font-weight: 600; letter-spacing: -0.05em; margin-left: 10px; }
+.vd { font-size: 25px; line-height: 1.4; letter-spacing: -0.02em; font-weight: 500; }
+.vd mark { background: #ecebfe; color: #3b32c4; padding: 0 4px; border-radius: 6px; }
+.tiers { gap: 12px; }
+.tiers div { flex: 1; height: 180px; border-radius: 16px; border: 1px solid #ececf2; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
+.tiers span { font-size: 15px; font-weight: 600; color: #5d5d5d; } .tiers b { font-size: 38px; font-weight: 600; letter-spacing: -0.03em; }
+.tiers .on { background: #0d0d0d; border-color: #0d0d0d; } .tiers .on span { color: #b9b2f8; } .tiers .on b { color: #fff; }
+.slide { height: 200px; border-radius: 14px; background: #f5f5f8; padding: 18px; display: flex; flex-direction: column; }
+.slide b { font-size: 22px; letter-spacing: -0.02em; }
+.slide .bars { flex: 1; align-items: flex-end; gap: 14px; padding-top: 12px; }
+.slide .bars i { flex: 1; border-radius: 8px 8px 3px 3px; background: linear-gradient(180deg, #8b7ff6, #6155f3); display: block; }
+.ds { font-size: 24px; line-height: 1.5; letter-spacing: -0.015em; }
+.ds s { color: #c2412f; text-decoration-thickness: 2px; opacity: .75; }
+.ds ins { text-decoration: none; background: #e3f6ef; color: #0b7d5f; padding: 0 4px; border-radius: 6px; }
+.mt-halo { background: radial-gradient(760px 360px at 50% 50%, rgba(247,247,251,.96), rgba(247,247,251,.75) 45%, rgba(247,247,251,0) 75%); }
+#mtov { display: flex; align-items: center; justify-content: center; }
+.mtA, .mtB { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: flex; align-items: center; justify-content: center; gap: 30px;
+  font-size: 150px; font-weight: 600; letter-spacing: -0.055em; color: #0d0d0d; font-variant-numeric: tabular-nums; }
+.mtA #mtN { color: #6155f3; }
+
+/* S5 Codex */
+#s5 { background: transparent; color: #fff; }
+.cxlabel { left: 0; top: 0; height: 46px; padding: 0 20px 0 16px; gap: 10px; border-radius: 23px; font-size: 20px; font-weight: 500; color: rgba(255,255,255,.92); }
+.cxlabel .ic { width: 20px; height: 20px; }
+.cxh { left: 0; top: 378px; width: 1920px; text-align: center; font-size: 60px; font-weight: 500; letter-spacing: -0.035em; color: #fff; text-shadow: 0 2px 30px rgba(20,20,80,.18); }
+.cxcomp { left: 330px; top: 486px; width: 1260px; height: 96px; border-radius: 48px; padding: 0 20px 0 28px; gap: 16px; }
+.cxplus { width: 30px; height: 30px; color: #fff; stroke-width: 1.8; }
+.cxchip { gap: 8px; height: 44px; padding: 0 16px 0 8px; border-radius: 22px; background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.35); font-size: 19px; font-weight: 500; white-space: nowrap; }
+.cxchip svg { border-radius: 8px; }
+.cxtext { font-size: 30px; font-weight: 400; white-space: nowrap; color: #fff; letter-spacing: -0.01em; }
+.cxw { display: inline-block; }
+.cxcaret { display: inline-block; width: 2px; height: 34px; background: #fff; vertical-align: -6px; margin-left: 2px; opacity: 0; }
+.cxright { margin-left: auto; gap: 22px; }
+.cxmodel { gap: 6px; font-size: 21px; color: rgba(255,255,255,.85); }
+.cxmodel .ic { width: 18px; height: 18px; }
+.cxmic { width: 28px; height: 28px; color: #fff; }
+.cxsend { width: 58px; height: 58px; border-radius: 50%; background: #fff; color: #1b1f3b; display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%; }
+.cxsend .ic { width: 26px; height: 26px; stroke-width: 2.2; }
+#s5tasks { opacity: 0; }
+.cxth { position: absolute; left: 0; top: 262px; width: 1920px; text-align: center; font-size: 56px; font-weight: 500; letter-spacing: -0.035em; color: #fff; text-shadow: 0 2px 30px rgba(20,20,80,.2); }
+.cxlist { position: absolute; left: 470px; top: 400px; width: 980px; display: flex; flex-direction: column; gap: 18px; }
+.cxtask { height: 110px; border-radius: 28px; padding: 0 30px 0 28px; gap: 20px; }
+.cxtask svg { border-radius: 12px; flex: none; }
+.cxtask b { font-size: 27px; font-weight: 600; letter-spacing: -0.02em; } .cxtask .col span { font-size: 19px; color: rgba(255,255,255,.78); margin-top: 2px; }
+.cxprog { margin-left: auto; width: 220px; height: 8px; border-radius: 4px; background: rgba(255,255,255,.25); overflow: hidden; }
+.cxprog i { display: block; height: 100%; width: 100%; background: #fff; border-radius: 4px; transform-origin: 0 50%; transform: scaleX(0); }
+.cxok { position: absolute; right: 30px; gap: 8px; height: 44px; padding: 0 18px 0 14px; border-radius: 22px; background: rgba(255,255,255,.95); color: #0b7d5f; font-size: 19px; font-weight: 600; opacity: 0; }
+.cxtask { position: relative; }
+.cxok .ic { width: 20px; height: 20px; stroke-width: 2.6; }
+
+/* S6 iPhone */
+#s6 { background: transparent; }
+.s6win { position: absolute; left: 140px; top: 170px; width: 1180px; height: 700px; border-radius: 22px; background: rgba(255,255,255,.9);
+  box-shadow: 0 30px 80px rgba(30,30,90,.22); overflow: hidden; filter: blur(9px); }
+.s6side { position: absolute; left: 0; top: 0; bottom: 0; width: 210px; background: #f6f6f8; padding: 70px 18px; display: flex; flex-direction: column; gap: 16px; }
+.s6side i { display: block; height: 14px; border-radius: 7px; background: #e4e4ea; } .s6side i.s { width: 60%; }
+.s6main { position: absolute; left: 210px; top: 0; right: 0; bottom: 0; }
+.s6main b { position: absolute; left: 330px; top: 210px; width: 300px; height: 22px; border-radius: 11px; background: #d9d9e0; }
+.s6comp { position: absolute; left: 180px; top: 270px; width: 600px; height: 90px; border-radius: 26px; border: 2px solid #e8e8ee; }
+.s6card { position: absolute; left: 180px; top: 400px; width: 600px; height: 200px; border-radius: 20px; background: #f3f2ff; }
+.s6h { position: absolute; left: 150px; top: 0; width: 620px; height: 1080px; display: flex; flex-direction: column; justify-content: center; gap: 18px; }
+.s6t { font-size: 76px; font-weight: 600; line-height: 1.05; letter-spacing: -0.045em; color: #0d0d0d; }
+.s6t .w { opacity: 0; }
+#s6lab { opacity: 0; }
+.s6stage { perspective: 2200px; }
+.phone { position: absolute; left: 1086px; top: 90px; width: 440px; height: 900px; border-radius: 76px; background: linear-gradient(145deg, #3a3a40, #121214 40%, #2a2a2e);
+  padding: 14px; box-shadow: 0 60px 120px rgba(30,20,90,.35), 0 20px 40px rgba(30,20,90,.2), inset 0 0 0 2px rgba(255,255,255,.12); transform-origin: 50% 55%; }
+.scr { position: relative; width: 412px; height: 872px; border-radius: 62px; background: #fff; overflow: hidden; font-size: 16px; }
+.island { position: absolute; left: 146px; top: 14px; width: 120px; height: 36px; border-radius: 18px; background: #000; }
+.stat { position: absolute; left: 0; top: 0; width: 100%; height: 56px; padding: 18px 34px 0 44px; justify-content: space-between; font-size: 17px; }
+.stat b { font-weight: 600; }
+.stat .ic { width: 18px; height: 18px; stroke-width: 2.4; }
+.stat .bat { display: block; width: 26px; height: 13px; border-radius: 4px; border: 1.6px solid #0d0d0d; margin-left: 6px; background: linear-gradient(90deg, #0d0d0d 70%, transparent 70%); background-clip: content-box; padding: 1.5px; }
+.pnav { position: absolute; left: 0; top: 62px; width: 100%; height: 48px; padding: 0 20px; justify-content: space-between; }
+.pnav .ic { width: 24px; height: 24px; stroke-width: 1.9; }
+.pnav b { gap: 4px; font-size: 18px; font-weight: 600; }
+.pnav b .ic { width: 16px; height: 16px; color: #8f8f8f; }
+.pthread { position: absolute; left: 18px; right: 18px; top: 128px; display: flex; flex-direction: column; gap: 14px; }
+.pu { align-self: flex-end; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.pu .ubub { font-size: 16.5px; padding: 10px 16px; max-width: 290px; }
+.pu .att { height: 50px; } .pu .att .atti { width: 34px; height: 34px; }
+.pw { padding: 16px 16px 8px; }
+.pw .wh { margin-bottom: 8px; }
+.pr { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid #f0f0f0; font-size: 15.5px; }
+.pr em { font-style: normal; font-size: 12.5px; font-weight: 600; padding: 4px 9px; border-radius: 999px; width: 70px; text-align: center; flex: none; }
+.pr .g { background: #e3f6ef; color: #0b7d5f; } .pr .a { background: #fff4de; color: #a86200; } .pr .r { background: #fdeceb; color: #c2412f; } .pr .n { background: #eeecfe; color: #4b40d6; }
+.pcomp { position: absolute; left: 14px; right: 14px; bottom: 40px; height: 54px; gap: 8px; }
+.pplus { width: 44px; height: 44px; border-radius: 50%; background: #f2f2f2; display: flex; align-items: center; justify-content: center; flex: none; }
+.pplus .ic { width: 22px; height: 22px; }
+.ppill { position: relative; flex: 1; height: 50px; border-radius: 25px; border: 1px solid #e3e3e3; padding: 0 14px 0 18px; font-size: 16.5px; }
+.ppill .ph { position: absolute; left: 18px; top: 14px; }
+#ptype { white-space: nowrap; overflow: hidden; }
+.pmic { margin-left: auto; width: 21px; height: 21px; color: #3d3d3d; flex: none; }
+.pwave { position: absolute; left: 18px; top: 0; height: 48px; gap: 3px; opacity: 0; }
+.pwave i { display: block; width: 3px; height: 6px; border-radius: 2px; background: #0d0d0d; }
+.pvoice { width: 50px; height: 50px; border-radius: 50%; background: #0d0d0d; color: #fff; display: flex; align-items: center; justify-content: center; flex: none; }
+.pvoice .ic { width: 22px; height: 22px; stroke-width: 2.1; }
+.ptouch { position: absolute; right: 0; top: 2px; width: 50px; height: 50px; border-radius: 50%; background: rgba(97,85,243,.35); opacity: 0; }
+.homebar { position: absolute; left: 136px; bottom: 10px; width: 140px; height: 5px; border-radius: 3px; background: #0d0d0d; }
+.pgreet { position: absolute; left: 0; top: 400px; width: 100%; text-align: center; font-size: 24px; font-weight: 500; letter-spacing: -0.02em; color: #0d0d0d; }
+
+/* S7 promise + S8 end card */
+#s7, #s8 { background: #fbfbfd; }
+.s7-ground { background: radial-gradient(900px 500px at 50% 50%, rgba(226,222,255,.45), rgba(251,251,253,0) 70%); }
+#s7rings { left: 960px; top: 540px; width: 0; height: 0; }
+.s7ring { position: absolute; left: -110px; top: -110px; width: 220px; height: 220px; border-radius: 50%; display: block; opacity: 0;
+  border: 1.5px solid rgba(110,98,245,.25); box-shadow: 0 0 70px rgba(120,108,246,.20) inset, 0 0 50px rgba(120,108,246,.12); }
+.s7row { position: absolute; left: 0; top: 490px; width: 1920px; height: 100px; }
+.s7tw { position: absolute; left: 0; top: 0; height: 100px; white-space: nowrap; }
+.s7t { display: inline-block; font-size: 78px; font-weight: 600; letter-spacing: -0.045em; line-height: 100px; color: #0d0d0d; padding-right: 26px; white-space: nowrap; }
+.s7mark { position: absolute; left: 0; top: 18px; width: 64px; height: 64px; }
+.s7mark svg { position: absolute; left: -72px; top: -72px; transform: scale(.3077); transform-origin: 104px 104px; border-radius: 22%;
+  filter: drop-shadow(0 10px 22px rgba(40,30,130,.25)); }
+.s8-glow { background: radial-gradient(520px 320px at 50% 38%, rgba(214,208,255,.55), rgba(251,251,253,0) 70%); opacity: 0; }
+#s8tile { left: 856px; top: 292px; width: 208px; height: 208px; border-radius: 22%; box-shadow: 0 34px 70px rgba(40,30,130,.22), 0 10px 22px rgba(40,30,130,.12); }
+#s8tile svg { display: block; }
+.s8word { left: 0; top: 552px; width: 1920px; text-align: center; font-size: 96px; font-weight: 600; letter-spacing: -0.045em; color: #1d1d1f; line-height: 1.1; }
+.s8now { left: 0; top: 684px; width: 1920px; text-align: center; font-size: 44px; font-weight: 500; letter-spacing: -0.02em; color: #86868b; }
+
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <!-- OP monogram gradients (userSpace, 1024 grid) -->
+    <linearGradient id="gO" gradientUnits="userSpaceOnUse" x1="251" y1="547" x2="581" y2="217">
+      <stop offset="0" stop-color="#5e52f2" /><stop offset="0.5" stop-color="#a397f5" /><stop offset="1" stop-color="#f0edfc" />
+    </linearGradient>
+    <linearGradient id="gP" gradientUnits="userSpaceOnUse" x1="502" y1="789" x2="767" y2="484">
+      <stop offset="0" stop-color="#5e52f2" /><stop offset="0.52" stop-color="#a99df6" /><stop offset="1" stop-color="#f0edfc" />
+    </linearGradient>
+    <linearGradient id="gTile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1334" /><stop offset="1" stop-color="#020719" />
+    </linearGradient>
+    <radialGradient id="gTileGlow" cx="0.3" cy="0.25" r="0.9">
+      <stop offset="0" stop-color="#27306a" stop-opacity=".55" /><stop offset="1" stop-color="#020719" stop-opacity="0" />
+    </radialGradient>
+
+    <symbol id="op-mark" viewBox="0 0 1024 1024">
+      <rect width="1024" height="1024" rx="228" fill="url(#gTile)" />
+      <rect width="1024" height="1024" rx="228" fill="url(#gTileGlow)" />
+      <rect x="2" y="2" width="1020" height="1020" rx="226" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="4" />
+      <circle cx="416" cy="382" r="133" fill="none" stroke="url(#gO)" stroke-width="64" />
+      <path d="M531.5 789 V513.5 H656 A80.75 80.75 0 0 1 656 675 H531.5" fill="none" stroke="url(#gP)" stroke-width="60" stroke-linejoin="miter" />
+    </symbol>
+
+    <!-- directional motion blur for whip pans (stdDeviation animated) -->
+    <filter id="mbx" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+      <feGaussianBlur id="mbxg" stdDeviation="0 0" />
+    </filter>
+    <filter id="mby" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+      <feGaussianBlur id="mbyg" stdDeviation="0 0" />
+    </filter>
+
+    <!-- icons: lucide-style 24 grid -->
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3" /><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3" /></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" /></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5" /><path d="m20.5 20.5-4.2-4.2" /></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.4 2.6a2.1 2.1 0 1 1 3 3L12 15l-4 1 1-4Z" /></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.6" /><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6" /><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6" /><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6" /></symbol>
+    <symbol id="i-term" viewBox="0 0 24 24"><path d="m4 17 6-6-6-6M12 19h8" /></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" /></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" /></symbol>
+    <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2" /><circle cx="12" cy="12" r="1.2" /><circle cx="19" cy="12" r="1.2" /></symbol>
+    <symbol id="i-side" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M9.5 3v18" /></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.5 13.8 9l5.7 1.9-5.7 1.9L12 18.5l-1.8-5.7-5.7-1.9L10.2 9Z" /></symbol>
+    <symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 10v4M7.5 6.5v11M12 3.5v17M16.5 7.5v9M21 10v4" /></symbol>
+    <symbol id="i-headph" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" /></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 8h16M4 16h12" /></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12" /></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6" /></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M21.5 20a6.5 6.5 0 0 0-4-6" /></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5" /><path d="M3 9.5h18M8 2.5v4M16 2.5v4" /></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7Z" /></symbol>
+    <symbol id="i-signal" viewBox="0 0 24 24"><path d="M2 20h2M7 20v-4M12 20v-8M17 20V8M22 20V4" /></symbol>
+  </defs>
+</svg>
+
+<div id="root" data-composition-id="main" data-start="0" data-duration="58.5" data-width="1920" data-height="1080">
+<!-- Shared gradient field. Sits under every scene; white scenes paint over it. -->
+<div id="bg" class="clip" data-start="0" data-duration="58.5" data-track-index="0">
+  <canvas id="bgc" width="960" height="540"></canvas>
+  <div id="grain"></div>
+</div>
+
+<!-- S1 HOOK 0.0-6.0 -->
+<section id="s1" class="scene clip" data-start="0" data-duration="6" data-track-index="1">
+  <div class="layer s1-ground"></div>
+  <div class="stage" id="s1stage">
+    <div class="cam" id="s1cam">
+      <div id="s1line">
+        <span class="w">Just</span><span class="w">describe</span><span class="w s1job" id="s1job">the job</span>
+        <span class="s1micwrap" id="s1micwrap">
+          <span class="s1pill" id="s1pill">
+            <span class="s1mic" id="s1mic"><svg class="ic"><use href="#i-mic" /></svg></span>
+            <span class="s1bars" id="s1bars"></span>
+          </span>
+        </span>
+      </div>
+      <div id="s1yourai" class="abs nowrap">Your AI</div>
+    </div>
+  </div>
+  <div class="layer" id="s1ov">
+    <div id="s1tip" class="abs s1tip nowrap"><span id="s1tipt"></span></div>
+  </div>
+  <div class="layer" id="s1b">
+    <div id="s1fin" class="s1fin"><span class="w">finishes</span><span class="w" data-c="#6155f3">it.</span></div>
+  </div>
+</section>
+
+<!-- S2 PRODUCT 6.0-10.0 -->
+<section id="s2" class="scene clip" data-start="6" data-duration="4" data-track-index="1">
+  <div class="layer s2-ground"></div>
+  <div class="layer" id="s2wrap">
+    <div id="s2rings" class="abs"><i class="s2ring"></i><i class="s2ring"></i><i class="s2ring"></i></div>
+    <div id="s2tile" class="abs">
+      <svg viewBox="0 0 1024 1024" width="208" height="208">
+        <rect width="1024" height="1024" rx="228" fill="url(#gTile)" />
+        <rect width="1024" height="1024" rx="228" fill="url(#gTileGlow)" />
+        <rect x="2" y="2" width="1020" height="1020" rx="226" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="4" />
+        <path id="s2O" d="M416 249 A133 133 0 1 1 416 515 A133 133 0 1 1 416 249" fill="none" stroke="url(#gO)" stroke-width="64" stroke-dasharray="836 836" />
+        <path id="s2P" d="M531.5 789 V513.5 H656 A80.75 80.75 0 0 1 656 675 H531.5" fill="none" stroke="url(#gP)" stroke-width="60" stroke-linejoin="miter" stroke-dasharray="780 780" />
+      </svg>
+    </div>
+    <div id="s2word" class="abs s2word"><span class="w">Operator</span><span class="w" data-c="#6155f3">Powers</span></div>
+    <div id="s2sub" class="abs s2sub">
+      <div id="s2subA" class="s2line">28 AI skills for people who don't code.</div>
+      <div id="s2subB" class="s2line">Now in ChatGPT and Codex.</div>
+    </div>
+  </div>
+</section>
+
+<!-- S3 INSTALL IN CHATGPT 10.0-19.5 + S4 OUTCOMES 19.5-34.0 (one continuous window) -->
+<section id="s3" class="scene clip" data-start="10" data-duration="24" data-track-index="1">
+  <div class="stage" id="s3stage">
+    <div class="cam" id="s3cam">
+      <div class="win" id="cgwin" style="left:200px;top:110px;width:1520px;height:860px">
+        <!-- ===== sidebar ===== -->
+        <div class="side" id="cgside">
+          <div class="lights"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+          <svg class="ic abs" style="left:222px;top:14px;color:#5d5d5d"><use href="#i-side" /></svg>
+          <div class="col" style="padding-top:60px">
+            <div class="navi"><svg class="ic"><use href="#i-pen" /></svg>New chat</div>
+            <div class="navi"><svg class="ic"><use href="#i-search" /></svg>Search chats</div>
+            <div class="navi" id="navPlugins"><svg class="ic"><use href="#i-grid" /></svg>Plugins</div>
+            <div class="navi"><svg class="ic"><use href="#i-term" /></svg>Codex</div>
+            <div class="navi"><svg class="ic"><use href="#i-book" /></svg>Library</div>
+            <div id="navOPwrap" style="height:0;overflow:hidden">
+              <div class="navi" id="navOP" style="margin-top:2px"><svg class="opi" viewBox="0 0 1024 1024" width="20" height="20"><use href="#op-mark" /></svg>Operator Powers</div>
+            </div>
+            <div class="sec">Chats</div>
+            <div class="chatitem">Q3 planning call notes</div>
+            <div class="chatitem">Newsletter: the pricing story</div>
+            <div class="chatitem">Podcast ep. 42 outline</div>
+            <div class="chatitem">Onboarding SOP draft</div>
+            <div class="chatitem">Landing page feedback</div>
+            <div class="chatitem">Hiring plan for Q4</div>
+            <div class="chatitem">Webinar follow-up emails</div>
+            <div class="chatitem">Case study: Lumen</div>
+          </div>
+          <div class="cguser row"><span class="av">N</span><div class="col"><b>Nahid</b><span>Work</span></div></div>
+        </div>
+
+        <!-- ===== main ===== -->
+        <div class="main" id="cgmain">
+          <div class="cghead row">
+            <div class="row" style="gap:4px;font-size:17px;font-weight:500">ChatGPT<svg class="ic" style="width:16px;height:16px;color:#8f8f8f"><use href="#i-chev" /></svg></div>
+            <div class="row" style="margin-left:auto;gap:18px;color:#3d3d3d"><svg class="ic" style="width:18px;height:18px"><use href="#i-share" /></svg><svg class="ic" style="width:18px;height:18px"><use href="#i-dots" /></svg></div>
+          </div>
+
+          <!-- home -->
+          <div class="view" id="vHome">
+            <div class="homeh" id="homeh">What can I help with?</div>
+            <div class="composer cgcomp" id="homecomp">
+              <div id="attWrap" class="attwrap">
+                <div class="att row"><span class="atti" style="background:#ff7a59"><svg class="ic"><use href="#i-headph" /></svg></span><div class="col"><b>Q3-planning-call.m4a</b><span>Audio · 92 min</span></div></div>
+              </div>
+              <div class="ctext"><span class="ph" id="homeph">Ask anything</span><span id="hometype"></span><span class="caret" id="homecaret"></span></div>
+              <div class="ctools row">
+                <span class="circle-btn tool-ghost"><svg class="ic"><use href="#i-plus" /></svg></span>
+                <span class="chip" id="homechip"><svg viewBox="0 0 1024 1024" width="22" height="22"><use href="#op-mark" /></svg>Operator Powers</span>
+                <span style="margin-left:auto" class="circle-btn tool-ghost"><svg class="ic"><use href="#i-mic" /></svg></span>
+                <span class="circle-btn sendb" id="homesend"><svg class="ic" id="homesendW"><use href="#i-wave" /></svg><svg class="ic abs" id="homesendU" style="opacity:0"><use href="#i-up" /></svg></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- plugins directory -->
+          <div class="view" id="vPlugins" style="opacity:0">
+            <div class="ph1">Plugins</div>
+            <div class="ph2">Add skills and tools to ChatGPT</div>
+            <div class="psearch row" id="psearch"><svg class="ic"><use href="#i-search" /></svg><span class="ptxt"><span class="ph pph" id="psph">Search plugins</span><span id="pstype"></span><span class="caret" id="pscaret"></span></span></div>
+            <div class="ptabs row"><span class="on">Featured</span><span>Productivity</span><span>Writing</span><span>Research</span><span>Design</span><span>Lifestyle</span></div>
+            <div id="pgrid">
+              <div class="psec">Featured</div>
+              <div class="pgrid">
+                <div class="pcard row"><span class="pic" style="background:linear-gradient(135deg,#ffb86b,#ff6b6b)"><svg class="ic"><use href="#i-grid" /></svg></span><div class="col"><b>Slide Studio</b><span>Decks from an outline</span></div></div>
+                <div class="pcard row"><span class="pic" style="background:linear-gradient(135deg,#6be3ff,#3b82f6)"><svg class="ic"><use href="#i-search" /></svg></span><div class="col"><b>Research Kit</b><span>Sources, notes and summaries</span></div></div>
+                <div class="pcard row"><span class="pic" style="background:linear-gradient(135deg,#8ef0b0,#10a37f)"><svg class="ic"><use href="#i-globe" /></svg></span><div class="col"><b>Trip Planner</b><span>Itineraries and bookings</span></div></div>
+                <div class="pcard row"><span class="pic" style="background:linear-gradient(135deg,#f7a8ff,#a855f7)"><svg class="ic"><use href="#i-file" /></svg></span><div class="col"><b>Doc Signer</b><span>Contracts and approvals</span></div></div>
+                <div class="pcard row"><span class="pic" style="background:linear-gradient(135deg,#ffe07a,#f59e0b)"><svg class="ic"><use href="#i-cal" /></svg></span><div class="col"><b>Calendar Assist</b><span>Scheduling across teams</span></div></div>
+                <div class="pcard row"><span class="pic" style="background:linear-gradient(135deg,#9ab6ff,#4f46e5)"><svg class="ic"><use href="#i-bolt" /></svg></span><div class="col"><b>Sheets Helper</b><span>Formulas and clean-up</span></div></div>
+              </div>
+            </div>
+            <div id="presults" style="opacity:0">
+              <div class="psec">Results</div>
+              <div class="presult row" id="presult">
+                <svg viewBox="0 0 1024 1024" width="60" height="60" class="presi"><use href="#op-mark" /></svg>
+                <div class="col"><b>Operator Powers</b><span>AI skills to operate and grow</span></div>
+                <span class="pdev">nahiddotai</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- chat thread -->
+          <div class="view" id="vChat" style="opacity:0">
+            <div id="thread">
+              <!-- V1 meeting miner -->
+              <div class="ex" id="ex1">
+                <div class="umsg">
+                  <div class="att row"><span class="atti" style="background:#ff7a59"><svg class="ic"><use href="#i-headph" /></svg></span><div class="col"><b>Q3-planning-call.m4a</b><span>Audio · 92 min</span></div></div>
+                  <div class="ubub">Find the decision buried in this call.</div>
+                </div>
+                <div class="tool-line" id="tl1"><svg viewBox="0 0 1024 1024" width="22" height="22"><use href="#op-mark" /></svg><span class="shim">Used Meeting Miner</span><svg class="ic" style="width:16px;height:16px"><use href="#i-chev" /></svg></div>
+                <div class="card wdg" id="w1">
+                  <div class="wh row"><svg viewBox="0 0 1024 1024" width="26" height="26"><use href="#op-mark" /></svg><b>Meeting Miner</b><span>Q3 planning call · 92 min</span></div>
+                  <div class="wl">Decisions</div>
+                  <div class="drow row"><i class="ck"><svg class="ic"><use href="#i-check" /></svg></i><span>Launch moves to October 14</span><em>Nadia</em></div>
+                  <div class="drow row"><i class="ck"><svg class="ic"><use href="#i-check" /></svg></i><span>Cut the webinar, keep the waitlist</span><em>Sam</em></div>
+                  <div class="drow row"><i class="ck"><svg class="ic"><use href="#i-check" /></svg></i><span>Pricing page ships before launch</span><em>Priya</em></div>
+                  <div class="missed row"><svg class="ic"><use href="#i-spark" /></svg><div><b>What everyone missed:</b> nobody owns the email sequence, and the launch depends on it.</div></div>
+                  <div class="wfoot row"><span class="tag">7 next steps</span><span class="tag">3 owners</span><span class="tag">2 open risks</span></div>
+                </div>
+              </div>
+
+              <!-- V2 content repurposing -->
+              <div class="ex" id="ex2">
+                <div class="umsg">
+                  <div class="att row"><span class="atti" style="background:#8b5cf6"><svg class="ic"><use href="#i-headph" /></svg></span><div class="col"><b>ep-42-final.mp3</b><span>Audio · 38 min</span></div></div>
+                  <div class="ubub">Turn this episode into a week of posts.</div>
+                </div>
+                <div class="tool-line" id="tl2"><svg viewBox="0 0 1024 1024" width="22" height="22"><use href="#op-mark" /></svg><span class="shim">Used Content Repurposing</span><svg class="ic" style="width:16px;height:16px"><use href="#i-chev" /></svg></div>
+                <div class="card wdg" id="w2">
+                  <div class="wh row"><svg viewBox="0 0 1024 1024" width="26" height="26"><use href="#op-mark" /></svg><b>Content Repurposing</b><span>From ep. 42 · 7 posts</span></div>
+                  <div class="posts row">
+                    <div class="post p-li"><div class="pt">LinkedIn</div><b>I almost quit the podcast at episode 12.</b><i></i><i></i><i class="s"></i></div>
+                    <div class="post p-th"><div class="pt">Threads</div><b>The one question I ask before every launch</b><i></i><i class="s"></i><div class="thr">1/6</div></div>
+                    <div class="post p-nl"><div class="pt">Newsletter</div><div class="nlbar"></div><b>Issue 42: the launch I almost cancelled</b><i></i><i class="s"></i></div>
+                    <div class="post p-ca"><div class="pt">Carousel</div><div class="slides"><span></span><span></span><span class="top">5 lessons from 100 launches</span></div></div>
+                  </div>
+                  <div class="week row"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+                </div>
+              </div>
+
+              <!-- V3 llm council -->
+              <div class="ex" id="ex3">
+                <div class="umsg"><div class="ubub">Should I raise my price to $49? Run the council.</div></div>
+                <div class="tool-line" id="tl3"><svg viewBox="0 0 1024 1024" width="22" height="22"><use href="#op-mark" /></svg><span class="shim">Used LLM Council</span><svg class="ic" style="width:16px;height:16px"><use href="#i-chev" /></svg></div>
+                <div class="card wdg" id="w3">
+                  <div class="wh row"><svg viewBox="0 0 1024 1024" width="26" height="26"><use href="#op-mark" /></svg><b>LLM Council</b><span>5 advisors · peer reviewed</span></div>
+                  <div class="adv row"><i style="background:#6155f3">O</i><b>The Operator</b><span>Churn is low enough to absorb it</span><em class="for">For</em></div>
+                  <div class="adv row"><i style="background:#ef6b5b">S</i><b>The Skeptic</b><span>Onboarding is still the weak spot</span><em class="ag">Against</em></div>
+                  <div class="adv row"><i style="background:#10a37f">C</i><b>The Customer</b><span>Fine, if setup gets faster</span><em class="dep">Depends</em></div>
+                  <div class="adv row"><i style="background:#f59e0b">N</i><b>The Numbers</b><span>+18% revenue at 6% churn</span><em class="for">For</em></div>
+                  <div class="verdict"><span>Verdict</span>Raise to $49 for new customers. Keep current customers at $39 for 90 days.</div>
+                </div>
+              </div>
+
+              <!-- V4 customer insight -->
+              <div class="ex" id="ex4">
+                <div class="umsg">
+                  <div class="att row"><span class="atti" style="background:#3b82f6"><svg class="ic"><use href="#i-file" /></svg></span><div class="col"><b>interviews.zip</b><span>12 transcripts</span></div></div>
+                  <div class="ubub">What do my customers keep saying?</div>
+                </div>
+                <div class="tool-line" id="tl4"><svg viewBox="0 0 1024 1024" width="22" height="22"><use href="#op-mark" /></svg><span class="shim">Used Customer Insight Synthesizer</span><svg class="ic" style="width:16px;height:16px"><use href="#i-chev" /></svg></div>
+                <div class="card wdg" id="w4">
+                  <div class="wh row"><svg viewBox="0 0 1024 1024" width="26" height="26"><use href="#op-mark" /></svg><b>Customer Insight Synthesizer</b><span>12 interviews · 3 patterns</span></div>
+                  <div class="pat"><div class="row"><b>Setup takes too long</b><em>9 of 12</em></div><div class="bar"><i style="width:75%"></i></div><q>I gave up on day two and came back a month later.</q></div>
+                  <div class="pat"><div class="row"><b>They want templates, not a blank page</b><em>7 of 12</em></div><div class="bar"><i style="width:58%"></i></div><q>Just show me what good looks like.</q></div>
+                  <div class="pat"><div class="row"><b>The pricing page raises more questions</b><em>5 of 12</em></div><div class="bar"><i style="width:42%"></i></div><q>I couldn't tell which plan I needed.</q></div>
+                </div>
+              </div>
+            </div>
+            <div class="composer cgcomp chatcomp">
+              <div class="ctext"><span class="ph">Ask anything</span></div>
+              <div class="ctools row">
+                <span class="circle-btn tool-ghost"><svg class="ic"><use href="#i-plus" /></svg></span>
+                <span class="chip"><svg viewBox="0 0 1024 1024" width="22" height="22"><use href="#op-mark" /></svg>Operator Powers</span>
+                <span style="margin-left:auto" class="circle-btn tool-ghost"><svg class="ic"><use href="#i-mic" /></svg></span>
+                <span class="circle-btn sendb"><svg class="ic"><use href="#i-wave" /></svg></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ===== plugin detail modal ===== -->
+        <div class="dim" id="pdim"></div>
+        <div class="pmodal" id="pmodal">
+          <svg class="ic pclose" style="width:22px;height:22px"><use href="#i-x" /></svg>
+          <div class="row" style="gap:20px;align-items:center">
+            <svg viewBox="0 0 1024 1024" width="88" height="88" style="border-radius:21px;box-shadow:0 6px 18px rgba(20,20,70,.18)"><use href="#op-mark" /></svg>
+            <div class="col" style="gap:4px">
+              <div class="pmname">Operator Powers</div>
+              <div class="pmdev">nahiddotai · Productivity</div>
+            </div>
+            <div class="pinstall" id="pinstall">
+              <span class="lab" id="pinLab">Install</span>
+              <span class="spin" id="pinSpin"></span>
+              <span class="done row" id="pinDone"><svg class="ic"><use href="#i-check" /></svg>Installed</span>
+            </div>
+          </div>
+          <div class="pmtag">AI skills to operate and grow</div>
+          <div class="pmdesc">A maintained collection of 28 practical AI skills for non-technical operators. Turn customer evidence into insight, build workflows, pressure-test decisions, create content and prepare product launches.</div>
+          <div class="pmchips row"><span>Skills</span><span>MCP</span><span>Hooks</span></div>
+          <div class="pmh">Try asking</div>
+          <div class="pmtry row"><svg class="ic"><use href="#i-spark" /></svg>Audit my last two weeks and tell me what to focus on.</div>
+          <div class="pmtry row"><svg class="ic"><use href="#i-spark" /></svg>Turn these meeting notes into decisions and next steps.</div>
+          <div class="pmtry row"><svg class="ic"><use href="#i-spark" /></svg>Set up my AGENTS.md so my AI understands how I work.</div>
+          <div class="pmh">Information</div>
+          <div class="pminfo"><span>Category</span><b>Productivity</b><span>Developer</span><b>nahiddotai</b><span>Version</span><b>1.0.1</b></div>
+        </div>
+        <!-- toast -->
+        <div class="toast row" id="toast"><svg viewBox="0 0 1024 1024" width="24" height="24"><use href="#op-mark" /></svg><b>Operator Powers is installed</b><span>28 skills ready</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4 overlay: scrim + outcome headlines (screen space) -->
+  <div class="layer" id="s4ov">
+    <div class="s4scrim" id="s4scrim"></div>
+    <div class="s4h" id="h1"><div class="s4lab">Meetings</div><div class="s4t"><span class="w">A</span> <span class="w">90-minute</span> <span class="w">call,</span> <span class="w">down</span> <span class="w">to</span> <span class="w">three</span> <span class="w">decisions.</span></div></div>
+    <div class="s4h" id="h2"><div class="s4lab">Content</div><div class="s4t"><span class="w">One</span> <span class="w">episode,</span> <span class="w">a</span> <span class="w">whole</span> <span class="w">week</span> <span class="w">of</span> <span class="w">posts.</span></div></div>
+    <div class="s4h" id="h3"><div class="s4lab">Decisions</div><div class="s4t"><span class="w">Pressure-test</span> <span class="w">the</span> <span class="w">call</span> <span class="w">before</span> <span class="w">you</span> <span class="w">make</span> <span class="w">it.</span></div></div>
+    <div class="s4h" id="h4"><div class="s4lab">Customers</div><div class="s4t"><span class="w">Twelve</span> <span class="w">interviews,</span> <span class="w">the</span> <span class="w">patterns</span> <span class="w">that</span> <span class="w">matter.</span></div></div>
+  </div>
+</section>
+
+<!-- S4b MONTAGE 34.0-38.0 : finished deliverables in depth -->
+<section id="s4b" class="scene clip" data-start="34" data-duration="4" data-track-index="1">
+  <div class="layer mt-ground"></div>
+  <div class="stage mt-stage" id="mtstage">
+    <div id="mtworld">
+      <div class="mc"><div class="mch"><svg viewBox="0 0 1024 1024"><use href="#op-mark" /></svg>Instagram Carousel Maker</div>
+        <div class="row" style="gap:10px"><div class="car1">5 lessons from 100 launches</div><div class="car2"></div><div class="car3"></div></div></div>
+      <div class="mc"><div class="mch"><svg viewBox="0 0 1024 1024"><use href="#op-mark" /></svg>Workflow and SOP Builder</div>
+        <div class="flow row"><span>Intake</span><i></i><span>Draft</span><i></i><span class="hl">Review</span><i></i><span>Send</span></div>
+        <div class="lines"><i></i><i class="s"></i></div></div>
+      <div class="mc"><div class="mch"><svg viewBox="0 0 1024 1024"><use href="#op-mark" /></svg>Landing Page CRO</div>
+        <div class="row" style="gap:22px"><div class="ring"><b>87</b></div><div class="col" style="gap:8px;flex:1"><div class="kv"><span>Headline clarity</span><em>+24</em></div><div class="kv"><span>Proof above fold</span><em>+18</em></div><div class="kv"><span>CTA friction</span><em>-2 steps</em></div></div></div></div>
+      <div class="mc"><div class="mch"><svg viewBox="0 0 1024 1024"><use href="#op-mark" /></svg>Digital Product Launch Builder</div>
+        <div class="gantt"><div><span>Waitlist</span><i style="left:0;width:38%"></i></div><div><span>Early bird</span><i style="left:30%;width:32%;background:#8b7ff6"></i></div><div><span>Launch</span><i style="left:58%;width:22%;background:#6155f3"></i></div><div><span>Follow-up</span><i style="left:74%;width:26%;background:#b9b2f8"></i></div></div></div>
+      <div class="mc"><div class="mch"><svg viewBox="0 0 1024 1024"><use href="#op-mark" /></svg>Case Study Builder</div>
+        <div class="big">How Lumen cut churn by 32% in one quarter</div><div class="lines"><i></i><i></i><i class="s"></i></div></div>
+      <div class="mc"><div class="mch"><svg viewBox="0 0 1024 1024"><use href="#op-mark" /></svg>Digital Lead Magnet Maker</div>
+        <div class="row" style="gap:18px"><div class="pdf"><b>The Weekly Review Kit</b><span>12 pages</span></div><div class="lines" style="flex:1"><i></i><i></i><i class="s"></i><i></i></div></div></div>
+      <div class="mc"><div class="mch"><svg viewBox="0 0 1024 1024"><use href="#op-mark" /></svg>Weekly Review</div>
+        <div class="wr"><div><em class="g">Moved</em>Launch page is live</div><div><em class="a">Drifted</em>Newsletter, two weeks late</div><div><em class="r">Stop</em>Daily standups</div></div></div>
+      <div class="mc"><div class="mch"><svg viewBox="0 0 1024 1024"><use href="#op-mark" /></svg>Brand System Builder</div>
+        <div class="row" style="gap:10px"><i class="sw" style="background:#0d0d0d"></i><i class="sw" style="background:#6155f3"></i><i class="sw" style="background:#b9b2f8"></i><i class="sw" style="background:#f3c7d8"></i><div class="aa">Aa</div></div></div>
+      <div class="mc"><div class="mch"><svg viewBox="0 0 1024 1024"><use href="#op-mark" /></svg>Voice DNA</div>
+        <div class="vd">Short sentences. <mark>Talks like a friend,</mark> not a brand. Uses <mark>real numbers</mark> and one clear ask.</div></div>
+      <div class="mc"><div class="mch"><svg viewBox="0 0 1024 1024"><use href="#op-mark" /></svg>Offer Builder</div>
+        <div class="tiers row"><div><span>Starter</span><b>$19</b></div><div class="on"><span>Pro</span><b>$49</b></div><div><span>Team</span><b>$129</b></div></div></div>
+      <div class="mc"><div class="mch"><svg viewBox="0 0 1024 1024"><use href="#op-mark" /></svg>HTML Slideshow</div>
+        <div class="slide"><b>Q3 in one slide</b><div class="bars row"><i style="height:30%"></i><i style="height:48%"></i><i style="height:40%"></i><i style="height:66%"></i><i style="height:84%"></i></div></div></div>
+      <div class="mc"><div class="mch"><svg viewBox="0 0 1024 1024"><use href="#op-mark" /></svg>De-Slop</div>
+        <div class="ds">We <s>leverage cutting-edge synergies to</s> <ins>help you</ins> ship the launch <s>seamlessly</s> <ins>this week</ins>.</div></div>
+    </div>
+  </div>
+  <div class="layer mt-halo"></div>
+  <div class="layer" id="mtov">
+    <div class="mtA" id="mtA"><span id="mtN">1</span> <span id="mtW">powers.</span></div>
+    <div class="mtB" id="mtB">One install.</div>
+  </div>
+</section>
+
+<!-- S5 CODEX 38.0-44.4 -->
+<section id="s5" class="scene clip" data-start="38" data-duration="6.4" data-track-index="2">
+  <div class="stage" id="s5stage">
+    <div class="cam" id="s5cam">
+      <div id="s5pill" class="abs cxlabel glass row"><svg class="ic"><use href="#i-term" /></svg>Also in Codex</div>
+      <div id="s5h" class="abs cxh">What should we work on?</div>
+      <div id="s5comp" class="abs cxcomp glass row">
+        <svg class="ic cxplus"><use href="#i-plus" /></svg>
+        <span class="cxchip row"><svg viewBox="0 0 1024 1024" width="28" height="28"><use href="#op-mark" /></svg>Operator Powers</span>
+        <div class="cxtext"><span id="s5a"></span><span id="s5w" class="cxw"></span><span class="cxcaret" id="s5caret"></span></div>
+        <div class="cxright row"><span class="cxmodel row">5.5 Medium<svg class="ic"><use href="#i-chev" /></svg></span><svg class="ic cxmic"><use href="#i-mic" /></svg><span class="cxsend" id="s5send"><svg class="ic"><use href="#i-up" /></svg></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="layer" id="s5tasks">
+    <div class="cxth" id="s5th">Kick it off. Come back to finished work.</div>
+    <div class="cxlist">
+      <div class="cxtask glass row"><svg viewBox="0 0 1024 1024" width="48" height="48"><use href="#op-mark" /></svg><div class="col"><b>Launch plan</b><span>Digital Product Launch Builder</span></div><div class="cxprog"><i></i></div><span class="cxok row"><svg class="ic"><use href="#i-check" /></svg>Ready</span></div>
+      <div class="cxtask glass row"><svg viewBox="0 0 1024 1024" width="48" height="48"><use href="#op-mark" /></svg><div class="col"><b>Case study</b><span>Case Study Builder</span></div><div class="cxprog"><i></i></div><span class="cxok row"><svg class="ic"><use href="#i-check" /></svg>Ready</span></div>
+      <div class="cxtask glass row"><svg viewBox="0 0 1024 1024" width="48" height="48"><use href="#op-mark" /></svg><div class="col"><b>Lead magnet</b><span>Digital Lead Magnet Maker</span></div><div class="cxprog"><i></i></div><span class="cxok row"><svg class="ic"><use href="#i-check" /></svg>Ready</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- S6 IPHONE 43.8-50.0 -->
+<section id="s6" class="scene clip" data-start="43.8" data-duration="6.2" data-track-index="3">
+  <div class="layer" id="s6back">
+    <div class="s6win">
+      <div class="s6side"><i></i><i></i><i></i><i class="s"></i><i></i><i class="s"></i></div>
+      <div class="s6main"><b></b><div class="s6comp"></div><div class="s6card"></div></div>
+    </div>
+  </div>
+  <div class="layer" id="s6head">
+    <div class="s6h"><div class="s4lab" id="s6lab">On your phone</div><div class="s6t"><span class="w">All</span> <span class="w">of</span> <span class="w">it,</span> <span class="w">right</span> <span class="w">from</span> <span class="w">your</span> <span class="w">phone.</span></div></div>
+  </div>
+  <div class="stage s6stage" id="s6stage">
+    <div class="phone" id="phone">
+      <div class="scr">
+        <div class="stat row"><b>9:41</b><span class="row"><svg class="ic"><use href="#i-signal" /></svg><i class="bat"></i></span></div>
+        <div class="island"></div>
+        <div class="pnav row"><svg class="ic"><use href="#i-menu" /></svg><b class="row">ChatGPT<svg class="ic"><use href="#i-chev" /></svg></b><svg class="ic"><use href="#i-pen" /></svg></div>
+        <div class="pgreet" id="pgreet">What can I help with?</div>
+        <div class="pthread">
+          <div class="pu" id="pu"><div class="att row"><span class="atti" style="background:#f59e0b"><svg class="ic"><use href="#i-file" /></svg></span><div class="col"><b>week-notes.txt</b><span>Notes</span></div></div><div class="ubub">Plan my week from these notes.</div></div>
+          <div class="tool-line" id="ptl"><svg viewBox="0 0 1024 1024" width="20" height="20"><use href="#op-mark" /></svg><span class="shim">Used Weekly Review</span></div>
+          <div class="card pw" id="pw">
+            <div class="wh row"><svg viewBox="0 0 1024 1024" width="24" height="24"><use href="#op-mark" /></svg><b>Weekly Review</b></div>
+            <div class="pr"><em class="g">Moved</em><span>Launch page is live</span></div>
+            <div class="pr"><em class="a">Drifted</em><span>Newsletter, two weeks late</span></div>
+            <div class="pr"><em class="r">Stop</em><span>Daily standups</span></div>
+            <div class="pr"><em class="n">Next</em><span>Ship the Lumen case study</span></div>
+          </div>
+        </div>
+        <div class="pcomp row">
+          <span class="pplus"><svg class="ic"><use href="#i-plus" /></svg></span>
+          <div class="ppill row"><span class="ph" id="pph">Ask anything</span><span id="ptype"></span><span class="pwave row" id="pwave"></span><svg class="ic pmic"><use href="#i-mic" /></svg></div>
+          <span class="pvoice" id="pvoice"><svg class="ic"><use href="#i-wave" /></svg></span>
+          <span class="ptouch" id="ptouch"></span>
+        </div>
+        <div class="homebar"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S7 PROMISE 50.0-54.0 -->
+<section id="s7" class="scene clip" data-start="50" data-duration="4" data-track-index="1">
+  <div class="layer s7-ground"></div>
+  <div id="s7rings" class="abs"><i class="s7ring"></i><i class="s7ring"></i><i class="s7ring"></i></div>
+  <div id="s7row" class="s7row">
+    <span class="s7tw" id="s7tw"><span class="s7t" id="s7t">No code to write.</span></span>
+    <span class="s7mark" id="s7mark"><svg viewBox="0 0 1024 1024" width="208" height="208"><use href="#op-mark" /></svg></span>
+  </div>
+</section>
+
+<!-- S8 END CARD 54.0-58.5 -->
+<section id="s8" class="scene clip" data-start="54" data-duration="4.5" data-track-index="1">
+  <div class="layer s8-glow" id="s8glow"></div>
+  <div id="s8tile" class="abs"><svg viewBox="0 0 1024 1024" width="208" height="208"><use href="#op-mark" /></svg></div>
+  <div id="s8word" class="abs s8word">Operator Powers</div>
+  <div id="s8now" class="abs s8now">Out now.</div>
+</section>
+
+<!-- Soundtrack: original score + Pixabay UI SFX, rendered by audio/make_audio.py -->
+<audio id="soundtrack" data-start="0" data-duration="58.5" data-track-index="8" src="assets/soundtrack.wav" data-volume="1"></audio>
+
+<!-- Top-most white flash used on zoom-through cuts. -->
+<div id="flashclip" class="clip" data-start="0" data-duration="58.5" data-track-index="9" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;z-index:100">
+  <div id="flash"></div>
+</div>
+
+</div>
+<script>
+/* ============================================================
+   Core: master timeline, camera, cursor, typing, text helpers,
+   shared WebGL gradient field.
+   Everything is driven by the paused master timeline so every
+   frame is deterministic under HyperFrames seeking.
+   ============================================================ */
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({ paused: true });
+/* Scene builders run after webfonts load so text measurement is exact. */
+const SCENES = [];
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const INK = "#0d0d0d", ACC = "#6155f3", ACC_SOFT = "#b9b2f8";
+const lerp = (a, b, k) => a + (b - a) * k;
+const clamp01 = (v) => Math.max(0, Math.min(1, v));
+
+/* seeded PRNG (mulberry32) for any scatter layouts */
+function rng(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ---------- camera ----------
+   Maps world point (cx, cy) to screen centre at zoom z.
+   Zoom is interpolated in log space so push-ins feel even. */
+function makeCam(el, o = {}) {
+  const s = { cx: o.cx ?? 960, cy: o.cy ?? 540, lz: Math.log(o.z ?? 1), rx: o.rx || 0, ry: o.ry || 0, rz: o.rz || 0 };
+  const apply = () => {
+    el.style.transform =
+      `translate(960px,540px) rotateX(${s.rx}deg) rotateY(${s.ry}deg) rotateZ(${s.rz}deg) ` +
+      `scale(${Math.exp(s.lz).toFixed(5)}) translate(${(-s.cx).toFixed(3)}px,${(-s.cy).toFixed(3)}px)`;
+  };
+  apply();
+  return { s, apply, el };
+}
+function camVars(v) {
+  const o = {};
+  for (const k in v) o[k === "z" ? "lz" : k] = k === "z" ? Math.log(v[k]) : v[k];
+  return o;
+}
+function camTo(c, v, t, dur, ease = "power3.inOut") {
+  tl.to(c.s, { ...camVars(v), duration: dur, ease, onUpdate: c.apply }, t);
+}
+/* world -> screen for a camera state (used to place overlays) */
+function toScreen(c, x, y) {
+  const z = Math.exp(c.s.lz);
+  return [960 + (x - c.s.cx) * z, 540 + (y - c.s.cy) * z];
+}
+
+/* ---------- measuring (layout is static at build time) ---------- */
+function rectIn(el, ancestor) {
+  const a = ancestor.getBoundingClientRect(), b = el.getBoundingClientRect();
+  return { x: b.left - a.left, y: b.top - a.top, w: b.width, h: b.height, cx: b.left - a.left + b.width / 2, cy: b.top - a.top + b.height / 2 };
+}
+/* Offset of el relative to an ancestor, ignoring transforms (walks offsetParent). */
+function offsetIn(el, ancestor) {
+  let x = 0, y = 0, n = el;
+  while (n && n !== ancestor) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+  return { x, y, w: el.offsetWidth, h: el.offsetHeight, cx: x + el.offsetWidth / 2, cy: y + el.offsetHeight / 2 };
+}
+
+/* ---------- ticker: call fn(time) every frame inside [t0, t1] ---------- */
+function tick(t0, t1, fn) {
+  const p = { v: 0 };
+  tl.to(p, { v: 1, duration: t1 - t0, ease: "none", onUpdate() { fn(t0 + p.v * (t1 - t0), p.v); } }, t0);
+}
+
+/* ---------- typing ---------- */
+function typeText(el, str, t, cps = 18, from = "") {
+  const p = { n: 0 };
+  const dur = Math.max(0.05, (str.length - from.length) / cps);
+  el.textContent = el.textContent || from;
+  tl.to(p, {
+    n: 1, duration: dur, ease: "none",
+    onUpdate() { el.textContent = from + str.slice(from.length, from.length + Math.round(p.n * (str.length - from.length))); },
+  }, t);
+  return t + dur;
+}
+function eraseText(el, str, to, t, cps = 40) {
+  const p = { n: 0 };
+  const dur = Math.max(0.05, (str.length - to.length) / cps);
+  tl.to(p, {
+    n: 1, duration: dur, ease: "none",
+    onUpdate() { el.textContent = str.slice(0, str.length - Math.round(p.n * (str.length - to.length))); },
+  }, t);
+  return t + dur;
+}
+function setText(el, str, t, prev = el.textContent) {
+  const p = { v: 0 };
+  tl.to(p, { v: 1, duration: 0.001, onUpdate() { el.textContent = p.v >= 1 ? str : prev; } }, t);
+}
+
+/* ---------- word entrances ---------- */
+function wordsIn(ws, t, o = {}) {
+  const st = o.stagger ?? 0.2, blur = o.blur ?? 14, y = o.y ?? 16, dur = o.dur ?? 0.8;
+  ws.forEach((w, i) => {
+    const tt = t + (Array.isArray(st) ? st[i] : i * st);
+    tl.fromTo(w, { opacity: 0, filter: `blur(${blur}px)`, y, scale: o.scale ?? 1 },
+      { opacity: 1, filter: "blur(0px)", y: 0, scale: 1, duration: dur, ease: "expo.out" }, tt);
+    if (o.tint !== false)
+      tl.fromTo(w, { color: o.tint || ACC_SOFT }, { color: w.dataset.c || INK, duration: dur * 1.5, ease: "sine.out" }, tt);
+  });
+}
+
+/* ---------- cursor ---------- */
+const CURSOR_SVG =
+  '<svg viewBox="-1 -1 17 21"><path d="M0 0v17.2l4.1-3.9 2.9 6.6 3-1.3-2.9-6.5h5.7Z" fill="#0d0d0d" stroke="#fff" stroke-width="1.35" stroke-linejoin="round"/></svg>';
+function makeCursor(parent, x, y, size = 34) {
+  const c = document.createElement("div");
+  c.className = "cursor";
+  c.style.width = size + "px"; c.style.height = size * 1.24 + "px";
+  c.innerHTML = CURSOR_SVG;
+  parent.appendChild(c);
+  gsap.set(c, { x, y, opacity: 0 });
+  return c;
+}
+function cursorShow(c, t, dur = 0.25) { tl.to(c, { opacity: 1, duration: dur, ease: "power1.out" }, t); }
+function cursorHide(c, t, dur = 0.2) { tl.to(c, { opacity: 0, duration: dur, ease: "power1.in" }, t); }
+function cursorTo(c, x, y, t, dur = 0.6, ease = "power3.inOut") {
+  tl.to(c, { x, y, duration: dur, ease }, t);
+}
+function clickAt(c, t, rippleParent, x, y, color) {
+  tl.to(c, { scale: 0.84, duration: 0.08, ease: "power2.out" }, t);
+  tl.to(c, { scale: 1, duration: 0.22, ease: "power2.out" }, t + 0.09);
+  if (rippleParent) {
+    const r = document.createElement("div");
+    r.className = "ripple";
+    if (color) r.style.borderColor = color;
+    r.style.left = x + "px"; r.style.top = y + "px";
+    rippleParent.appendChild(r);
+    tl.set(r, { scale: 0.25, opacity: 0.85 }, t + 0.02);
+    tl.to(r, { scale: 1.35, opacity: 0, duration: 0.6, ease: "power2.out" }, t + 0.021);
+  }
+}
+/* press a button: compress + recover */
+function press(el, t, s = 0.94) {
+  tl.to(el, { scale: s, duration: 0.08, ease: "power2.out" }, t);
+  tl.to(el, { scale: 1, duration: 0.3, ease: "power3.out" }, t + 0.09);
+}
+
+/* ---------- flash ---------- */
+function flash(t, peak = 1, up = 0.12, down = 0.45) {
+  const f = $("#flash");
+  tl.to(f, { opacity: peak, duration: up, ease: "power2.in" }, t - up);
+  tl.to(f, { opacity: 0, duration: down, ease: "power2.out" }, t);
+}
+
+/* ---------- shared gradient field (WebGL) ---------- */
+const BG = (() => {
+  const canvas = $("#bgc");
+  const W = 960, H = 540;
+  const gl = canvas.getContext("webgl", { preserveDrawingBuffer: true, antialias: false, alpha: false });
+  const vs = "attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}";
+  const fs = `precision highp float;
+uniform float t; uniform vec2 r;
+uniform vec3 c0,c1,c2,c3,c4; uniform float lum;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
+float fbm(vec2 p){float v=0.,a=.5;mat2 m=mat2(1.6,1.2,-1.2,1.6);for(int i=0;i<5;i++){v+=a*n(p);p=m*p;a*=.5;}return v;}
+void main(){
+  vec2 uv=gl_FragCoord.xy/r;
+  vec2 p=(uv-.5)*vec2(r.x/r.y,1.)*1.25;
+  float tt=t*.05;
+  vec2 q=vec2(fbm(p*1.05+vec2(0.,tt)),fbm(p*1.05+vec2(5.2,-tt*.8)));
+  vec2 w=vec2(fbm(p*1.25+2.1*q+vec2(1.7,9.2)+tt*.6),fbm(p*1.25+2.1*q+vec2(8.3,2.8)-tt*.5));
+  float f=fbm(p+1.7*w);
+  vec3 col=mix(c1,c0,smoothstep(.0,1.,uv.y));
+  col=mix(col,c2,smoothstep(.34,.86,f)*.85);
+  col=mix(col,c3,smoothstep(.48,.96,w.x)*.72);
+  col=mix(col,c4,smoothstep(.5,1.,q.y)*smoothstep(.85,.15,uv.y)*.85);
+  col+=.07*smoothstep(.62,1.,f);
+  float v=smoothstep(1.3,.3,length((uv-.5)*vec2(1.15,1.)));
+  col*=mix(.86,1.,v)*lum;
+  gl_FragColor=vec4(col,1.);
+}`;
+  const sh = (tp, s) => { const o = gl.createShader(tp); gl.shaderSource(o, s); gl.compileShader(o); return o; };
+  const pr = gl.createProgram();
+  gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(pr); gl.useProgram(pr);
+  const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(pr, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const U = (n) => gl.getUniformLocation(pr, n);
+  const u = { t: U("t"), r: U("r"), lum: U("lum"), c: [U("c0"), U("c1"), U("c2"), U("c3"), U("c4")] };
+  const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+  // palettes: top, bottom, body, accent, low glow
+  const PAL = [
+    ["#86aef6", "#dccff8", "#b6a8f5", "#f3c7d8", "#ffe0c8"], // 0 sky (ChatGPT desktop)
+    ["#2b3a9a", "#8b6fda", "#5a6de0", "#c68cdd", "#f3a8ba"], // 1 dusk (Codex)
+    ["#a9c7f8", "#f6e2ea", "#c6b8f7", "#f9d3c0", "#fff0dc"], // 2 morning (iPhone)
+  ].map((p) => p.map(hex));
+  const state = { pal: 0, lum: 1 };
+  function draw(time) {
+    const i = Math.floor(state.pal), k = state.pal - i;
+    const A = PAL[Math.min(i, PAL.length - 1)], B = PAL[Math.min(i + 1, PAL.length - 1)];
+    gl.viewport(0, 0, W, H);
+    gl.uniform1f(u.t, time); gl.uniform2f(u.r, W, H); gl.uniform1f(u.lum, state.lum);
+    for (let j = 0; j < 5; j++) gl.uniform3f(u.c[j], lerp(A[j][0], B[j][0], k), lerp(A[j][1], B[j][1], k), lerp(A[j][2], B[j][2], k));
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  draw(0);
+  return { draw, state };
+})();
+
+/* ============ S1 HOOK 0.0-6.0 ============ */
+SCENES.push(() => {
+  const camEl = $("#s1cam"), stage = $("#s1stage");
+  const cam = makeCam(camEl);
+  const words = $$("#s1line > .w");
+  const job = $("#s1job"), micwrap = $("#s1micwrap"), pill = $("#s1pill"), mic = $("#s1mic");
+  const barsBox = $("#s1bars");
+  const NB = 46;
+  for (let i = 0; i < NB; i++) barsBox.appendChild(document.createElement("i"));
+  const bars = $$("i", barsBox);
+
+  // Resolve the final layout "Just describe [mic]" once, then drive the
+  // re-centre with transforms (sub-pixel smooth) instead of layout tweens.
+  const w0 = offsetIn(words[0], camEl), w1 = offsetIn(words[1], camEl), m0 = offsetIn(micwrap, camEl);
+  job.style.display = "none"; micwrap.style.width = "96px";
+  const f0 = offsetIn(words[0], camEl), f1 = offsetIn(words[1], camEl);
+  const M = offsetIn(mic, camEl);
+  const fm = offsetIn(micwrap, camEl);
+  job.style.display = ""; micwrap.style.width = "0px";
+  gsap.set(micwrap, { x: fm.x - m0.x });
+
+  // giant "Your AI" sits to the right of the voice pill in world space
+  const YA = $("#s1yourai");
+  YA.style.left = M.x + 760 + 170 + "px";
+  YA.style.top = M.cy - YA.offsetHeight / 2 + 4 + "px";
+  const Y = offsetIn(YA, camEl);
+
+  /* 0.2 words assemble */
+  wordsIn(words.slice(0, 3), 0.2, { stagger: [0, 0.26, 0.52], dur: 0.95 });
+
+  /* 1.25 "the job" dissolves, mic takes its place, line re-centres */
+  tl.to(job, { opacity: 0, filter: "blur(10px)", scale: 0.9, duration: 0.34, ease: "power2.in" }, 1.22);
+  tl.to(words[0], { x: f0.x - w0.x, duration: 0.6, ease: "power3.inOut" }, 1.28);
+  tl.to(words[1], { x: f1.x - w1.x, duration: 0.6, ease: "power3.inOut" }, 1.28);
+  tl.to(job, { x: f1.x - w1.x, duration: 0.6, ease: "power3.inOut" }, 1.28);
+  tl.fromTo(pill, { scale: 0.3, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.75, ease: "expo.out" }, 1.42);
+
+  /* cursor glides in and clicks the mic */
+  const cur = makeCursor(camEl, M.cx + 360, M.cy + 250, 36);
+  cursorShow(cur, 1.4, 0.2);
+  cursorTo(cur, M.cx + 8, M.cy + 12, 1.42, 0.58, "power3.out");
+  clickAt(cur, 2.0, camEl, M.cx, M.cy, "rgba(97,85,243,.45)");
+  tl.to(mic, { backgroundColor: "#ecebfe", color: ACC, duration: 0.25, ease: "power2.out" }, 2.02);
+  press(pill, 2.0, 0.93);
+  tl.set(pill, { transformOrigin: "48px 48px" }, 0);
+
+  /* 2.05 slam in on the voice pill */
+  const ZC = { cx: M.cx + 150, cy: M.cy + 34, z: 3.4 };
+  camTo(cam, ZC, 2.05, 0.82, "power3.inOut");
+  tl.to(pill, { width: 760, duration: 0.85, ease: "power3.out" }, 2.16);
+  cursorTo(cur, M.cx + 30, M.cy + 58, 2.2, 0.9, "power2.inOut");
+  bars.forEach((b, i) => tl.fromTo(b, { opacity: 0 }, { opacity: 1 - (i / NB) * 0.6, duration: 0.3, ease: "power1.out" }, 2.28 + i * 0.012));
+  tick(2.2, 4.06, (t) => {
+    for (let i = 0; i < NB; i++) {
+      const a = Math.abs(Math.sin(t * 7.1 + i * 0.73)) * 0.6 + Math.abs(Math.sin(t * 3.3 + i * 1.91)) * 0.4;
+      const env = 0.3 + 0.7 * Math.abs(Math.sin(i * 0.31 + t * 1.4));
+      bars[i].style.height = (8 + 56 * a * env).toFixed(1) + "px";
+    }
+  });
+
+  /* transcript tooltip (screen space; tracks the pan) */
+  const tip = $("#s1tip"), tipt = $("#s1tipt");
+  const pillBottom = 540 - 34 * 3.4 + 48 * 3.4; // screen y of pill bottom after zoom
+  gsap.set(tip, { left: 318, top: pillBottom + 70 });
+  tl.fromTo(tip, { opacity: 0, y: 14, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "power3.out" }, 2.5);
+  typeText(tipt, "There's a decision buried in this call. Find it.", 2.56, 52);
+
+  /* 3.05 whip pan onto "Your AI" */
+  const panDx = (Y.cx - ZC.cx) * 3.4;
+  camTo(cam, { cx: Y.cx, cy: M.cy + 6 }, 3.05, 0.62, "power3.inOut");
+  tl.to(tip, { x: -panDx, duration: 0.62, ease: "power3.inOut" }, 3.05);
+  tl.set(stage, { filter: "url(#mbx)" }, 3.05);
+  tl.to("#mbxg", { attr: { stdDeviation: "26 0" }, duration: 0.3, ease: "power2.in" }, 3.05);
+  tl.to("#mbxg", { attr: { stdDeviation: "0 0" }, duration: 0.3, ease: "power2.out" }, 3.36);
+  tl.set(stage, { filter: "none" }, 3.68);
+  tl.fromTo(YA, { opacity: 0 }, { opacity: 1, duration: 0.2 }, 2.9);
+  tl.fromTo(YA, { backgroundPosition: "100% 0%" }, { backgroundPosition: "0% 0%", duration: 1.0, ease: "power2.inOut" }, 3.3);
+
+  /* 4.05 cut: "finishes it." arrives oversized */
+  tl.to([stage, "#s1ov"], { opacity: 0, duration: 0.001 }, 4.05);
+  const fin = $("#s1fin");
+  tl.fromTo(fin, { scale: 1.32, opacity: 0, filter: "blur(10px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.7, ease: "expo.out" }, 4.05);
+  $$("#s1fin .w").forEach((w, i) =>
+    tl.fromTo(w, { color: ACC_SOFT }, { color: w.dataset.c || INK, duration: 1.0, ease: "sine.out" }, 4.05 + i * 0.14));
+
+  /* 5.52 forward zoom-blur exit */
+  tl.to(fin, { scale: 1.38, filter: "blur(16px)", duration: 0.46, ease: "power3.in" }, 5.52);
+  tl.to(fin, { opacity: 0, duration: 0.44, ease: "none" }, 5.54);
+});
+
+/* ============ S2 PRODUCT 6.0-10.0 ============ */
+SCENES.push(() => {
+  const T = 6.0;
+  const wrap = $("#s2wrap"), tile = $("#s2tile");
+  tl.fromTo(tile, { scale: 0.7, opacity: 0, filter: "blur(16px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 1.05, ease: "expo.out" }, T + 0.02);
+  tl.fromTo("#s2O", { strokeDashoffset: 836 }, { strokeDashoffset: 0, duration: 0.85, ease: "power2.inOut" }, T + 0.28);
+  tl.fromTo("#s2P", { strokeDashoffset: 780 }, { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" }, T + 0.55);
+  $$(".s2ring").forEach((r, i) => {
+    tl.set(r, { scale: 1, opacity: 0.95 }, T + 0.12 + i * 0.24);
+    tl.to(r, { scale: 3.6, opacity: 0, duration: 1.7, ease: "power2.out" }, T + 0.121 + i * 0.24);
+  });
+  wordsIn($$("#s2word .w"), T + 0.85, { stagger: 0.16, dur: 0.95, y: 22 });
+  tl.fromTo("#s2subA", { opacity: 0, y: 20, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.85, ease: "power3.out" }, T + 1.4);
+  // subline cycles (cut-the-curve upward)
+  tl.to("#s2subA", { y: -40, duration: 0.32, ease: "power4.in" }, T + 2.3);
+  tl.to("#s2subA", { opacity: 0, duration: 0.2, ease: "power1.in" }, T + 2.3);
+  tl.fromTo("#s2subB", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power4.out" }, T + 2.62);
+  // zoom-through exit
+  tl.to(wrap, { scale: 1.24, filter: "blur(18px)", duration: 0.42, ease: "power3.in" }, T + 3.56);
+  tl.to(wrap, { opacity: 0, duration: 0.42, ease: "none" }, T + 3.56);
+});
+
+/* ============ S3 INSTALL 10.0-19.5 / S4 OUTCOMES 19.5-34.0 ============ */
+SCENES.push(() => {
+  const camEl = $("#s3cam"), stage = $("#s3stage"), win = $("#cgwin");
+  const cam = makeCam(camEl, { z: 0.8, rx: 16, ry: -12 });
+  const P = (sel) => offsetIn(typeof sel === "string" ? $(sel) : sel, camEl);
+  const toast = $("#toast");
+  toast.style.left = (1520 - toast.offsetWidth) / 2 + "px";
+
+  /* ---------- 10.0 window arrives tilted, settles flat ---------- */
+  tl.fromTo(win, { opacity: 0, filter: "blur(18px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.8, ease: "expo.out" }, 10.0);
+  camTo(cam, { z: 0.97, rx: 0, ry: 0 }, 10.0, 1.35, "expo.out");
+  flash(10.02, 0.8, 0.1, 0.5);
+
+  const cur = makeCursor(camEl, 1260, 860, 30);
+  cursorShow(cur, 10.85, 0.25);
+
+  /* ---------- 11.0 open Plugins ---------- */
+  const np = P("#navPlugins");
+  cursorTo(cur, np.x + 44, np.cy + 2, 10.95, 0.78);
+  camTo(cam, { cx: 840, cy: 440, z: 1.32 }, 10.95, 1.0);
+  clickAt(cur, 11.76, camEl, np.x + 44, np.cy, "rgba(13,13,13,.25)");
+  tl.to("#navPlugins", { backgroundColor: "#ececec", duration: 0.15 }, 11.78);
+  tl.to("#vHome", { opacity: 0, duration: 0.18, ease: "power1.in" }, 11.82);
+  tl.fromTo("#vPlugins", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 11.9);
+
+  /* ---------- 12.5 search "Operator" ---------- */
+  const ps = P("#psearch");
+  cursorTo(cur, ps.x + 150, ps.cy + 6, 12.02, 0.5);
+  camTo(cam, { cx: ps.x + 400, cy: ps.cy + 150, z: 1.68 }, 12.08, 0.85);
+  clickAt(cur, 12.54, camEl, ps.x + 150, ps.cy, "rgba(13,13,13,.2)");
+  tl.fromTo("#pscaret", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 12.58);
+  tl.to("#psph", { opacity: 0, duration: 0.01 }, 12.64);
+  typeText($("#pstype"), "Operator", 12.64, 14);
+  tl.to("#pgrid", { opacity: 0, y: 10, duration: 0.25, ease: "power2.in" }, 12.95);
+  tl.fromTo("#presults", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 13.12);
+  tl.fromTo("#presult", { opacity: 0, y: 18, scale: 0.98 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "expo.out" }, 13.12);
+
+  /* ---------- 13.8 open the plugin page ---------- */
+  const pr = P("#presult");
+  cursorTo(cur, pr.x + 280, pr.cy + 8, 13.3, 0.45);
+  clickAt(cur, 13.78, camEl, pr.x + 280, pr.cy, "rgba(13,13,13,.2)");
+  press($("#presult"), 13.78, 0.985);
+  tl.to("#pdim", { opacity: 1, duration: 0.35, ease: "power2.out" }, 13.88);
+  tl.fromTo("#pmodal", { opacity: 0, y: 34, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "expo.out" }, 13.9);
+  camTo(cam, { cx: 960, cy: 532, z: 1.24 }, 13.86, 0.7);
+
+  /* ---------- 15.0 giant push onto Install, click ---------- */
+  const pi = P("#pinstall");
+  cursorTo(cur, pi.cx + 6, pi.cy + 6, 14.45, 0.55);
+  camTo(cam, { cx: pi.cx + 8, cy: pi.cy + 22, z: 4.3 }, 15.0, 0.72, "power3.inOut");
+  clickAt(cur, 15.75, camEl, pi.cx, pi.cy, "rgba(97,85,243,.55)");
+  press($("#pinstall"), 15.75, 0.92);
+  tl.fromTo("#pinstall", { boxShadow: "0 0 0 0px rgba(97,85,243,0), 0 0 0px 0px rgba(97,85,243,0)" },
+    { boxShadow: "0 0 0 7px rgba(97,85,243,.22), 0 0 34px 10px rgba(97,85,243,.38)", duration: 0.18, ease: "power2.out" }, 15.77);
+  tl.to("#pinstall", { boxShadow: "0 0 0 0px rgba(97,85,243,0), 0 0 0px 0px rgba(97,85,243,0)", duration: 0.7, ease: "power2.out" }, 16.0);
+  tl.to("#pinLab", { opacity: 0, duration: 0.12 }, 15.82);
+  tl.fromTo("#pinSpin", { opacity: 0 }, { opacity: 1, duration: 0.12 }, 15.86);
+  tl.fromTo("#pinSpin", { rotation: 0 }, { rotation: 760, duration: 0.62, ease: "none", immediateRender: false }, 15.86);
+  tl.to("#pinSpin", { opacity: 0, duration: 0.1 }, 16.4);
+  tl.to("#pinstall", { backgroundColor: "#f0f0f0", duration: 0.3, ease: "power2.out" }, 16.4);
+  tl.fromTo("#pinDone", { opacity: 0, scale: 0.82 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, 16.44);
+
+  /* ---------- 16.5 pull back: toast + sidebar entry ---------- */
+  camTo(cam, { cx: 960, cy: 540, z: 1.0 }, 16.52, 0.85, "power3.inOut");
+  tl.fromTo(toast, { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, 16.8);
+  tl.to("#navOPwrap", { height: 38, duration: 0.45, ease: "power3.inOut" }, 16.9);
+  tl.fromTo("#navOP", { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 17.0);
+  tl.to("#navPlugins", { backgroundColor: "rgba(236,236,236,0)", duration: 0.2 }, 17.0);
+  tl.to("#pmodal", { opacity: 0, scale: 0.98, duration: 0.25, ease: "power2.in" }, 17.28);
+  tl.to("#pdim", { opacity: 0, duration: 0.3 }, 17.3);
+
+  /* ---------- 17.6 new chat with the plugin ---------- */
+  const no = P("#navOP");
+  cursorTo(cur, no.x + 70, no.cy + 4, 17.02, 0.56);
+  clickAt(cur, 17.6, camEl, no.x + 70, no.cy, "rgba(13,13,13,.2)");
+  tl.to("#navOP", { backgroundColor: "#ececec", duration: 0.15 }, 17.62);
+  tl.to("#vPlugins", { opacity: 0, duration: 0.2 }, 17.64);
+  tl.to("#vHome", { opacity: 1, duration: 0.35, ease: "power2.out" }, 17.7);
+  tl.fromTo("#homechip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, 17.82);
+  tl.to(toast, { opacity: 0, y: -10, duration: 0.3, ease: "power2.in" }, 17.9);
+  const hc = P("#homecomp");
+  camTo(cam, { cx: hc.cx, cy: hc.cy + 24, z: 1.58 }, 17.66, 0.75);
+
+  /* attachment + prompt */
+  tl.to("#attWrap", { height: 70, duration: 0.42, ease: "power3.out" }, 18.0);
+  tl.fromTo("#attWrap .att", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, 18.02);
+  camTo(cam, { cy: hc.cy + 58 }, 18.0, 0.5, "power2.inOut");
+  tl.to("#homeph", { opacity: 0, duration: 0.01 }, 18.3);
+  tl.fromTo("#homecaret", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 18.3);
+  tl.to("#homesendW", { opacity: 0, duration: 0.12 }, 18.34);
+  tl.to("#homesendU", { opacity: 1, duration: 0.12 }, 18.36);
+  typeText($("#hometype"), "Find the decision buried in this call.", 18.32, 40);
+  cursorHide(cur, 18.3, 0.2);
+  const hs = P("#homesend");
+  tl.set(cur, { x: hs.cx + 60, y: hs.cy + 50 }, 18.6);
+  cursorShow(cur, 18.9, 0.2);
+  cursorTo(cur, hs.cx + 4, hs.cy + 4, 18.95, 0.42);
+  clickAt(cur, 19.38);
+  press($("#homesend"), 19.38, 0.88);
+  cursorHide(cur, 19.5, 0.15);
+
+  /* ---------- 19.45 conversation view (S4) ---------- */
+  tl.to("#vHome", { opacity: 0, duration: 0.15, ease: "power1.in" }, 19.44);
+  tl.fromTo("#vChat", { opacity: 0 }, { opacity: 1, duration: 0.22 }, 19.46);
+  camTo(cam, { cx: 897, cy: 498, z: 1.5 }, 19.42, 0.72, "power3.inOut");
+  tl.to("#cgside", { filter: "blur(5px)", duration: 0.5, ease: "power2.out" }, 19.46);
+  tl.to("#s4scrim", { opacity: 1, duration: 0.5, ease: "power2.out" }, 19.5);
+
+  const thread = $("#thread");
+  const exs = $$(".ex", thread);
+  const V = [19.5, 23.2, 26.8, 30.4];
+
+  function headIn(h, t) {
+    tl.fromTo($(".s4lab", h), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, t);
+    wordsIn($$(".w", h), t + 0.1, { stagger: 0.055, dur: 0.8, blur: 10, y: 20 });
+  }
+  function headOut(h, t) {
+    const ws = $$(".w", h);
+    ws.forEach((w, i) => {
+      tl.to(w, { y: -44, duration: 0.34, ease: "power4.in" }, t + i * 0.022);
+      tl.to(w, { opacity: 0, duration: 0.2, ease: "power1.in" }, t + i * 0.022);
+    });
+    tl.to($(".s4lab", h), { opacity: 0, y: -16, duration: 0.3, ease: "power3.in" }, t);
+  }
+  function exchangeIn(i, t, dTool = 0.4, dW = 0.8) {
+    const ex = exs[i];
+    tl.fromTo($(".umsg", ex), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, t);
+    const line = $(".tool-line", ex);
+    tl.fromTo(line, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, t + dTool);
+    tl.fromTo($(".shim", line), { backgroundPosition: "100% 0%" }, { backgroundPosition: "0% 0%", duration: 0.9, ease: "none" }, t + dTool);
+    tl.fromTo($(".wdg", ex), { opacity: 0, y: 26, scale: 0.985 }, { opacity: 1, y: 0, scale: 1, duration: 0.65, ease: "expo.out" }, t + dW);
+  }
+  function scrollTo(i, t) {
+    tl.to(thread, { y: -exs[i].offsetTop, duration: 0.6, ease: "power3.inOut" }, t);
+    tl.set(stage, { filter: "url(#mby)" }, t);
+    tl.to("#mbyg", { attr: { stdDeviation: "0 14" }, duration: 0.28, ease: "power2.in" }, t + 0.02);
+    tl.to("#mbyg", { attr: { stdDeviation: "0 0" }, duration: 0.28, ease: "power2.out" }, t + 0.3);
+    tl.set(stage, { filter: "none" }, t + 0.6);
+  }
+  // hide later exchanges until they're sent
+  exs.slice(1).forEach((ex) => tl.set($$(".umsg, .tool-line, .wdg", ex), { opacity: 0 }, 0));
+
+  /* V1 Meeting Miner */
+  exchangeIn(0, 19.48, 0.22, 0.5);
+  headIn($("#h1"), 19.78);
+  $$("#w1 .drow").forEach((r, i) => tl.fromTo(r, { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 20.3 + i * 0.16));
+  tl.fromTo("#w1 .missed", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 20.95);
+  $$("#w1 .tag").forEach((r, i) => tl.fromTo(r, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.4, ease: "expo.out" }, 21.3 + i * 0.07));
+  camTo(cam, { cy: 508, z: 1.54 }, 20.3, 0.9, "power2.out");
+
+  /* V2 Content Repurposing */
+  headOut($("#h1"), 23.02);
+  scrollTo(1, 23.12);
+  camTo(cam, { cy: 498, z: 1.5 }, 23.12, 0.6, "power3.inOut");
+  exchangeIn(1, 23.3);
+  headIn($("#h2"), 23.42);
+  $$("#w2 .post").forEach((r, i) => tl.fromTo(r, { opacity: 0, y: 22, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "expo.out" }, 24.28 + i * 0.12));
+  $$("#w2 .week span").forEach((r, i) =>
+    tl.fromTo(r, { opacity: 0, backgroundColor: "#ffffff" }, { opacity: 1, backgroundColor: "#f5f3ff", duration: 0.35, ease: "power2.out" }, 24.9 + i * 0.05));
+  camTo(cam, { cy: 506, z: 1.55 }, 24.0, 0.9, "power2.out");
+
+  /* V3 LLM Council */
+  headOut($("#h2"), 26.62);
+  scrollTo(2, 26.72);
+  camTo(cam, { cy: 498, z: 1.5 }, 26.72, 0.6, "power3.inOut");
+  exchangeIn(2, 26.9);
+  headIn($("#h3"), 27.02);
+  $$("#w3 .adv").forEach((r, i) => {
+    tl.fromTo(r, { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 27.82 + i * 0.17);
+    tl.fromTo($("em", r), { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "expo.out" }, 27.98 + i * 0.17);
+  });
+  tl.fromTo("#w3 .verdict", { opacity: 0, y: 14, scale: 0.98 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "expo.out" }, 28.75);
+  camTo(cam, { cy: 506, z: 1.55 }, 27.6, 1.0, "power2.out");
+
+  /* V4 Customer Insight Synthesizer */
+  headOut($("#h3"), 30.22);
+  scrollTo(3, 30.32);
+  camTo(cam, { cy: 498, z: 1.5 }, 30.32, 0.6, "power3.inOut");
+  exchangeIn(3, 30.5);
+  headIn($("#h4"), 30.62);
+  $$("#w4 .pat").forEach((r, i) => {
+    tl.fromTo(r, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 31.35 + i * 0.28);
+    tl.fromTo($(".bar i", r), { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power3.out" }, 31.45 + i * 0.28);
+  });
+  camTo(cam, { cy: 506, z: 1.55 }, 31.1, 1.0, "power2.out");
+
+  /* 33.58 zoom-through into the montage */
+  tl.to([stage, "#s4ov"], { scale: 1.16, filter: "blur(16px)", duration: 0.42, ease: "power3.in", transformOrigin: "50% 50%" }, 33.58);
+  tl.to([stage, "#s4ov"], { opacity: 0, duration: 0.4, ease: "none" }, 33.6);
+});
+
+/* ============ S4b MONTAGE 34.0-38.0 ============ */
+SCENES.push(() => {
+  const T = 34.0;
+  flash(T, 0.7, 0.14, 0.45);
+  const world = $("#mtworld");
+  const cards = $$(".mc", world);
+  // x, y, z (px). Near cards keep clear of the centre headline.
+  const L = [
+    [-660, -250, -250], [650, -270, -560], [-720, 270, -820], [700, 260, -300],
+    [-200, -400, -1250], [280, 400, -1050], [-1020, -30, -1450], [1010, 10, -1200],
+    [140, -440, -1750], [-440, 430, -1650], [560, -40, -2050], [-600, -60, -2250],
+  ];
+  cards.forEach((c, i) => { c.style.transform = `translate3d(${L[i][0]}px,${L[i][1]}px,${L[i][2]}px)`; });
+  const FOCAL = -420;
+  const ease = gsap.parseEase("power1.inOut");
+  function frame(t) {
+    const p = clamp01((t - T) / 4);
+    const d = 1150 * ease(p);
+    const ry = lerp(-9, 7, p), rx = lerp(5, -3, p);
+    world.style.transform = `translateZ(${d.toFixed(2)}px) rotateY(${ry.toFixed(3)}deg) rotateX(${rx.toFixed(3)}deg)`;
+    cards.forEach((c, i) => {
+      const ze = L[i][2] + d;
+      const ent = clamp01((t - (T + 0.02 + i * 0.035)) / 0.55);
+      const near = 1 - clamp01((ze - 520) / 260);
+      c.style.opacity = (ent * ent * (3 - 2 * ent) * near).toFixed(3);
+      const b = Math.min(12, Math.abs(ze - FOCAL) / 105);
+      c.style.filter = `blur(${b.toFixed(2)}px)`;
+    });
+  }
+  frame(T);
+  tick(T, T + 4, (t) => frame(t));
+
+  /* "28 powers." counts up, then "One install." */
+  const A = $("#mtA"), B = $("#mtB"), N = $("#mtN");
+  tl.fromTo(A, { opacity: 0, scale: 0.9, filter: "blur(12px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.8, ease: "expo.out" }, T + 0.28);
+  const cnt = gsap.parseEase("power2.out");
+  tick(T + 0.28, T + 1.3, (t) => { N.textContent = String(Math.round(1 + 27 * cnt(clamp01((t - T - 0.28) / 1.0)))); });
+  tl.to(A, { scale: 1.2, filter: "blur(10px)", duration: 0.22, ease: "power3.in" }, T + 2.0);
+  tl.to(A, { opacity: 0, duration: 0.22, ease: "none" }, T + 2.0);
+  tl.fromTo(B, { opacity: 0, scale: 0.75, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, T + 2.22);
+
+  /* exit: push through into Codex */
+  tl.to(["#mtstage", "#mtov"], { scale: 1.25, filter: "blur(18px)", duration: 0.45, ease: "power3.in", transformOrigin: "50% 50%" }, T + 3.55);
+  flash(T + 4.0, 1, 0.32, 0.55);
+});
+
+/* ============ S5 CODEX 38.0-44.4 ============ */
+SCENES.push(() => {
+  const T = 38.0;
+  const camEl = $("#s5cam"), stage = $("#s5stage");
+  const cam = makeCam(camEl);
+  const P = (sel) => offsetIn($(sel), camEl);
+  tl.set(BG.state, { pal: 1, lum: 1 }, T);
+
+  // label sits centred above the heading
+  const pill = $("#s5pill");
+  pill.style.left = (1920 - pill.offsetWidth) / 2 + "px"; pill.style.top = "300px";
+
+  /* arrive out of the white flash */
+  tl.fromTo("#s5h", { opacity: 0, y: 18, filter: "blur(14px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.9, ease: "expo.out" }, T + 0.05);
+  tl.fromTo("#s5comp", { opacity: 0, y: 26, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "expo.out" }, T + 0.18);
+  tl.fromTo(pill, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, T + 0.32);
+  tl.fromTo(stage, { scale: 1.06 }, { scale: 1, duration: 1.2, ease: "expo.out", transformOrigin: "50% 50%" }, T);
+
+  /* type, then cycle the deliverable */
+  tl.fromTo("#s5caret", { opacity: 0 }, { opacity: 1, duration: 0.01 }, T + 0.7);
+  const a = $("#s5a"), w = $("#s5w");
+  const tA = typeText(a, "Turn my notes into a ", T + 0.74, 30);
+  typeText(w, "launch plan", tA, 30);
+  const comp = P("#s5comp");
+  camTo(cam, { cx: comp.x + 520, cy: comp.cy + 8, z: 1.75 }, T + 0.95, 0.9, "power3.inOut");
+  function swap(word, prev, t) {
+    tl.to(w, { opacity: 0, y: -10, filter: "blur(6px)", duration: 0.16, ease: "power2.in" }, t);
+    setText(w, word, t + 0.17, prev);
+    tl.fromTo(w, { opacity: 0, y: 10, filter: "blur(6px)", color: "#c9c2ff" },
+      { opacity: 1, y: 0, filter: "blur(0px)", color: "#ffffff", duration: 0.5, ease: "expo.out", immediateRender: false }, t + 0.17);
+  }
+  swap("case study", "launch plan", T + 2.1);
+  swap("lead magnet", "case study", T + 2.7);
+
+  /* pan to send, giant push, click with glow */
+  const send = P("#s5send");
+  const cur = makeCursor(camEl, send.cx + 180, send.cy + 170, 30);
+  cursorShow(cur, T + 3.0, 0.2);
+  cursorTo(cur, send.cx + 6, send.cy + 8, T + 3.02, 0.62, "power3.out");
+  camTo(cam, { cx: send.cx - 30, cy: send.cy + 14, z: 3.9 }, T + 3.2, 0.62, "power3.inOut");
+  clickAt(cur, T + 3.8, camEl, send.cx, send.cy, "rgba(255,255,255,.8)");
+  press($("#s5send"), T + 3.8, 0.9);
+  tl.to("#s5send", { backgroundColor: "#cfe0ff", boxShadow: "0 0 0 8px rgba(190,210,255,.35), 0 0 50px 16px rgba(170,195,255,.55)", duration: 0.2, ease: "power2.out" }, T + 3.82);
+  flash(T + 4.1, 1, 0.2, 0.5);
+
+  /* tasks run side by side */
+  tl.to(stage, { opacity: 0, duration: 0.01 }, T + 4.1);
+  tl.to("#s5tasks", { opacity: 1, duration: 0.01 }, T + 4.1);
+  tl.fromTo("#s5th", { opacity: 0, y: 16, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "expo.out" }, T + 4.12);
+  $$("#s5tasks .cxtask").forEach((r, i) => {
+    const t0 = T + 4.25 + i * 0.1;
+    tl.fromTo(r, { opacity: 0, y: 30, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "expo.out" }, t0);
+    tl.to($(".cxprog i", r), { scaleX: 1, duration: 0.8 + i * 0.25, ease: "power2.inOut" }, t0 + 0.2);
+    const done = t0 + 1.05 + i * 0.25;
+    tl.to($(".cxprog", r), { opacity: 0, duration: 0.15 }, done);
+    tl.fromTo($(".cxok", r), { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, done + 0.05);
+  });
+
+  /* hand over to the phone: tasks slide back and soften */
+  tl.to("#s5tasks", { x: -260, scale: 0.9, filter: "blur(8px)", opacity: 0, duration: 0.6, ease: "power3.in", transformOrigin: "30% 50%" }, T + 5.75);
+  tl.to(BG.state, { pal: 2, duration: 1.2, ease: "sine.inOut" }, T + 5.7);
+});
+
+/* ============ S6 IPHONE 43.8-50.0 ============ */
+SCENES.push(() => {
+  const T = 43.8;
+  const phone = $("#phone");
+  const waveBox = $("#pwave");
+  for (let i = 0; i < 34; i++) waveBox.appendChild(document.createElement("i"));
+  const wv = $$("i", waveBox);
+
+  /* layered: blurred desktop behind, phone rises in front */
+  tl.fromTo("#s6back", { opacity: 0, x: -60, scale: 0.94 }, { opacity: 0.7, x: 0, scale: 0.9, duration: 1.2, ease: "expo.out", transformOrigin: "30% 50%" }, T + 0.1);
+  tl.fromTo(phone, { y: 980, rotationX: 26, rotationY: -26, rotationZ: 4, scale: 1.0 },
+    { y: 0, rotationX: 7, rotationY: -14, rotationZ: 0, scale: 1.04, duration: 1.25, ease: "expo.out" }, T + 0.05);
+  tl.to(phone, { rotationX: 2, rotationY: -5, scale: 1.1, duration: 4.4, ease: "sine.inOut" }, T + 1.3);
+  tl.fromTo("#s6lab", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, T + 0.45);
+  wordsIn($$("#s6head .w"), T + 0.55, { stagger: 0.07, dur: 0.85, blur: 10, y: 22 });
+
+  /* hide the conversation until it happens */
+  ["#pu", "#ptl", "#pw"].forEach((s) => tl.set(s, { opacity: 0 }, 0));
+
+  /* voice tap, listening, transcript */
+  const tT = T + 1.2;
+  tl.set("#ptouch", { opacity: 0.9, scale: 0.4 }, tT);
+  tl.to("#ptouch", { opacity: 0, scale: 1.8, duration: 0.55, ease: "power2.out" }, tT + 0.001);
+  press($("#pvoice"), tT, 0.88);
+  tl.to("#pph", { opacity: 0, duration: 0.15 }, tT + 0.1);
+  tl.fromTo("#pwave", { opacity: 0 }, { opacity: 1, duration: 0.2 }, tT + 0.15);
+  tick(tT + 0.15, tT + 1.2, (t) => {
+    for (let i = 0; i < wv.length; i++) {
+      const a = Math.abs(Math.sin(t * 9.1 + i * 0.6)) * 0.6 + Math.abs(Math.sin(t * 4.3 + i * 1.7)) * 0.4;
+      wv[i].style.height = (4 + 26 * a * (0.35 + 0.65 * Math.abs(Math.sin(i * 0.25 + t * 2)))).toFixed(1) + "px";
+    }
+  });
+  tl.to("#pwave", { opacity: 0, duration: 0.18 }, tT + 1.2);
+  typeText($("#ptype"), "Plan my week from these notes.", tT + 1.2, 42);
+  tl.to("#ptype", { opacity: 0, duration: 0.12 }, tT + 2.0);
+  tl.to("#pph", { opacity: 1, duration: 0.2 }, tT + 2.1);
+
+  /* sent, answered */
+  tl.to("#pgreet", { opacity: 0, y: -12, duration: 0.3, ease: "power2.in" }, tT + 1.95);
+  tl.fromTo("#pu", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out", immediateRender: false }, tT + 2.02);
+  tl.fromTo("#ptl", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", immediateRender: false }, tT + 2.4);
+  tl.fromTo("#ptl .shim", { backgroundPosition: "100% 0%" }, { backgroundPosition: "0% 0%", duration: 0.8, ease: "none" }, tT + 2.4);
+  tl.fromTo("#pw", { opacity: 0, y: 20, scale: 0.98 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "expo.out", immediateRender: false }, tT + 2.75);
+  $$("#pw .pr").forEach((r, i) => tl.fromTo(r, { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, tT + 2.95 + i * 0.18));
+
+  /* exit: push through to white */
+  tl.to(["#s6stage", "#s6head", "#s6back"], { scale: 1.2, filter: "blur(16px)", duration: 0.45, ease: "power3.in", transformOrigin: "60% 50%" }, 49.55);
+  flash(50.0, 1, 0.28, 0.35);
+});
+
+/* ============ S7 PROMISE 50.0-54.0 / S8 END 54.0-58.5 ============ */
+SCENES.push(() => {
+  const T = 50.0;
+  const tw = $("#s7tw"), tx = $("#s7t"), mark = $("#s7mark"), msvg = $("#s7mark svg");
+  const W1 = tx.offsetWidth;
+  tx.textContent = "No prompts to memorize.";
+  const W2 = tx.offsetWidth;
+  tx.textContent = "No code to write.";
+
+  /* mark arrives with ripples */
+  tl.fromTo(msvg, { opacity: 0, scale: 0.15 }, { opacity: 1, scale: 0.3077, duration: 0.7, ease: "expo.out" }, T + 0.02);
+  $$(".s7ring").forEach((r, i) => {
+    tl.set(r, { scale: 0.4, opacity: 0.9 }, T + 0.08 + i * 0.2);
+    tl.to(r, { scale: 3.2, opacity: 0, duration: 1.5, ease: "power2.out" }, T + 0.081 + i * 0.2);
+  });
+
+  /* the mark drags the line out behind it, then swallows it back.
+     v = revealed width; group (text + mark) stays centred. */
+  const R = { v: 0, W: W1 };
+  const applyR = () => {
+    const v = Math.max(0, R.v), left = 960 - (v + 64) / 2;
+    tw.style.transform = `translateX(${left.toFixed(2)}px)`;
+    const m = `linear-gradient(90deg, #000 ${Math.max(0, v - 70).toFixed(1)}px, transparent ${v.toFixed(1)}px)`;
+    tw.style.webkitMaskImage = m; tw.style.maskImage = m;
+    mark.style.transform = `translateX(${(left + v).toFixed(2)}px)`;
+  };
+  applyR();
+  tl.to(R, { v: W1, duration: 0.85, ease: "power3.out", onUpdate: applyR }, T + 0.5);
+  tl.fromTo(tx, { color: ACC_SOFT }, { color: INK, duration: 0.9, ease: "sine.out" }, T + 0.5);
+  tl.to(R, { v: 0, duration: 0.5, ease: "power3.in", onUpdate: applyR }, T + 1.72);
+  tl.to(tx, { filter: "blur(8px)", opacity: 0.2, duration: 0.45, ease: "power2.in" }, T + 1.74);
+  setText(tx, "No prompts to memorize.", T + 2.26, "No code to write.");
+  tl.to(tx, { filter: "blur(0px)", opacity: 1, duration: 0.01 }, T + 2.27);
+  tl.to(R, { v: W2, duration: 0.95, ease: "power3.out", onUpdate: applyR }, T + 2.3);
+  tl.fromTo(tx, { color: ACC_SOFT }, { color: INK, duration: 0.9, ease: "sine.out", immediateRender: false }, T + 2.3);
+  tl.to(R, { v: 0, duration: 0.45, ease: "power3.in", onUpdate: applyR }, T + 3.12);
+  tl.to(tx, { filter: "blur(8px)", opacity: 0.2, duration: 0.4, ease: "power2.in" }, T + 3.14);
+
+  /* the mark grows into the end-card icon (centre 960,396 at 208px) */
+  tl.to(msvg, { scale: 1, y: -144, duration: 0.5, ease: "power3.inOut" }, T + 3.5);
+
+  /* S8 end card */
+  const E = 54.0;
+  tl.fromTo("#s8glow", { opacity: 0 }, { opacity: 1, duration: 1.4, ease: "sine.out" }, E);
+  tl.fromTo("#s8word", { opacity: 0, y: 22, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.1, ease: "power3.out" }, E + 0.3);
+  tl.fromTo("#s8now", { opacity: 0, y: 16, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.0, ease: "power3.out" }, E + 1.0);
+});
+
+/* ---------- register ---------- */
+tl.eventCallback("onUpdate", () => BG.draw(tl.time()));
+window.addEventListener("hf-seek", (e) => BG.draw(e.detail.time));
+window.__timelines["main"] = tl;
+window.__hf = window.__hf || {};
+window.__hf.buildReady = window.__hf.buildReady || {};
+window.__hf.buildReady["op-scenes"] = document.fonts.ready.then(() => {
+  SCENES.forEach((build) => build());
+  tl.seek(0, false);
+  BG.draw(0);
+});
+
+</script>
+</body>
+</html>
