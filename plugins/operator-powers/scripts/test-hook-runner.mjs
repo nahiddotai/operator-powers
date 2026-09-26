@@ -124,6 +124,16 @@ const statePath = (home) => join(home, ".operator-powers", "state.json");
   check("valid submission passes", run("guard-mcp-write", { tool_name: "mcp__operator_powers__submit_feedback", tool_input: { payload, payloadHash: goodHash, confirmationToken: "t" } }, home).out === "");
   check("deletion without token denied", run("guard-mcp-write", { tool_name: "mcp__operator_powers__delete_my_submission", tool_input: {} }, home).out.includes("deny"));
   check("deletion with credentials passes", run("guard-mcp-write", { tool_name: "mcp__operator_powers__delete_my_submission", tool_input: { receiptId: "r1", deletionToken: "d1" } }, home).out === "");
+
+  // Claude Code names a plugin's MCP tools mcp__plugin_<plugin>_<server>__<tool>.
+  const scoped = "mcp__plugin_operator-powers_operator_powers__submit_feedback";
+  const guardMatcher = JSON.parse(readFileSync(join(HERE, "..", "hooks", "hooks.json"), "utf8")).hooks.PreToolUse
+    .find((group) => (group.hooks || []).some((hook) => (hook.command || "").includes("guard-mcp-write"))).matcher;
+  check("guard matcher covers Claude Code plugin-scoped tool names", new RegExp(`^(?:${guardMatcher})$`).test(scoped));
+  check("guard matcher still covers unscoped tool names", new RegExp(`^(?:${guardMatcher})$`).test("mcp__operator_powers__submit_feedback"));
+  check("guard matcher ignores other servers", !new RegExp(`^(?:${guardMatcher})$`).test("mcp__other_server__submit_feedback"));
+  check("plugin-scoped submission without token denied", run("guard-mcp-write", { tool_name: scoped, tool_input: { payload } }, home).out.includes("deny"));
+  check("plugin-scoped valid submission passes", run("guard-mcp-write", { tool_name: scoped, tool_input: { payload, payloadHash: goodHash, confirmationToken: "t" } }, home).out === "");
 }
 
 // --- unknown subcommand ---

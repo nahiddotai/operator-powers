@@ -35,7 +35,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "mcp__operator_powers__.*",
+        "matcher": "mcp__(plugin_operator-powers_)?operator_powers__.*",
         "hooks": [
           {
             "type": "command",

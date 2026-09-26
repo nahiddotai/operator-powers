@@ -1,6 +1,6 @@
 # Privacy
 
-Plain-language summary: the skills run inside your own AI tool. Your prompts, files, transcripts, and outputs stay there. The only thing that ever leaves is a feedback or request message you explicitly wrote and approved after seeing it in full.
+Plain-language summary: the skills run inside your own AI tool. Your prompts, files, transcripts, and outputs stay there. Only two things ever leave: anonymous usage counts (six fixed fields, described below, with an off switch), and feedback or request messages you explicitly wrote and approved after seeing them in full.
 
 ## What runs locally
 
