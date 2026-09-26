@@ -11,6 +11,9 @@
   "repository": "https://github.com/nahiddotai/operator-powers",
   "license": "MIT",
   "privacyPolicyUrl": "https://github.com/nahiddotai/operator-powers/blob/main/plugins/operator-powers/docs/PRIVACY.md",
+  "termsOfServiceUrl": "https://github.com/nahiddotai/operator-powers/blob/main/plugins/operator-powers/docs/TERMS.md",
+  "supportUrl": "https://github.com/nahiddotai/operator-powers/issues",
+  "documentationUrl": "https://github.com/nahiddotai/operator-powers/blob/main/plugins/operator-powers/README.md",
   "keywords": [
     "ai-workflows",
     "productivity",
