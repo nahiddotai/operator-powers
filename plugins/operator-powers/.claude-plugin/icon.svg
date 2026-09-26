@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Operator Powers">
+  <defs>
+    <linearGradient id="op" gradientUnits="userSpaceOnUse" x1="251" y1="394" x2="372" y2="296">
+      <stop offset="0" stop-color="#5E50F3"/>
+      <stop offset="1" stop-color="#E8E4F8"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="100" fill="#020A1F"/>
+  <circle cx="208" cy="191.5" r="66.5" fill="none" stroke="url(#op)" stroke-width="32"/>
+  <path fill="url(#op)" fill-rule="evenodd" d="M251 242H328A55 55 0 0 1 328 352H281V394H251ZM281 272H328A25 25 0 0 1 328 322H281Z"/>
+</svg>

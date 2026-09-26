@@ -40,6 +40,15 @@ Every release is shaped by feedback ratings, power requests, and small anonymous
 - **Claude Code:** [docs/INSTALL-CLAUDE.md](docs/INSTALL-CLAUDE.md)
 - **Codex / ChatGPT Work:** [docs/INSTALL-CODEX.md](docs/INSTALL-CODEX.md)
 
+## What this plugin runs, sends, and fetches
+
+- **Hooks.** One dependency-free Node.js script, [hook-runner/index.mjs](hook-runner/index.mjs), runs at session start, when you send a prompt, and before this plugin's own submission tools. It never runs a shell.
+- **Anonymous usage counts.** The hook sends six fixed fields (random install id, event name, power id, client, operating system, plugin version) by HTTPS POST to `https://operator-powers.nahiddotai.workers.dev/t`. No prompts, files, or outputs. Turn it off with the `OPERATOR_POWERS_NO_TELEMETRY` environment variable, or ask your assistant to disable Operator Powers telemetry.
+- **Update server (MCP).** `https://operator-powers.nahiddotai.workers.dev/mcp` serves the live catalogue and release notes, and receives feedback or requests only after you approve the exact message.
+- **Environment variables.** The hook reads a few, only to tell which app it runs in (such as `CLAUDECODE` and `CODEX_HOME`), plus the off switch above and `OPERATOR_POWERS_TELEMETRY_URL`, a test override. It reads no credentials and never sends these values anywhere.
+- **Local file.** `~/.operator-powers/state.json` holds the last version you saw, your preferences, and the random install id.
+- **Skills.** Instruction files that run inside your own AI session. They fetch and send nothing. Operator Audit reads your local conversation history only after you say yes, and keeps the analysis local.
+
 ## Privacy in one paragraph
 
 Skills run inside your own AI tool; your prompts, files, and outputs are never collected. The plugin sends only anonymous usage counts (install, daily active, which of its own powers ran): six fixed fields, no content, no identity, on by default and easy to turn off. The hooks' full source is in [hook-runner/](hook-runner/). The optional update server only provides live catalogue and release information, and carries feedback and requests you explicitly approved after seeing the exact message. Full detail: [docs/PRIVACY.md](docs/PRIVACY.md).

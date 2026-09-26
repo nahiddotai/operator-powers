@@ -1,5 +1,6 @@
 {
   "name": "operator-powers",
+  "displayName": "Operator Powers",
   "version": "1.0.1",
   "description": "AI skills to operate and grow. Twenty-eight practical powers for non-technical operators.",
   "author": {
@@ -9,6 +10,7 @@
   "homepage": "https://github.com/nahiddotai/operator-powers",
   "repository": "https://github.com/nahiddotai/operator-powers",
   "license": "MIT",
+  "privacyPolicyUrl": "https://github.com/nahiddotai/operator-powers/blob/main/plugins/operator-powers/docs/PRIVACY.md",
   "keywords": [
     "ai-workflows",
     "productivity",
@@ -16,6 +18,5 @@
     "decision-making",
     "skills"
   ],
-  "hooks": "./hooks/hooks.json",
   "mcpServers": "./.mcp.json"
 }
